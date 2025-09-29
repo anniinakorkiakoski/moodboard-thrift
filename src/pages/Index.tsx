@@ -59,23 +59,21 @@ const Index = () => {
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center space-y-16 mb-20">
             <div className="mt-16 flex justify-center">
-              <div className="relative w-full max-w-6xl">
-                {/* Brand gradient rectangle with rounded corners */}
-                <div className="gradient-brand h-80 rounded-2xl shadow-glow relative overflow-hidden">
-                  {/* Decorative elements */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
-                  
-                  {/* Center content area */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-accent/90 backdrop-blur-sm rounded-xl p-12 shadow-soft border border-white/20">
-                      <h1 className="text-3xl md:text-4xl font-black text-accent-foreground leading-tight text-center">
-                        <span className="block">Find your</span>
-                        <span className="block">perfect</span>
-                        <span className="block whitespace-nowrap">thrift bundle.</span>
-                      </h1>
-                    </div>
-                  </div>
+              <div className="flex items-center w-full">
+                {/* Left burgundy extension */}
+                <div className="flex-1 h-80 bg-accent-foreground"></div>
+                
+                {/* Center pink square */}
+                <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center flex-shrink-0">
+                  <h1 className="text-3xl md:text-4xl font-black text-accent-foreground leading-tight text-center px-2">
+                    <span className="block">Find your</span>
+                    <span className="block">perfect</span>
+                    <span className="block whitespace-nowrap">thrift bundle.</span>
+                  </h1>
                 </div>
+                
+                {/* Right burgundy extension */}
+                <div className="flex-1 h-80 bg-accent-foreground"></div>
               </div>
             </div>
             <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed mt-12">
