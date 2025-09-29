@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { GalleryUpload } from '@/components/GalleryUpload';
+import { StylerFinds } from '@/components/StylerFinds';
 import { BundleDisplay } from '@/components/BundleDisplay';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<'upload' | 'searching' | 'results'>('upload');
+  const [searchedImage, setSearchedImage] = useState<{ url: string; caption: string } | null>(null);
 
   const handleUpload = (files: File[]) => {
     console.log('Uploaded files:', files);
     setCurrentView('searching');
+    setSearchedImage(null);
     
     // Simulate AI processing time
     setTimeout(() => {
@@ -15,8 +18,18 @@ const Index = () => {
     }, 3000);
   };
 
+  const handleImageSearch = (image: { url: string; caption: string }) => {
+    setSearchedImage(image);
+    setCurrentView('searching');
+    // Simulate AI processing time for visual search
+    setTimeout(() => {
+      setCurrentView('results');
+    }, 2500);
+  };
+
   const handleStartOver = () => {
     setCurrentView('upload');
+    setSearchedImage(null);
   };
 
   if (currentView === 'searching') {
@@ -24,19 +37,7 @@ const Index = () => {
   }
 
   if (currentView === 'results') {
-    return (
-      <div>
-        <BundleDisplay />
-        <div className="fixed bottom-6 left-6">
-          <button
-            onClick={handleStartOver}
-            className="bg-card/90 backdrop-blur-sm hover:bg-card text-foreground px-4 py-2 rounded-lg shadow-soft transition-all duration-300 hover:shadow-glow border"
-          >
-            ← New Search
-          </button>
-        </div>
-      </div>
-    );
+    return <StylerFinds searchedImage={searchedImage} onStartOver={handleStartOver} />;
   }
 
   return (
@@ -69,7 +70,8 @@ const Index = () => {
           </div>
 
           <GalleryUpload 
-            onUpload={handleUpload} 
+            onUpload={handleUpload}
+            onImageSearch={handleImageSearch}
             isLoading={false} 
           />
         </div>

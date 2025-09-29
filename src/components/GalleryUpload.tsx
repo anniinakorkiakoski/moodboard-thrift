@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Upload, ImagePlus, Sparkles, Edit2 } from 'lucide-react';
+import { Upload, ImagePlus, Sparkles, Edit2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,10 +12,11 @@ interface UploadedImage {
 
 interface GalleryUploadProps {
   onUpload: (files: File[]) => void;
+  onImageSearch?: (image: UploadedImage) => void;
   isLoading?: boolean;
 }
 
-export const GalleryUpload = ({ onUpload, isLoading = false }: GalleryUploadProps) => {
+export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: GalleryUploadProps) => {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [editingCaption, setEditingCaption] = useState<number | null>(null);
@@ -126,7 +127,15 @@ export const GalleryUpload = ({ onUpload, isLoading = false }: GalleryUploadProp
                                   className="w-full h-auto object-cover"
                                   style={{ aspectRatio: image.aspectRatio }}
                                 />
-                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white"
+                                    onClick={() => onImageSearch?.(image)}
+                                  >
+                                    <Search className="w-3 h-3" />
+                                  </Button>
                                   <Button
                                     variant="outline"
                                     size="sm"
