@@ -104,25 +104,28 @@ const Index = () => {
                 {/* Left burgundy extension with artistic linework */}
                 <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden">
                   {/* Subtle artistic line work */}
-                  <div className="absolute inset-0 opacity-15">
+                  <div className="absolute inset-0 opacity-18">
                     <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none">
-                      {/* Mountain line silhouettes */}
-                      <path d="M0,200 Q100,150 200,180 Q300,120 400,160" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none"/>
-                      <path d="M0,220 Q150,180 250,200 Q350,150 400,180" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none"/>
-                      {/* Cloud line forms */}
-                      <path d="M60,80 Q80,75 100,80 Q120,85 140,80" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none"/>
-                      <path d="M180,60 Q220,55 260,60 Q300,65 340,60" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none"/>
-                      {/* Textural brush lines */}
-                      <path d="M50,40 Q120,35 180,45 Q240,50 300,42" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none"/>
-                      <path d="M30,140 Q90,135 160,145 Q220,150 280,142" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none"/>
-                      <path d="M70,110 Q130,105 200,115 Q260,120 320,112" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none"/>
+                      {/* Sharp mountain line silhouettes */}
+                      <path d="M0,210 L80,160 L120,180 L180,140 L240,170 L300,120 L360,150 L400,130" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.7" fill="none" opacity="0.8"/>
+                      <path d="M0,230 L60,190 L140,200 L200,170 L280,190 L340,160 L400,175" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
+                      {/* Paint brush stroke clouds */}
+                      <path d="M50,85 Q65,80 85,82 Q105,78 125,85 Q140,88 155,85" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.4" strokeLinecap="round"/>
+                      <path d="M180,65 Q200,62 225,65 Q250,60 275,67 Q300,64 320,68" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.5" strokeLinecap="round"/>
+                      {/* Natural brush strokes with varying opacity */}
+                      <path d="M40,45 Q70,42 95,48 Q125,45 155,52 Q185,49 220,55 Q250,52 285,48" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.3" strokeLinecap="round"/>
+                      <path d="M25,135 Q55,132 85,138 Q115,135 145,142 Q175,139 205,145 Q235,142 265,138" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.4" strokeLinecap="round"/>
+                      <path d="M60,115 Q85,112 110,118 Q135,115 165,122 Q195,119 225,125 Q255,122 285,118" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none" opacity="0.35" strokeLinecap="round"/>
+                      {/* Additional delicate strokes */}
+                      <path d="M90,95 Q115,92 140,98 Q165,95 190,101" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none" opacity="0.25" strokeLinecap="round"/>
                     </svg>
                   </div>
                 </div>
@@ -137,25 +140,28 @@ const Index = () => {
                 {/* Right burgundy extension with artistic linework */}
                 <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden">
                   {/* Subtle artistic line work */}
-                  <div className="absolute inset-0 opacity-15">
+                  <div className="absolute inset-0 opacity-18">
                     <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none">
-                      {/* Mountain line silhouettes */}
-                      <path d="M0,160 Q100,120 200,140 Q300,180 400,200" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none"/>
-                      <path d="M0,180 Q150,150 250,170 Q350,200 400,220" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none"/>
-                      {/* Cloud line forms */}
-                      <path d="M100,85 Q120,80 140,85 Q160,90 180,85" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none"/>
-                      <path d="M260,65 Q300,60 340,65 Q380,70 400,65" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none"/>
-                      {/* Textural brush lines */}
-                      <path d="M100,45 Q170,40 240,50 Q310,55 370,47" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none"/>
-                      <path d="M80,145 Q140,140 210,150 Q270,155 340,147" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none"/>
-                      <path d="M120,115 Q180,110 250,120 Q310,125 380,117" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none"/>
+                      {/* Sharp mountain line silhouettes */}
+                      <path d="M0,140 L40,120 L100,150 L160,110 L220,140 L280,105 L340,130 L400,115" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.7" fill="none" opacity="0.8"/>
+                      <path d="M0,165 L60,145 L120,160 L180,130 L240,155 L300,125 L360,145 L400,130" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
+                      {/* Paint brush stroke clouds */}
+                      <path d="M80,90 Q100,85 125,88 Q150,82 175,90 Q195,93 215,90" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.4" strokeLinecap="round"/>
+                      <path d="M240,70 Q265,67 290,72 Q315,69 340,75 Q365,72 385,76" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.5" strokeLinecap="round"/>
+                      {/* Natural brush strokes with varying opacity */}
+                      <path d="M90,50 Q120,47 150,53 Q180,50 210,56 Q240,53 270,59 Q300,56 330,52" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.3" strokeLinecap="round"/>
+                      <path d="M70,140 Q100,137 130,143 Q160,140 190,146 Q220,143 250,149 Q280,146 310,142" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.4" strokeLinecap="round"/>
+                      <path d="M110,120 Q135,117 160,123 Q185,120 215,126 Q245,123 275,129 Q305,126 335,122" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none" opacity="0.35" strokeLinecap="round"/>
+                      {/* Additional delicate strokes */}
+                      <path d="M200,100 Q225,97 250,103 Q275,100 300,106" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none" opacity="0.25" strokeLinecap="round"/>
                     </svg>
                   </div>
                 </div>
