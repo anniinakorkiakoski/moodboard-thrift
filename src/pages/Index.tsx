@@ -61,7 +61,9 @@ const Index = () => {
             <div className="mt-16 flex justify-center">
               <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center">
                 <h1 className="text-3xl md:text-4xl font-bold text-accent-foreground leading-tight text-center px-4">
-                  find your perfect thrift bundle
+                  <span className="block">Find your</span>
+                  <span className="block">perfect</span>
+                  <span className="block">thrift bundle.</span>
                 </h1>
               </div>
             </div>
