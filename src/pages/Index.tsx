@@ -58,10 +58,12 @@ const Index = () => {
         
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center space-y-8 mb-12">
-            <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center">
-              <h1 className="text-3xl md:text-4xl font-bold text-accent-foreground leading-tight text-center px-4">
-                find your perfect thrift bundle
-              </h1>
+            <div className="mt-16 flex justify-center">
+              <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center">
+                <h1 className="text-3xl md:text-4xl font-bold text-accent-foreground leading-tight text-center px-4">
+                  find your perfect thrift bundle
+                </h1>
+              </div>
             </div>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Upload your style inspiration and let AI find the perfect secondhand pieces 
