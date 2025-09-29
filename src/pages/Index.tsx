@@ -65,8 +65,8 @@ const Index = () => {
                 
                 {/* Center pink square */}
                 <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center flex-shrink-0">
-                  <h1 className="text-3xl md:text-4xl font-black text-accent-foreground leading-tight text-center px-2">
-                    KURA
+                  <h1 className="text-8xl md:text-9xl font-black text-accent-foreground leading-none text-center tracking-tighter">
+                    CURA
                   </h1>
                 </div>
                 
