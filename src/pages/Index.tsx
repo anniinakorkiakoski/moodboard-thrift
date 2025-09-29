@@ -175,11 +175,13 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <p className="text-lg font-light text-text-primary max-w-2xl mx-auto leading-relaxed mt-20 font-serif px-4">
-              Upload your style inspiration, and let Al find the perfect secondhand pieces from across multiple platforms.
-              <br /><br />
-              <span className="text-base">Sustainable fashion, curated for you.</span>
-            </p>
+            <div className="flex justify-center items-center min-h-[300px]">
+              <p className="text-lg font-light text-text-primary max-w-2xl mx-auto leading-relaxed font-serif px-4 text-center">
+                Upload your style inspiration, and let Al find the perfect secondhand pieces from across multiple platforms.
+                <br /><br />
+                <span className="text-base">Sustainable fashion, curated for you.</span>
+              </p>
+            </div>
           </div>
 
           {/* Gallery Process Section */}
@@ -202,7 +204,7 @@ const Index = () => {
                   <div className="group">
                     <div className="bg-white border border-muted shadow-sm hover:shadow-lg transition-all duration-300 p-8 h-full hover-scale">
                       <div className="flex flex-col items-center text-center space-y-6">
-                        <div className="w-16 h-16 bg-burgundy rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-16 h-16 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                           <span className="text-xl font-medium text-burgundy-foreground">01</span>
                         </div>
                         <div className="space-y-3">
@@ -237,7 +239,7 @@ const Index = () => {
                   <div className="group">
                     <div className="bg-white border border-muted shadow-sm hover:shadow-lg transition-all duration-300 p-8 h-full hover-scale">
                       <div className="flex flex-col items-center text-center space-y-6">
-                        <div className="w-16 h-16 bg-burgundy rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-16 h-16 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                           <span className="text-xl font-medium text-burgundy-foreground">02</span>
                         </div>
                         <div className="space-y-3">
@@ -262,7 +264,7 @@ const Index = () => {
                   <div className="group">
                     <div className="bg-white border border-muted shadow-sm hover:shadow-lg transition-all duration-300 p-8 h-full hover-scale">
                       <div className="flex flex-col items-center text-center space-y-6">
-                        <div className="w-16 h-16 bg-burgundy rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-16 h-16 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                           <span className="text-xl font-medium text-burgundy-foreground">03</span>
                         </div>
                         <div className="space-y-3">
