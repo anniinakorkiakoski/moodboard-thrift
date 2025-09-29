@@ -60,10 +60,10 @@ const Index = () => {
           <div className="text-center space-y-8 mb-12">
             <div className="mt-16 flex justify-center">
               <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center">
-                <h1 className="text-4xl md:text-5xl font-black text-accent-foreground leading-tight text-center px-4">
+                <h1 className="text-3xl md:text-4xl font-black text-accent-foreground leading-tight text-center px-2">
                   <span className="block">Find your</span>
                   <span className="block">perfect</span>
-                  <span className="block">thrift bundle.</span>
+                  <span className="block whitespace-nowrap">thrift bundle.</span>
                 </h1>
               </div>
             </div>
