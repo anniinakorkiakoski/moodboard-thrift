@@ -95,13 +95,13 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center relative">
-        <div className="container mx-auto px-4">
+      <section className="min-h-screen flex flex-col justify-center relative overflow-hidden">
+        <div className="w-full px-0">
           <div className="text-center space-y-16 mb-32">
-            <div className="mt-16 flex justify-center">
-              <div className="flex items-center w-full">
+            <div className="mt-16 flex justify-center w-full">
+              <div className="flex items-center w-full max-w-[2000px]">
                 {/* Left burgundy extension with artistic linework */}
-                <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden">
+                <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden min-w-0">
                   {/* Subtle artistic line work */}
                   <div className="absolute inset-0 opacity-18">
                     <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none">
@@ -143,7 +143,7 @@ const Index = () => {
                 </div>
                 
                 {/* Right burgundy extension with artistic linework */}
-                <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden">
+                <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden min-w-0">
                   {/* Subtle artistic line work - MIRRORED from left side */}
                   <div className="absolute inset-0 opacity-18">
                     <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none" style={{ transform: 'scaleX(-1)' }}>
@@ -178,7 +178,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <p className="text-lg font-light text-text-primary max-w-2xl mx-auto leading-relaxed mt-20 font-serif">
+            <p className="text-lg font-light text-text-primary max-w-2xl mx-auto leading-relaxed mt-20 font-serif px-4">
               Upload your style inspiration, and let Al find the perfect secondhand pieces from across multiple platforms.
               <br /><br />
               <span className="text-base">Sustainable fashion, curated for you.</span>
