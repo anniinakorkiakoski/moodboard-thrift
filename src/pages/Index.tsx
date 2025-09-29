@@ -57,7 +57,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px]"></div>
         
         <div className="relative z-10 container mx-auto px-4">
-          <div className="text-center space-y-8 mb-12">
+          <div className="text-center space-y-16 mb-20">
             <div className="mt-16 flex justify-center">
               <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center">
                 <h1 className="text-3xl md:text-4xl font-black text-accent-foreground leading-tight text-center px-2">
@@ -67,7 +67,7 @@ const Index = () => {
                 </h1>
               </div>
             </div>
-            <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed mt-12">
               Upload your style inspiration and let AI find the perfect secondhand pieces 
               across multiple platforms. Sustainable fashion made effortless.
             </p>
@@ -92,7 +92,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-background/85 backdrop-blur-sm"></div>
         
         <div className="relative z-10 container mx-auto px-4">
-          <div className="text-center space-y-8 mb-16">
+          <div className="text-center space-y-12 mb-20">
             <h2 className="text-4xl font-bold text-gray-800">How It Works</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               From inspiration to outfit in three simple steps
