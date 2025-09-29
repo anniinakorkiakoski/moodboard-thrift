@@ -105,15 +105,21 @@ const Index = () => {
                   {/* Subtle artistic line work */}
                   <div className="absolute inset-0 opacity-18">
                     <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none">
-                      {/* Soft cloud formations - positioned above mountains */}
-                      <path d="M35,55 C48,52 62,48 76,54 C90,60 104,52 118,56 C132,60 146,56 160,58 C168,59 176,57 182,56" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.7" fill="none" opacity="0.5" strokeLinecap="round"/>
-                      <path d="M200,40 C218,36 236,32 254,40 C272,48 290,40 308,44 C326,48 344,42 362,46 C368,47 374,46 378,45" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.55" strokeLinecap="round"/>
-                      <path d="M90,70 C102,68 114,65 126,70 C138,75 150,70 162,72 C174,74 186,71 198,73 C204,74 210,73 214,72" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.45" strokeLinecap="round"/>
+                      {/* Realistic puffy cloud formations - positioned well above mountains */}
+                      <path d="M35,65 Q45,58 55,60 Q65,62 70,55 Q75,48 85,50 Q95,52 100,58 Q105,64 115,62 Q125,60 130,65 Q135,70 140,65 Q145,60 150,62 Q155,64 158,60" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M200,45 Q215,38 230,42 Q245,46 255,40 Q265,34 280,38 Q295,42 305,37 Q315,32 330,36 Q345,40 355,35 Q365,30 375,34" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="1.4" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M80,85 Q92,78 104,82 Q116,86 125,80 Q134,74 146,78 Q158,82 168,77 Q178,72 188,76 Q198,80 205,76" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="1" fill="none" opacity="0.45" strokeLinecap="round" strokeLinejoin="round"/>
                       
-                      {/* Organic mountain silhouettes - more varied and natural */}
+                      {/* Small wispy clouds higher up */}
+                      <path d="M120,40 Q130,36 140,38 Q150,40 158,36 Q166,32 174,36 Q182,40 188,37" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.4" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M260,60 Q272,55 284,58 Q296,61 306,56 Q316,51 326,55 Q336,59 343,56" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.42" strokeLinecap="round" strokeLinejoin="round"/>
+                      
+                      {/* Organic mountain silhouettes - positioned lower, well separated from clouds */}
                       <path d="M0,220 C18,208 32,185 48,178 C64,171 78,192 94,198 C110,204 128,175 148,168 C168,161 186,180 206,188 C226,196 246,165 270,158 C294,151 314,172 334,166 C354,160 372,150 388,145 C394,143 397,142 400,141" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.85" strokeLinecap="round"/>
                       <path d="M0,238 C22,228 38,210 58,204 C78,198 96,215 116,222 C136,229 158,205 178,198 C198,191 218,208 242,216 C266,224 288,198 312,191 C336,184 356,201 378,195 C388,192 394,190 400,188" 
@@ -121,16 +127,13 @@ const Index = () => {
                       <path d="M0,254 C28,246 44,232 68,227 C88,222 108,236 128,241 C148,246 168,228 188,223 C208,218 228,233 252,238 C276,243 296,223 320,218 C344,213 364,228 386,223 C392,222 396,221 400,220" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6" strokeLinecap="round"/>
                       
-                      {/* Natural flowing brush strokes */}
-                      <path d="M40,105 C58,102 76,98 94,106 C112,114 130,108 148,112 C166,116 184,112 202,118 C220,124 238,120 256,123 C274,126 292,122 310,116 C322,113 330,111 334,110" 
+                      {/* Natural flowing brush strokes in middle zone */}
+                      <path d="M40,135 C58,132 76,128 94,136 C112,144 130,138 148,142 C166,146 184,142 202,148 C220,154 238,150 256,153 C274,156 292,152 310,146 C322,143 330,141 334,140" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.35" strokeLinecap="round"/>
-                      <path d="M25,158 C42,155 59,151 76,159 C93,167 110,161 127,164 C144,167 161,163 178,169 C195,175 212,171 229,174 C246,177 263,173 280,167 C291,164 298,162 302,161" 
+                      <path d="M25,168 C42,165 59,161 76,169 C93,177 110,171 127,174 C144,177 161,173 178,179 C195,185 212,181 229,184 C246,187 263,183 280,177 C291,174 298,172 302,171" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.4" strokeLinecap="round"/>
-                      <path d="M60,135 C78,132 96,128 114,136 C132,144 150,138 168,142 C186,146 204,142 222,148 C240,154 258,150 276,153 C294,156 312,152 330,146" 
+                      <path d="M60,152 C78,149 96,145 114,153 C132,161 150,155 168,159 C186,163 204,159 222,165 C240,171 258,167 276,170 C294,173 312,169 330,163" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.35" fill="none" opacity="0.38" strokeLinecap="round"/>
-                      {/* Delicate wispy strokes */}
-                      <path d="M120,85 C138,82 156,78 174,86 C192,94 210,89 228,92 C236,93 244,92 248,91" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none" opacity="0.28" strokeLinecap="round"/>
                     </svg>
                   </div>
                 </div>
@@ -147,15 +150,21 @@ const Index = () => {
                   {/* Subtle artistic line work - MIRRORED from left side */}
                   <div className="absolute inset-0 opacity-18">
                     <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none" style={{ transform: 'scaleX(-1)' }}>
-                      {/* Soft cloud formations - positioned above mountains */}
-                      <path d="M35,55 C48,52 62,48 76,54 C90,60 104,52 118,56 C132,60 146,56 160,58 C168,59 176,57 182,56" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.7" fill="none" opacity="0.5" strokeLinecap="round"/>
-                      <path d="M200,40 C218,36 236,32 254,40 C272,48 290,40 308,44 C326,48 344,42 362,46 C368,47 374,46 378,45" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.55" strokeLinecap="round"/>
-                      <path d="M90,70 C102,68 114,65 126,70 C138,75 150,70 162,72 C174,74 186,71 198,73 C204,74 210,73 214,72" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.45" strokeLinecap="round"/>
+                      {/* Realistic puffy cloud formations - positioned well above mountains */}
+                      <path d="M35,65 Q45,58 55,60 Q65,62 70,55 Q75,48 85,50 Q95,52 100,58 Q105,64 115,62 Q125,60 130,65 Q135,70 140,65 Q145,60 150,62 Q155,64 158,60" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M200,45 Q215,38 230,42 Q245,46 255,40 Q265,34 280,38 Q295,42 305,37 Q315,32 330,36 Q345,40 355,35 Q365,30 375,34" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="1.4" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M80,85 Q92,78 104,82 Q116,86 125,80 Q134,74 146,78 Q158,82 168,77 Q178,72 188,76 Q198,80 205,76" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="1" fill="none" opacity="0.45" strokeLinecap="round" strokeLinejoin="round"/>
                       
-                      {/* Organic mountain silhouettes - more varied and natural */}
+                      {/* Small wispy clouds higher up */}
+                      <path d="M120,40 Q130,36 140,38 Q150,40 158,36 Q166,32 174,36 Q182,40 188,37" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.4" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M260,60 Q272,55 284,58 Q296,61 306,56 Q316,51 326,55 Q336,59 343,56" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.42" strokeLinecap="round" strokeLinejoin="round"/>
+                      
+                      {/* Organic mountain silhouettes - positioned lower, well separated from clouds */}
                       <path d="M0,220 C18,208 32,185 48,178 C64,171 78,192 94,198 C110,204 128,175 148,168 C168,161 186,180 206,188 C226,196 246,165 270,158 C294,151 314,172 334,166 C354,160 372,150 388,145 C394,143 397,142 400,141" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.85" strokeLinecap="round"/>
                       <path d="M0,238 C22,228 38,210 58,204 C78,198 96,215 116,222 C136,229 158,205 178,198 C198,191 218,208 242,216 C266,224 288,198 312,191 C336,184 356,201 378,195 C388,192 394,190 400,188" 
@@ -163,16 +172,13 @@ const Index = () => {
                       <path d="M0,254 C28,246 44,232 68,227 C88,222 108,236 128,241 C148,246 168,228 188,223 C208,218 228,233 252,238 C276,243 296,223 320,218 C344,213 364,228 386,223 C392,222 396,221 400,220" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6" strokeLinecap="round"/>
                       
-                      {/* Natural flowing brush strokes */}
-                      <path d="M40,105 C58,102 76,98 94,106 C112,114 130,108 148,112 C166,116 184,112 202,118 C220,124 238,120 256,123 C274,126 292,122 310,116 C322,113 330,111 334,110" 
+                      {/* Natural flowing brush strokes in middle zone */}
+                      <path d="M40,135 C58,132 76,128 94,136 C112,144 130,138 148,142 C166,146 184,142 202,148 C220,154 238,150 256,153 C274,156 292,152 310,146 C322,143 330,141 334,140" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.35" strokeLinecap="round"/>
-                      <path d="M25,158 C42,155 59,151 76,159 C93,167 110,161 127,164 C144,167 161,163 178,169 C195,175 212,171 229,174 C246,177 263,173 280,167 C291,164 298,162 302,161" 
+                      <path d="M25,168 C42,165 59,161 76,169 C93,177 110,171 127,174 C144,177 161,173 178,179 C195,185 212,181 229,184 C246,187 263,183 280,177 C291,174 298,172 302,171" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.4" strokeLinecap="round"/>
-                      <path d="M60,135 C78,132 96,128 114,136 C132,144 150,138 168,142 C186,146 204,142 222,148 C240,154 258,150 276,153 C294,156 312,152 330,146" 
+                      <path d="M60,152 C78,149 96,145 114,153 C132,161 150,155 168,159 C186,163 204,159 222,165 C240,171 258,167 276,170 C294,173 312,169 330,163" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.35" fill="none" opacity="0.38" strokeLinecap="round"/>
-                      {/* Delicate wispy strokes */}
-                      <path d="M120,85 C138,82 156,78 174,86 C192,94 210,89 228,92 C236,93 244,92 248,91" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none" opacity="0.28" strokeLinecap="round"/>
                     </svg>
                   </div>
                 </div>
