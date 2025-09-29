@@ -67,7 +67,7 @@ const Index = () => {
                 </h1>
               </div>
             </div>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
               Upload your style inspiration and let AI find the perfect secondhand pieces 
               across multiple platforms. Sustainable fashion made effortless.
             </p>
@@ -93,8 +93,8 @@ const Index = () => {
         
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center space-y-8 mb-16">
-            <h2 className="text-4xl font-bold">How It Works</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold text-gray-800">How It Works</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               From inspiration to outfit in three simple steps
             </p>
           </div>
@@ -104,8 +104,8 @@ const Index = () => {
               <div className="w-16 h-16 mx-auto rounded-full bg-accent/20 flex items-center justify-center">
                 <span className="text-2xl font-bold text-accent">1</span>
               </div>
-              <h3 className="text-xl font-semibold">Upload Inspiration</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-xl font-semibold text-gray-800">Upload Inspiration</h3>
+              <p className="text-gray-600">
                 Share your style moodboard, outfit photos, or Pinterest-style collages
               </p>
             </div>
@@ -114,8 +114,8 @@ const Index = () => {
               <div className="w-16 h-16 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="text-2xl font-bold text-primary">2</span>
               </div>
-              <h3 className="text-xl font-semibold">AI Finds Matches</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-xl font-semibold text-gray-800">AI Finds Matches</h3>
+              <p className="text-gray-600">
                 Our smart system scans Vinted, Tise, Emmy, Etsy, and more for similar pieces
               </p>
             </div>
@@ -124,8 +124,8 @@ const Index = () => {
               <div className="w-16 h-16 mx-auto rounded-full bg-earth/20 flex items-center justify-center">
                 <span className="text-2xl font-bold text-earth-foreground">3</span>
               </div>
-              <h3 className="text-xl font-semibold">Curate & Purchase</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-xl font-semibold text-gray-800">Curate & Purchase</h3>
+              <p className="text-gray-600">
                 Review your personalized bundle, filter by size and location, then purchase
               </p>
             </div>
