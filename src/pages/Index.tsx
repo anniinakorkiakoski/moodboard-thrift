@@ -64,7 +64,7 @@ const Index = () => {
                 <div className="flex-1 h-80 bg-accent-foreground"></div>
                 
                 {/* Center pink square */}
-                <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center flex-shrink-0">
+                <div className="w-80 h-80 bg-transparent flex items-center justify-center flex-shrink-0">
                   <h1 className="text-8xl md:text-9xl font-black text-accent-foreground leading-none text-center tracking-tighter">
                     CURA
                   </h1>
