@@ -51,6 +51,7 @@
     --gradient-earth: linear-gradient(135deg, hsl(var(--earth)), hsl(var(--muted)));
     --gradient-sage: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
     --gradient-ocean: linear-gradient(135deg, hsl(var(--muted)), hsl(var(--background)));
+    --gradient-brand: linear-gradient(90deg, hsl(var(--accent-foreground)), hsl(var(--accent)), hsl(var(--accent-foreground)));
 
     /* Shadows */
     --shadow-soft: 0 4px 20px -4px hsl(var(--primary) / 0.1);
@@ -129,6 +130,10 @@
   
   .gradient-ocean {
     background: var(--gradient-ocean);
+  }
+  
+  .gradient-brand {
+    background: var(--gradient-brand);
   }
   
   .shadow-soft {
