@@ -108,8 +108,6 @@ const Index = () => {
                       {/* Realistic puffy cloud formations - positioned well above mountains */}
                       <path d="M35,65 Q45,58 55,60 Q65,62 70,55 Q75,48 85,50 Q95,52 100,58 Q105,64 115,62 Q125,60 130,65 Q135,70 140,65 Q145,60 150,62 Q155,64 158,60" 
                             stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M200,45 Q215,38 230,42 Q245,46 255,40 Q265,34 280,38 Q295,42 305,37 Q315,32 330,36 Q345,40 355,35 Q365,30 375,34" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="1.4" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
                       <path d="M80,85 Q92,78 104,82 Q116,86 125,80 Q134,74 146,78 Q158,82 168,77 Q178,72 188,76 Q198,80 205,76" 
                             stroke="hsl(330 60% 75%)" strokeWidth="1" fill="none" opacity="0.45" strokeLinecap="round" strokeLinejoin="round"/>
                       
@@ -145,8 +143,6 @@ const Index = () => {
                       {/* Realistic puffy cloud formations - positioned well above mountains */}
                       <path d="M35,65 Q45,58 55,60 Q65,62 70,55 Q75,48 85,50 Q95,52 100,58 Q105,64 115,62 Q125,60 130,65 Q135,70 140,65 Q145,60 150,62 Q155,64 158,60" 
                             stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M200,45 Q215,38 230,42 Q245,46 255,40 Q265,34 280,38 Q295,42 305,37 Q315,32 330,36 Q345,40 355,35 Q365,30 375,34" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="1.4" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
                       <path d="M80,85 Q92,78 104,82 Q116,86 125,80 Q134,74 146,78 Q158,82 168,77 Q178,72 188,76 Q198,80 205,76" 
                             stroke="hsl(330 60% 75%)" strokeWidth="1" fill="none" opacity="0.45" strokeLinecap="round" strokeLinejoin="round"/>
                       
