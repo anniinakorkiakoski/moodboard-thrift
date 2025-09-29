@@ -22,9 +22,9 @@ serve(async (req) => {
       });
     }
 
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not configured');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -39,15 +39,15 @@ serve(async (req) => {
       .update({ status: 'analyzing' })
       .eq('id', searchId);
 
-    // Step 1: Analyze the image with OpenAI Vision
-    const visionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Step 1: Analyze the image with Lovable AI (Gemini Vision)
+    const visionResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'system',
@@ -67,12 +67,12 @@ serve(async (req) => {
             ]
           }
         ],
-        max_tokens: 500,
       }),
     });
 
     if (!visionResponse.ok) {
-      console.error('OpenAI Vision API error:', await visionResponse.text());
+      const errorText = await visionResponse.text();
+      console.error('Lovable AI Vision API error:', errorText);
       throw new Error('Failed to analyze image');
     }
 
@@ -191,17 +191,22 @@ function generateMockResults(searchTerms: string[], searchId: string) {
   const platforms = ['vinted', 'etsy', 'depop', 'tise', 'facebook_marketplace'];
   const mockResults = [];
   
-  // Generate 2-3 high-quality mock results
-  for (let i = 0; i < 3; i++) {
+  // Generate 5-8 varied mock results with different similarity scores
+  const resultCount = 5 + Math.floor(Math.random() * 4); // 5-8 results
+  
+  for (let i = 0; i < resultCount; i++) {
+    const basePrice = 20 + Math.floor(Math.random() * 80); // $20-$100
+    const similarity = 0.75 + (Math.random() * 0.20); // 0.75-0.95
+    
     mockResults.push({
       platform: platforms[i % platforms.length] as any,
       item_url: `https://example.com/item-${i}`,
-      title: `${searchTerms.join(' ')} - Item ${i + 1}`,
-      price: 25.99 + (i * 10),
+      title: `${searchTerms.slice(0, 2).join(' ')} ${['Style', 'Piece', 'Find', 'Item'][i % 4]} ${i + 1}`,
+      price: basePrice + (i * 5),
       currency: 'USD',
       image_url: null,
-      similarity_score: 0.80 + (Math.random() * 0.15), // 0.80-0.95
-      description: `Vintage ${searchTerms.join(' ')} in excellent condition`,
+      similarity_score: similarity,
+      description: `Curated ${searchTerms.join(' ')} from verified seller - ${['excellent', 'very good', 'good'][Math.floor(Math.random() * 3)]} condition`,
     });
   }
   
