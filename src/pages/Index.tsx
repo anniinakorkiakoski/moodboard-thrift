@@ -58,12 +58,11 @@ const Index = () => {
         
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center space-y-8 mb-12">
-            <h1 className="text-5xl md:text-7xl font-bold text-foreground leading-tight">
-              Your AI
-              <span className="block text-accent gradient-sage bg-clip-text text-transparent">
-                Thrift Stylist
-              </span>
-            </h1>
+            <div className="inline-block bg-accent px-8 py-6 rounded-lg shadow-glow">
+              <h1 className="text-4xl md:text-5xl font-bold text-accent-foreground leading-tight">
+                find your perfect thrift bundle
+              </h1>
+            </div>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Upload your style inspiration and let AI find the perfect secondhand pieces 
               across multiple platforms. Sustainable fashion made effortless.
