@@ -62,9 +62,9 @@ export const MoodboardUpload = ({ onUpload, isLoading = false }: MoodboardUpload
       <div className="text-center space-y-4">
         <div className="flex items-center justify-center gap-2 text-primary">
           <Sparkles className="w-8 h-8" />
-          <h2 className="text-3xl font-bold">Create Your Style Moodboard</h2>
+          <h2 className="text-3xl font-bold text-gray-800">Create Your Style Moodboard</h2>
         </div>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
           Upload outfit inspiration, style photos, or Pinterest-style collages. Our AI will find similar thrifted pieces across multiple platforms.
         </p>
       </div>
