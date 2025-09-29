@@ -209,15 +209,15 @@ const Index = () => {
                         </div>
                         <div className="space-y-3">
                           <h3 className="text-xl font-black text-primary uppercase tracking-wider">Share</h3>
-                          <p className="text-sm font-light text-muted-foreground leading-relaxed uppercase tracking-wide">
+                          <p className="text-sm font-light text-muted-foreground leading-relaxed">
                             Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
                           </p>
                           <details className="mt-4 text-left">
-                            <summary className="text-xs font-medium text-burgundy cursor-pointer hover:text-burgundy/80 transition-colors uppercase tracking-wide">
+                            <summary className="text-xs font-medium text-burgundy cursor-pointer hover:text-burgundy/80 transition-colors">
                               Become a better sharer →
                             </summary>
                             <div className="mt-3 pt-3 border-t border-muted">
-                              <p className="text-xs font-light text-muted-foreground leading-relaxed uppercase tracking-wide">
+                              <p className="text-xs font-light text-muted-foreground leading-relaxed">
                                 Caption your images with what you love about each piece. Describe the colors, textures, silhouettes, or moods that draw you in. These notes not only help you organize your thoughts but also train our AI to understand your unique style and discover better matches for you.
                               </p>
                             </div>
@@ -244,7 +244,7 @@ const Index = () => {
                         </div>
                         <div className="space-y-3">
                           <h3 className="text-xl font-black text-primary uppercase tracking-wider">Discover</h3>
-                          <p className="text-sm font-light text-muted-foreground leading-relaxed uppercase tracking-wide">
+                          <p className="text-sm font-light text-muted-foreground leading-relaxed">
                             Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
                           </p>
                         </div>
@@ -269,7 +269,7 @@ const Index = () => {
                         </div>
                         <div className="space-y-3">
                           <h3 className="text-xl font-black text-primary uppercase tracking-wider">Curate</h3>
-                          <p className="text-sm font-light text-muted-foreground leading-relaxed uppercase tracking-wide">
+                          <p className="text-sm font-light text-muted-foreground leading-relaxed">
                             Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
                           </p>
                         </div>
