@@ -35,8 +35,10 @@ export const useUserImages = () => {
   };
 
   const uploadImage = async (file: File, caption: string = '', aspectRatio: number) => {
+    console.log('Starting upload process for:', file.name);
     try {
       const { data: user } = await supabase.auth.getUser();
+      console.log('User authenticated:', !!user.user, user.user?.id);
       if (!user.user) throw new Error('User not authenticated');
 
       const fileExt = file.name.split('.').pop();
