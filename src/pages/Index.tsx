@@ -59,12 +59,12 @@ const Index = () => {
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center space-y-16 mb-20">
             <div className="mt-16 flex justify-center">
-              <div className="flex items-center">
+              <div className="flex items-center w-full">
                 {/* Left burgundy extension */}
-                <div className="w-32 h-80 bg-accent-foreground"></div>
+                <div className="flex-1 h-80 bg-accent-foreground"></div>
                 
                 {/* Center pink square */}
-                <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center">
+                <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center flex-shrink-0">
                   <h1 className="text-3xl md:text-4xl font-black text-accent-foreground leading-tight text-center px-2">
                     <span className="block">Find your</span>
                     <span className="block">perfect</span>
@@ -73,7 +73,7 @@ const Index = () => {
                 </div>
                 
                 {/* Right burgundy extension */}
-                <div className="w-32 h-80 bg-accent-foreground"></div>
+                <div className="flex-1 h-80 bg-accent-foreground"></div>
               </div>
             </div>
             <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed mt-12">
