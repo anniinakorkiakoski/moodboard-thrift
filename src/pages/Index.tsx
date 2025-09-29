@@ -126,14 +126,6 @@ const Index = () => {
                             stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.7" strokeLinecap="round"/>
                       <path d="M0,254 C28,246 44,232 68,227 C88,222 108,236 128,241 C148,246 168,228 188,223 C208,218 228,233 252,238 C276,243 296,223 320,218 C344,213 364,228 386,223 C392,222 396,221 400,220" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6" strokeLinecap="round"/>
-                      
-                      {/* Natural flowing brush strokes in middle zone */}
-                      <path d="M40,135 C58,132 76,128 94,136 C112,144 130,138 148,142 C166,146 184,142 202,148 C220,154 238,150 256,153 C274,156 292,152 310,146 C322,143 330,141 334,140" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.35" strokeLinecap="round"/>
-                      <path d="M25,168 C42,165 59,161 76,169 C93,177 110,171 127,174 C144,177 161,173 178,179 C195,185 212,181 229,184 C246,187 263,183 280,177 C291,174 298,172 302,171" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.4" strokeLinecap="round"/>
-                      <path d="M60,152 C78,149 96,145 114,153 C132,161 150,155 168,159 C186,163 204,159 222,165 C240,171 258,167 276,170 C294,173 312,169 330,163" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.35" fill="none" opacity="0.38" strokeLinecap="round"/>
                     </svg>
                   </div>
                 </div>
@@ -171,14 +163,6 @@ const Index = () => {
                             stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.7" strokeLinecap="round"/>
                       <path d="M0,254 C28,246 44,232 68,227 C88,222 108,236 128,241 C148,246 168,228 188,223 C208,218 228,233 252,238 C276,243 296,223 320,218 C344,213 364,228 386,223 C392,222 396,221 400,220" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6" strokeLinecap="round"/>
-                      
-                      {/* Natural flowing brush strokes in middle zone */}
-                      <path d="M40,135 C58,132 76,128 94,136 C112,144 130,138 148,142 C166,146 184,142 202,148 C220,154 238,150 256,153 C274,156 292,152 310,146 C322,143 330,141 334,140" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.35" strokeLinecap="round"/>
-                      <path d="M25,168 C42,165 59,161 76,169 C93,177 110,171 127,174 C144,177 161,173 178,179 C195,185 212,181 229,184 C246,187 263,183 280,177 C291,174 298,172 302,171" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.4" strokeLinecap="round"/>
-                      <path d="M60,152 C78,149 96,145 114,153 C132,161 150,155 168,159 C186,163 204,159 222,165 C240,171 258,167 276,170 C294,173 312,169 330,163" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="0.35" fill="none" opacity="0.38" strokeLinecap="round"/>
                     </svg>
                   </div>
                 </div>
