@@ -14,7 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      user_images: {
+        Row: {
+          aspect_ratio: number | null
+          caption: string | null
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          aspect_ratio?: number | null
+          caption?: string | null
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          aspect_ratio?: number | null
+          caption?: string | null
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

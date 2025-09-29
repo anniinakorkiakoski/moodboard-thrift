@@ -1,12 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GalleryUpload } from '@/components/GalleryUpload';
 import { StylerFinds } from '@/components/StylerFinds';
 import { BundleDisplay } from '@/components/BundleDisplay';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { Link } from 'react-router-dom';
+import { LogOut, User } from 'lucide-react';
 
 const Index = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [searchedImage, setSearchedImage] = useState<{ url: string; caption: string } | null>(null);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Check current user
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
 
   const handleUpload = (files: File[]) => {
     console.log('Uploaded files:', files);
@@ -37,6 +62,39 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="absolute top-0 left-0 right-0 z-10 p-4">
+        <div className="container mx-auto flex justify-end">
+          {user ? (
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-muted-foreground">
+                {user.email}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSignOut}
+                className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          ) : (
+            <Link to="/auth">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Sign In
+              </Button>
+            </Link>
+          )}
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col justify-center relative">
         <div className="container mx-auto px-4">
