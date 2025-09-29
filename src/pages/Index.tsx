@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { GalleryUpload } from '@/components/GalleryUpload';
 import { StylerFinds } from '@/components/StylerFinds';
 import { BundleDisplay } from '@/components/BundleDisplay';
@@ -8,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { LogOut, User } from 'lucide-react';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [searchedImage, setSearchedImage] = useState<{ url: string; caption: string } | null>(null);
@@ -45,14 +47,11 @@ const Index = () => {
     }, 3000);
   };
 
-  const handleImageSearch = (image: { url: string; caption: string }) => {
-    setSearchedImage(image);
-    setIsSearching(true);
-    // Simulate AI processing time for visual search
-    setTimeout(() => {
-      setIsSearching(false);
-      setShowResults(true);
-    }, 2500);
+  const handleImageSearch = (image: { url: string; caption: string; aspectRatio: number }) => {
+    // Navigate to visual search results page
+    navigate('/search', {
+      state: { imageUrl: image.url }
+    });
   };
 
   const handleStartOver = () => {

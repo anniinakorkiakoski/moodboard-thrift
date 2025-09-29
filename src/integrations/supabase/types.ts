@@ -14,6 +14,152 @@ export type Database = {
   }
   public: {
     Tables: {
+      search_results: {
+        Row: {
+          created_at: string
+          currency: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          item_url: string
+          platform: Database["public"]["Enums"]["platform_type"]
+          price: number | null
+          search_id: string
+          similarity_score: number | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          item_url: string
+          platform: Database["public"]["Enums"]["platform_type"]
+          price?: number | null
+          search_id: string
+          similarity_score?: number | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          item_url?: string
+          platform?: Database["public"]["Enums"]["platform_type"]
+          price?: number | null
+          search_id?: string
+          similarity_score?: number | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_results_search_id_fkey"
+            columns: ["search_id"]
+            isOneToOne: false
+            referencedRelation: "visual_searches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      thrift_requests: {
+        Row: {
+          budget: number | null
+          created_at: string
+          customer_id: string
+          id: string
+          notes: string | null
+          search_id: string
+          status: string
+          thrifter_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          notes?: string | null
+          search_id: string
+          status?: string
+          thrifter_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          notes?: string | null
+          search_id?: string
+          status?: string
+          thrifter_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thrift_requests_search_id_fkey"
+            columns: ["search_id"]
+            isOneToOne: false
+            referencedRelation: "visual_searches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thrift_requests_thrifter_id_fkey"
+            columns: ["thrifter_id"]
+            isOneToOne: false
+            referencedRelation: "thrifters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      thrifters: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string
+          id: string
+          is_verified: boolean | null
+          pricing_info: string | null
+          rating: number | null
+          specialties: string[] | null
+          total_orders: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          id?: string
+          is_verified?: boolean | null
+          pricing_info?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+          total_orders?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_verified?: boolean | null
+          pricing_info?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+          total_orders?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_images: {
         Row: {
           aspect_ratio: number | null
@@ -47,6 +193,36 @@ export type Database = {
         }
         Relationships: []
       }
+      visual_searches: {
+        Row: {
+          analysis_data: Json | null
+          created_at: string
+          id: string
+          image_url: string
+          status: Database["public"]["Enums"]["search_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_data?: Json | null
+          created_at?: string
+          id?: string
+          image_url: string
+          status?: Database["public"]["Enums"]["search_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_data?: Json | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          status?: Database["public"]["Enums"]["search_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -55,7 +231,20 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      platform_type:
+        | "vinted"
+        | "tise"
+        | "etsy"
+        | "emmy"
+        | "facebook_marketplace"
+        | "depop"
+        | "other_vintage"
+      search_status:
+        | "pending"
+        | "analyzing"
+        | "searching"
+        | "completed"
+        | "no_matches"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -182,6 +371,23 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      platform_type: [
+        "vinted",
+        "tise",
+        "etsy",
+        "emmy",
+        "facebook_marketplace",
+        "depop",
+        "other_vintage",
+      ],
+      search_status: [
+        "pending",
+        "analyzing",
+        "searching",
+        "completed",
+        "no_matches",
+      ],
+    },
   },
 } as const
