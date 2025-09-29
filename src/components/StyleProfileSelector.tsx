@@ -121,94 +121,150 @@ export const StyleProfileSelector = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading your style profile...</div>;
+    return <div className="text-center py-8 text-sm">Loading your style profile...</div>;
   }
 
   return (
-    <div className="space-y-16 max-w-6xl mx-auto">
+    <div className="space-y-20 max-w-7xl mx-auto px-4">
       {/* Header */}
-      <div className="text-center space-y-4 pt-8">
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Define Your Style</h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+      <div className="text-center space-y-3 pt-12">
+        <h2 className="text-5xl md:text-6xl font-black tracking-tighter text-accent-foreground">
+          DEFINE YOUR STYLE
+        </h2>
+        <p className="text-xs tracking-wide text-muted-foreground max-w-xl mx-auto uppercase">
           Curate your fashion DNA to discover pieces that truly resonate with your aesthetic
         </p>
       </div>
 
-      {/* Selected Collections - Only show if items are selected */}
+      {/* Selected Collections - Split Layout */}
       {(selectedStyles.length > 0 || selectedBrands.length > 0) && (
-        <div className="space-y-12">
-          {selectedStyles.length > 0 && (
+        <div className="grid md:grid-cols-2 gap-16">
+          {/* Your Style Collection - Left Side */}
+          <div className="space-y-8">
+            <div className="flex items-center gap-2 justify-center">
+              <Sparkles className="w-4 h-4 text-burgundy" />
+              <h3 className="text-xs font-medium tracking-widest uppercase text-burgundy">
+                Your Style
+              </h3>
+            </div>
             <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <Sparkles className="w-6 h-6 text-primary" />
-                <h3 className="text-2xl font-semibold">Your Style Collection</h3>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {selectedStyles.map(style => (
-                  <div
-                    key={style}
-                    className="group relative bg-card border-2 border-burgundy rounded-lg p-4 hover:shadow-lg transition-all cursor-pointer"
-                    onClick={() => STYLE_TAGS.includes(style) ? toggleStyle(style) : removeStyle(style)}
-                  >
-                    <p className="text-sm font-medium text-center break-words">{style}</p>
+              {selectedStyles.map(style => (
+                <div
+                  key={style}
+                  className="group flex items-center cursor-pointer"
+                  onClick={() => STYLE_TAGS.includes(style) ? toggleStyle(style) : removeStyle(style)}
+                >
+                  {/* Left burgundy bar */}
+                  <div className="flex-1 h-12 bg-burgundy relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10">
+                      <svg className="w-full h-full" viewBox="0 0 100 48" preserveAspectRatio="none">
+                        <path d="M0,24 Q20,18 40,24 Q60,30 80,24 Q90,21 100,20" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  {/* Center transparent square with text */}
+                  <div className="w-48 h-12 bg-transparent flex items-center justify-center flex-shrink-0 border-y-2 border-burgundy relative group-hover:bg-burgundy/5 transition-colors">
+                    <p className="text-xs font-light text-burgundy tracking-wider uppercase text-center px-2">
+                      {style}
+                    </p>
                     {!STYLE_TAGS.includes(style) && (
-                      <X className="absolute -top-2 -right-2 w-5 h-5 bg-burgundy text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <X className="absolute -top-2 -right-2 w-4 h-4 bg-burgundy text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     )}
                   </div>
-                ))}
-              </div>
+                  
+                  {/* Right burgundy bar */}
+                  <div className="flex-1 h-12 bg-burgundy relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10">
+                      <svg className="w-full h-full" viewBox="0 0 100 48" preserveAspectRatio="none" style={{ transform: 'scaleX(-1)' }}>
+                        <path d="M0,24 Q20,18 40,24 Q60,30 80,24 Q90,21 100,20" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
 
-          {selectedBrands.length > 0 && (
+          {/* Your Brand Wishlist - Right Side */}
+          <div className="space-y-8">
+            <div className="flex items-center gap-2 justify-center">
+              <Heart className="w-4 h-4 text-burgundy" />
+              <h3 className="text-xs font-medium tracking-widest uppercase text-burgundy">
+                Your Brands
+              </h3>
+            </div>
             <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <Heart className="w-6 h-6 text-accent" />
-                <h3 className="text-2xl font-semibold">Your Brand Wishlist</h3>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {selectedBrands.map(brand => (
-                  <div
-                    key={brand}
-                    className="group relative bg-card border-2 border-burgundy rounded-lg p-4 hover:shadow-lg transition-all cursor-pointer"
-                    onClick={() => DREAM_BRANDS.includes(brand) ? toggleBrand(brand) : removeBrand(brand)}
-                  >
-                    <p className="text-sm font-medium text-center break-words">{brand}</p>
+              {selectedBrands.map(brand => (
+                <div
+                  key={brand}
+                  className="group flex items-center cursor-pointer"
+                  onClick={() => DREAM_BRANDS.includes(brand) ? toggleBrand(brand) : removeBrand(brand)}
+                >
+                  {/* Left burgundy bar */}
+                  <div className="flex-1 h-12 bg-burgundy relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10">
+                      <svg className="w-full h-full" viewBox="0 0 100 48" preserveAspectRatio="none">
+                        <path d="M0,30 Q25,22 50,28 Q75,34 100,28" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  {/* Center transparent square with text */}
+                  <div className="w-48 h-12 bg-transparent flex items-center justify-center flex-shrink-0 border-y-2 border-burgundy relative group-hover:bg-burgundy/5 transition-colors">
+                    <p className="text-xs font-light text-burgundy tracking-wider uppercase text-center px-2">
+                      {brand}
+                    </p>
                     {!DREAM_BRANDS.includes(brand) && (
-                      <X className="absolute -top-2 -right-2 w-5 h-5 bg-burgundy text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <X className="absolute -top-2 -right-2 w-4 h-4 bg-burgundy text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     )}
                   </div>
-                ))}
-              </div>
+                  
+                  {/* Right burgundy bar */}
+                  <div className="flex-1 h-12 bg-burgundy relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10">
+                      <svg className="w-full h-full" viewBox="0 0 100 48" preserveAspectRatio="none" style={{ transform: 'scaleX(-1)' }}>
+                        <path d="M0,30 Q25,22 50,28 Q75,34 100,28" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       )}
 
-      {/* Selection Areas */}
-      <div className="space-y-16">
-        {/* Style Vibe Section */}
-        <Card className="p-8 md:p-12 space-y-8 bg-gradient-to-br from-background to-primary/5">
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <Sparkles className="w-6 h-6 text-primary" />
-              <h3 className="text-2xl font-semibold">Style Aesthetics</h3>
+      {/* Selection Areas - Split Layout */}
+      <div className="grid md:grid-cols-2 gap-16">
+        {/* Style Aesthetics - Left Side */}
+        <Card className="p-10 space-y-8 bg-gradient-to-br from-background to-burgundy/5">
+          <div className="space-y-2 text-center">
+            <div className="flex items-center gap-2 justify-center">
+              <Sparkles className="w-4 h-4 text-burgundy" />
+              <h3 className="text-xs font-medium tracking-widest uppercase text-burgundy">
+                Style Aesthetics
+              </h3>
             </div>
-            <p className="text-muted-foreground">
-              Select styles that define your aesthetic, or create your own unique descriptors
+            <p className="text-xs text-muted-foreground">
+              Select styles that define your aesthetic
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             {STYLE_TAGS.map(style => (
               <button
                 key={style}
                 onClick={() => toggleStyle(style)}
                 className={`
-                  p-4 rounded-lg border-2 transition-all text-sm font-medium
+                  p-3 rounded border transition-all text-xs font-light tracking-wide
                   ${selectedStyles.includes(style)
-                    ? 'border-burgundy bg-burgundy/5 text-burgundy scale-105'
-                    : 'border-border hover:border-primary/50 hover:scale-105'
+                    ? 'border-burgundy bg-burgundy/5 text-burgundy'
+                    : 'border-border hover:border-burgundy/50'
                   }
                 `}
               >
@@ -218,51 +274,50 @@ export const StyleProfileSelector = () => {
           </div>
 
           {/* Add Custom Style */}
-          <div className="pt-8 border-t">
-            <div className="flex gap-3">
-              <Input
-                placeholder="Add your own aesthetic (e.g., 'Scandi Minimalist', 'Dark Academia')"
-                value={customStyleInput}
-                onChange={(e) => setCustomStyleInput(e.target.value)}
-                onKeyPress={handleStyleKeyPress}
-                className="flex-1 h-12 text-base"
-              />
-              <Button
-                onClick={addCustomStyle}
-                size="lg"
-                variant="outline"
-                type="button"
-                className="px-6"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Add
-              </Button>
-            </div>
+          <div className="pt-6 border-t space-y-3">
+            <Input
+              placeholder="Add custom aesthetic"
+              value={customStyleInput}
+              onChange={(e) => setCustomStyleInput(e.target.value)}
+              onKeyPress={handleStyleKeyPress}
+              className="h-10 text-xs"
+            />
+            <Button
+              onClick={addCustomStyle}
+              variant="outline"
+              type="button"
+              className="w-full h-10 text-xs border-burgundy text-burgundy hover:bg-burgundy hover:text-white"
+            >
+              <Plus className="w-3 h-3 mr-2" />
+              Add Style
+            </Button>
           </div>
         </Card>
 
-        {/* Dream Brands Section */}
-        <Card className="p-8 md:p-12 space-y-8 bg-gradient-to-br from-background to-accent/5">
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <Heart className="w-6 h-6 text-accent" />
-              <h3 className="text-2xl font-semibold">Brand Universe</h3>
+        {/* Brand Universe - Right Side */}
+        <Card className="p-10 space-y-8 bg-gradient-to-br from-background to-burgundy/5">
+          <div className="space-y-2 text-center">
+            <div className="flex items-center gap-2 justify-center">
+              <Heart className="w-4 h-4 text-burgundy" />
+              <h3 className="text-xs font-medium tracking-widest uppercase text-burgundy">
+                Brand Universe
+              </h3>
             </div>
-            <p className="text-muted-foreground">
-              Choose brands you love, or add niche labels you're hunting for
+            <p className="text-xs text-muted-foreground">
+              Choose brands you love or hunt for
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             {DREAM_BRANDS.map(brand => (
               <button
                 key={brand}
                 onClick={() => toggleBrand(brand)}
                 className={`
-                  p-4 rounded-lg border-2 transition-all text-sm font-medium
+                  p-3 rounded border transition-all text-xs font-light tracking-wide
                   ${selectedBrands.includes(brand)
-                    ? 'border-burgundy bg-burgundy/5 text-burgundy scale-105'
-                    : 'border-border hover:border-accent/50 hover:scale-105'
+                    ? 'border-burgundy bg-burgundy/5 text-burgundy'
+                    : 'border-border hover:border-burgundy/50'
                   }
                 `}
               >
@@ -272,26 +327,23 @@ export const StyleProfileSelector = () => {
           </div>
 
           {/* Add Custom Brand */}
-          <div className="pt-8 border-t">
-            <div className="flex gap-3">
-              <Input
-                placeholder="Add your dream brand (e.g., 'Lemaire', 'Our Legacy', 'Jil Sander')"
-                value={customBrandInput}
-                onChange={(e) => setCustomBrandInput(e.target.value)}
-                onKeyPress={handleBrandKeyPress}
-                className="flex-1 h-12 text-base"
-              />
-              <Button
-                onClick={addCustomBrand}
-                size="lg"
-                variant="outline"
-                type="button"
-                className="px-6"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Add
-              </Button>
-            </div>
+          <div className="pt-6 border-t space-y-3">
+            <Input
+              placeholder="Add dream brand"
+              value={customBrandInput}
+              onChange={(e) => setCustomBrandInput(e.target.value)}
+              onKeyPress={handleBrandKeyPress}
+              className="h-10 text-xs"
+            />
+            <Button
+              onClick={addCustomBrand}
+              variant="outline"
+              type="button"
+              className="w-full h-10 text-xs border-burgundy text-burgundy hover:bg-burgundy hover:text-white"
+            >
+              <Plus className="w-3 h-3 mr-2" />
+              Add Brand
+            </Button>
           </div>
         </Card>
       </div>
@@ -301,10 +353,10 @@ export const StyleProfileSelector = () => {
         <Button 
           onClick={handleSave} 
           size="xl"
-          className="min-w-[300px]"
+          className="min-w-[300px] bg-burgundy hover:bg-burgundy/90 text-xs tracking-widest"
           disabled={saving}
         >
-          {saving ? "Saving Your Style..." : "Save My Style Profile"}
+          {saving ? "SAVING..." : "SAVE MY STYLE PROFILE"}
         </Button>
       </div>
     </div>
