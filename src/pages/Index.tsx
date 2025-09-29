@@ -75,8 +75,7 @@ const Index = () => {
               </div>
             </div>
             <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed mt-12">
-              Upload your style inspiration and let AI find the perfect secondhand pieces 
-              across multiple platforms. Sustainable fashion made effortless.
+              Upload your style inspiration, and let AI curate the perfect secondhand pieces from across multiple platforms. Sustainable fashion, made effortless.
             </p>
           </div>
 
