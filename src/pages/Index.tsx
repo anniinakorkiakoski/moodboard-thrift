@@ -58,8 +58,8 @@ const Index = () => {
         
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center space-y-8 mb-12">
-            <div className="inline-block bg-accent p-12 shadow-glow">
-              <h1 className="text-4xl md:text-5xl font-bold text-accent-foreground leading-tight">
+            <div className="w-80 h-80 bg-accent shadow-glow flex items-center justify-center">
+              <h1 className="text-3xl md:text-4xl font-bold text-accent-foreground leading-tight text-center px-4">
                 find your perfect thrift bundle
               </h1>
             </div>
