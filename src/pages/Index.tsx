@@ -74,7 +74,7 @@ const Index = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                  className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
                   My Style
@@ -175,7 +175,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-center items-center min-h-[300px]">
+            <div className="flex justify-center items-center min-h-[180px]">
               <p className="text-lg font-light text-text-primary max-w-2xl mx-auto leading-relaxed font-serif px-4 text-center">
                 Upload your style inspiration, and let Al find the perfect secondhand pieces from across multiple platforms.
                 <br /><br />
@@ -289,16 +289,18 @@ const Index = () => {
           </div>
 
           {/* Main Picture Feed with Sidebar */}
-          <div className="flex gap-0">
-            <div className="w-2/3 pr-4">
-              <GalleryUpload 
-                onUpload={handleUpload}
-                onImageSearch={handleImageSearch}
-                isLoading={isSearching} 
-              />
-            </div>
-            <div className="w-1/3">
-              <LibrarySidebar />
+          <div className="relative">
+            <div className="flex gap-0 relative">
+              <div className="w-full pr-0 transition-all duration-500" style={{ marginRight: '33.333%' }}>
+                <GalleryUpload 
+                  onUpload={handleUpload}
+                  onImageSearch={handleImageSearch}
+                  isLoading={isSearching} 
+                />
+              </div>
+              <div className="w-1/3 absolute right-0 top-0">
+                <LibrarySidebar />
+              </div>
             </div>
           </div>
         </div>
