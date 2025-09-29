@@ -65,8 +65,51 @@ export const MoodboardUpload = ({ onUpload, isLoading = false }: MoodboardUpload
           <h2 className="text-3xl font-bold text-gray-800">Create Your Style Moodboard</h2>
         </div>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Upload outfit inspiration, style photos, or Pinterest-style collages. Our AI will find similar thrifted pieces across multiple platforms.
+          Upload outfit inspiration, style photos, or Pinterest-style collages. Our AI will find similar thrifted pieces across multiple platforms. Sustainable fashion made effortless.
         </p>
+        
+        {/* Platform Logos */}
+        <div className="mt-8 space-y-3">
+          <p className="text-sm text-gray-500 font-medium">We search across:</p>
+          <div className="flex flex-wrap items-center justify-center gap-6 opacity-70">
+            <div className="flex items-center gap-2 bg-white/50 px-3 py-2 rounded-md shadow-sm">
+              <div className="w-6 h-6 bg-red-500 rounded-sm flex items-center justify-center">
+                <span className="text-white text-xs font-bold">P</span>
+              </div>
+              <span className="text-sm font-medium text-gray-700">Pinterest</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/50 px-3 py-2 rounded-md shadow-sm">
+              <div className="w-6 h-6 bg-orange-500 rounded-sm flex items-center justify-center">
+                <span className="text-white text-xs font-bold">V</span>
+              </div>
+              <span className="text-sm font-medium text-gray-700">Vinted</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/50 px-3 py-2 rounded-md shadow-sm">
+              <div className="w-6 h-6 bg-blue-500 rounded-sm flex items-center justify-center">
+                <span className="text-white text-xs font-bold">T</span>
+              </div>
+              <span className="text-sm font-medium text-gray-700">Tise</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/50 px-3 py-2 rounded-md shadow-sm">
+              <div className="w-6 h-6 bg-pink-500 rounded-sm flex items-center justify-center">
+                <span className="text-white text-xs font-bold">E</span>
+              </div>
+              <span className="text-sm font-medium text-gray-700">Emmy</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/50 px-3 py-2 rounded-md shadow-sm">
+              <div className="w-6 h-6 bg-black rounded-sm flex items-center justify-center">
+                <span className="text-white text-xs font-bold">R</span>
+              </div>
+              <span className="text-sm font-medium text-gray-700">The RealReal</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/50 px-3 py-2 rounded-md shadow-sm">
+              <div className="w-6 h-6 bg-green-500 rounded-sm flex items-center justify-center">
+                <span className="text-white text-xs font-bold">D</span>
+              </div>
+              <span className="text-sm font-medium text-gray-700">Depop</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Card 
