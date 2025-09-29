@@ -101,76 +101,63 @@ const Index = () => {
           <div className="text-center space-y-16 mb-32">
             <div className="mt-16 flex justify-center">
               <div className="flex items-center w-full">
-                {/* Continuous burgundy shape with artistic landscape details */}
+                {/* Left burgundy extension with artistic linework */}
                 <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden">
-                  {/* Subtle artistic landscape layer */}
+                  {/* Subtle artistic line work */}
                   <div className="absolute inset-0 opacity-15">
                     <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none">
-                      {/* Abstract mountain silhouettes */}
-                      <path d="M0,200 Q100,150 200,180 Q300,120 400,160 L400,320 L0,320 Z" 
-                            fill="hsl(330 80% 70%)" opacity="0.3"/>
-                      <path d="M0,220 Q150,180 250,200 Q350,150 400,180 L400,320 L0,320 Z" 
-                            fill="hsl(330 60% 75%)" opacity="0.2"/>
-                      {/* Cloud-like brushstrokes */}
-                      <ellipse cx="80" cy="80" rx="40" ry="15" fill="hsl(330 70% 80%)" opacity="0.15"/>
-                      <ellipse cx="200" cy="60" rx="60" ry="20" fill="hsl(330 70% 80%)" opacity="0.12"/>
-                      <ellipse cx="320" cy="90" rx="45" ry="18" fill="hsl(330 70% 80%)" opacity="0.13"/>
-                      {/* Textural brush marks */}
+                      {/* Mountain line silhouettes */}
+                      <path d="M0,200 Q100,150 200,180 Q300,120 400,160" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none"/>
+                      <path d="M0,220 Q150,180 250,200 Q350,150 400,180" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none"/>
+                      {/* Cloud line forms */}
+                      <path d="M60,80 Q80,75 100,80 Q120,85 140,80" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none"/>
+                      <path d="M180,60 Q220,55 260,60 Q300,65 340,60" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none"/>
+                      {/* Textural brush lines */}
                       <path d="M50,40 Q120,35 180,45 Q240,50 300,42" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="2" fill="none" opacity="0.1"/>
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none"/>
                       <path d="M30,140 Q90,135 160,145 Q220,150 280,142" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="1.5" fill="none" opacity="0.08"/>
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none"/>
+                      <path d="M70,110 Q130,105 200,115 Q260,120 320,112" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none"/>
                     </svg>
                   </div>
-                  {/* Canvas texture overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/[0.02] to-transparent"></div>
                 </div>
                 
-                {/* Center logo area with same background and artistic details */}
-                <div className="w-80 h-80 bg-accent-foreground flex items-center justify-center flex-shrink-0 relative overflow-hidden">
-                  {/* Subtle artistic landscape layer for center */}
-                  <div className="absolute inset-0 opacity-12">
-                    <svg className="w-full h-full" viewBox="0 0 320 320" preserveAspectRatio="none">
-                      {/* Centered mountain silhouettes */}
-                      <path d="M0,200 Q80,160 160,180 Q240,140 320,160 L320,320 L0,320 Z" 
-                            fill="hsl(330 80% 70%)" opacity="0.25"/>
-                      {/* Delicate cloud forms */}
-                      <ellipse cx="160" cy="70" rx="50" ry="18" fill="hsl(330 70% 80%)" opacity="0.1"/>
-                      {/* Subtle brush textures */}
-                      <path d="M40,60 Q100,55 180,65 Q240,70 280,62" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="1" fill="none" opacity="0.06"/>
-                    </svg>
-                  </div>
-                  {/* Canvas texture overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/[0.02] to-transparent"></div>
-                  <h1 className="text-8xl md:text-9xl font-black text-burgundy-foreground leading-none text-center tracking-tighter relative z-10">
+                {/* Center transparent square */}
+                <div className="w-80 h-80 bg-transparent flex items-center justify-center flex-shrink-0">
+                  <h1 className="text-8xl md:text-9xl font-black text-accent-foreground leading-none text-center tracking-tighter">
                     CURA
                   </h1>
                 </div>
                 
-                {/* Right burgundy extension with artistic details */}
+                {/* Right burgundy extension with artistic linework */}
                 <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden">
-                  {/* Subtle artistic landscape layer */}
+                  {/* Subtle artistic line work */}
                   <div className="absolute inset-0 opacity-15">
                     <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none">
-                      {/* Abstract mountain silhouettes */}
-                      <path d="M0,160 Q100,120 200,140 Q300,180 400,200 L400,320 L0,320 Z" 
-                            fill="hsl(330 80% 70%)" opacity="0.3"/>
-                      <path d="M0,180 Q150,150 250,170 Q350,200 400,220 L400,320 L0,320 Z" 
-                            fill="hsl(330 60% 75%)" opacity="0.2"/>
-                      {/* Cloud-like brushstrokes */}
-                      <ellipse cx="120" cy="85" rx="45" ry="17" fill="hsl(330 70% 80%)" opacity="0.14"/>
-                      <ellipse cx="280" cy="65" rx="55" ry="22" fill="hsl(330 70% 80%)" opacity="0.11"/>
-                      <ellipse cx="350" cy="95" rx="40" ry="16" fill="hsl(330 70% 80%)" opacity="0.12"/>
-                      {/* Textural brush marks */}
+                      {/* Mountain line silhouettes */}
+                      <path d="M0,160 Q100,120 200,140 Q300,180 400,200" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none"/>
+                      <path d="M0,180 Q150,150 250,170 Q350,200 400,220" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none"/>
+                      {/* Cloud line forms */}
+                      <path d="M100,85 Q120,80 140,85 Q160,90 180,85" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none"/>
+                      <path d="M260,65 Q300,60 340,65 Q380,70 400,65" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none"/>
+                      {/* Textural brush lines */}
                       <path d="M100,45 Q170,40 240,50 Q310,55 370,47" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="2" fill="none" opacity="0.1"/>
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none"/>
                       <path d="M80,145 Q140,140 210,150 Q270,155 340,147" 
-                            stroke="hsl(330 60% 75%)" strokeWidth="1.5" fill="none" opacity="0.08"/>
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none"/>
+                      <path d="M120,115 Q180,110 250,120 Q310,125 380,117" 
+                            stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none"/>
                     </svg>
                   </div>
-                  {/* Canvas texture overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/[0.02] to-transparent"></div>
                 </div>
               </div>
             </div>
