@@ -8,39 +8,15 @@ export const LibrarySidebar = () => {
           Your Library
         </h3>
         
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Exact Matches */}
           <div className="relative group cursor-pointer">
-            <div className="flex items-center w-full">
-              <div className="h-20 bg-accent-foreground flex-shrink-0 w-20 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-15">
-                  <svg className="w-full h-full" viewBox="0 0 80 80" preserveAspectRatio="none">
-                    <path d="M0,55 C10,50 20,45 30,48 C40,51 50,45 60,48 C70,51 75,48 80,46" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.7"/>
-                    <path d="M0,65 C12,62 24,58 36,61 C48,64 60,58 72,61 C76,62 78,61 80,60" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.6"/>
-                  </svg>
-                </div>
-              </div>
-              
-              <div className="flex-1 bg-transparent px-6 py-6">
-                <div className="flex items-start gap-3">
-                  <Search className="w-3.5 h-3.5 text-accent-foreground mt-0.5 flex-shrink-0" />
-                  <div className="text-left flex-1">
-                    <div className="text-xs font-light text-primary uppercase tracking-wider">Your Exact Matches</div>
-                    <div className="text-[10px] font-light text-muted-foreground mt-1.5 leading-relaxed">Items that match your inspiration</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="h-20 bg-accent-foreground flex-shrink-0 w-20 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-15" style={{ transform: 'scaleX(-1)' }}>
-                  <svg className="w-full h-full" viewBox="0 0 80 80" preserveAspectRatio="none">
-                    <path d="M0,55 C10,50 20,45 30,48 C40,51 50,45 60,48 C70,51 75,48 80,46" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.7"/>
-                    <path d="M0,65 C12,62 24,58 36,61 C48,64 60,58 72,61 C76,62 78,61 80,60" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.6"/>
-                  </svg>
+            <div className="py-6 border-b border-muted hover:border-burgundy transition-colors">
+              <div className="flex items-start gap-3 px-4">
+                <Search className="w-4 h-4 text-accent-foreground mt-1 flex-shrink-0" />
+                <div className="text-left flex-1">
+                  <div className="text-sm font-black text-primary uppercase tracking-wider leading-tight">Your Exact Matches</div>
+                  <div className="text-xs font-light text-muted-foreground mt-2 leading-relaxed">Items that match your inspiration</div>
                 </div>
               </div>
             </div>
@@ -48,36 +24,12 @@ export const LibrarySidebar = () => {
 
           {/* Items You Might Like */}
           <div className="relative group cursor-pointer">
-            <div className="flex items-center w-full">
-              <div className="h-20 bg-accent-foreground flex-shrink-0 w-20 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-15">
-                  <svg className="w-full h-full" viewBox="0 0 80 80" preserveAspectRatio="none">
-                    <path d="M0,55 C10,50 20,45 30,48 C40,51 50,45 60,48 C70,51 75,48 80,46" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.7"/>
-                    <path d="M0,65 C12,62 24,58 36,61 C48,64 60,58 72,61 C76,62 78,61 80,60" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.6"/>
-                  </svg>
-                </div>
-              </div>
-              
-              <div className="flex-1 bg-transparent px-6 py-6">
-                <div className="flex items-start gap-3">
-                  <Sparkles className="w-3.5 h-3.5 text-accent-foreground mt-0.5 flex-shrink-0" />
-                  <div className="text-left flex-1">
-                    <div className="text-xs font-light text-primary uppercase tracking-wider">Items You Might Like</div>
-                    <div className="text-[10px] font-light text-muted-foreground mt-1.5 leading-relaxed">Pieces that fit your vibe</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="h-20 bg-accent-foreground flex-shrink-0 w-20 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-15" style={{ transform: 'scaleX(-1)' }}>
-                  <svg className="w-full h-full" viewBox="0 0 80 80" preserveAspectRatio="none">
-                    <path d="M0,55 C10,50 20,45 30,48 C40,51 50,45 60,48 C70,51 75,48 80,46" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.7"/>
-                    <path d="M0,65 C12,62 24,58 36,61 C48,64 60,58 72,61 C76,62 78,61 80,60" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.6"/>
-                  </svg>
+            <div className="py-6 border-b border-muted hover:border-burgundy transition-colors">
+              <div className="flex items-start gap-3 px-4">
+                <Sparkles className="w-4 h-4 text-accent-foreground mt-1 flex-shrink-0" />
+                <div className="text-left flex-1">
+                  <div className="text-sm font-black text-primary uppercase tracking-wider leading-tight">Items You Might Like</div>
+                  <div className="text-xs font-light text-muted-foreground mt-2 leading-relaxed">Pieces that fit your vibe</div>
                 </div>
               </div>
             </div>
@@ -85,36 +37,12 @@ export const LibrarySidebar = () => {
 
           {/* Pro Thrifter Services */}
           <div className="relative group cursor-pointer">
-            <div className="flex items-center w-full">
-              <div className="h-20 bg-accent-foreground flex-shrink-0 w-20 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-15">
-                  <svg className="w-full h-full" viewBox="0 0 80 80" preserveAspectRatio="none">
-                    <path d="M0,55 C10,50 20,45 30,48 C40,51 50,45 60,48 C70,51 75,48 80,46" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.7"/>
-                    <path d="M0,65 C12,62 24,58 36,61 C48,64 60,58 72,61 C76,62 78,61 80,60" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.6"/>
-                  </svg>
-                </div>
-              </div>
-              
-              <div className="flex-1 bg-transparent px-6 py-6">
-                <div className="flex items-start gap-3">
-                  <Phone className="w-3.5 h-3.5 text-accent-foreground mt-0.5 flex-shrink-0" />
-                  <div className="text-left flex-1">
-                    <div className="text-xs font-light text-primary uppercase tracking-wider">Pro Thrifter Services</div>
-                    <div className="text-[10px] font-light text-muted-foreground mt-1.5 leading-relaxed">Get help from curators</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="h-20 bg-accent-foreground flex-shrink-0 w-20 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-15" style={{ transform: 'scaleX(-1)' }}>
-                  <svg className="w-full h-full" viewBox="0 0 80 80" preserveAspectRatio="none">
-                    <path d="M0,55 C10,50 20,45 30,48 C40,51 50,45 60,48 C70,51 75,48 80,46" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.7"/>
-                    <path d="M0,65 C12,62 24,58 36,61 C48,64 60,58 72,61 C76,62 78,61 80,60" 
-                          stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.6"/>
-                  </svg>
+            <div className="py-6 border-b border-muted hover:border-burgundy transition-colors">
+              <div className="flex items-start gap-3 px-4">
+                <Phone className="w-4 h-4 text-accent-foreground mt-1 flex-shrink-0" />
+                <div className="text-left flex-1">
+                  <div className="text-sm font-black text-primary uppercase tracking-wider leading-tight">Pro Thrifter Services</div>
+                  <div className="text-xs font-light text-muted-foreground mt-2 leading-relaxed">Get help from curators</div>
                 </div>
               </div>
             </div>
