@@ -144,41 +144,41 @@ const Index = () => {
                 
                 {/* Right burgundy extension with artistic linework */}
                 <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden">
-                  {/* Subtle artistic line work */}
+                  {/* Subtle artistic line work - MIRRORED from left side */}
                   <div className="absolute inset-0 opacity-18">
-                    <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none">
+                    <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none" style={{ transform: 'scaleX(-1)' }}>
                       {/* Soft cloud formations - positioned above mountains */}
-                      <path d="M65,62 C78,59 92,55 106,62 C120,69 134,62 148,65 C162,68 176,64 190,67 C198,68 206,67 212,66" 
+                      <path d="M35,55 C48,52 62,48 76,54 C90,60 104,52 118,56 C132,60 146,56 160,58 C168,59 176,57 182,56" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.7" fill="none" opacity="0.5" strokeLinecap="round"/>
-                      <path d="M220,45 C238,41 256,37 274,45 C292,53 310,45 328,49 C346,53 364,47 382,51 C388,52 394,51 398,50" 
+                      <path d="M200,40 C218,36 236,32 254,40 C272,48 290,40 308,44 C326,48 344,42 362,46 C368,47 374,46 378,45" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.55" strokeLinecap="round"/>
-                      <path d="M140,78 C152,76 164,73 176,78 C188,83 200,78 212,80 C224,82 236,79 248,81 C254,82 260,81 264,80" 
+                      <path d="M90,70 C102,68 114,65 126,70 C138,75 150,70 162,72 C174,74 186,71 198,73 C204,74 210,73 214,72" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.45" strokeLinecap="round"/>
                       
                       {/* Organic mountain silhouettes - more varied and natural */}
-                      <path d="M0,215 C16,203 28,182 44,176 C60,170 74,189 90,196 C106,203 124,176 144,170 C164,164 182,182 202,189 C222,196 242,168 266,162 C290,156 310,174 330,169 C350,164 368,155 384,151 C390,149 395,148 400,147" 
+                      <path d="M0,220 C18,208 32,185 48,178 C64,171 78,192 94,198 C110,204 128,175 148,168 C168,161 186,180 206,188 C226,196 246,165 270,158 C294,151 314,172 334,166 C354,160 372,150 388,145 C394,143 397,142 400,141" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.85" strokeLinecap="round"/>
-                      <path d="M0,232 C20,223 34,207 54,202 C74,197 92,212 112,218 C132,224 154,203 174,197 C194,191 214,207 238,214 C262,221 284,197 308,191 C332,185 352,201 374,196 C384,194 392,192 400,190" 
+                      <path d="M0,238 C22,228 38,210 58,204 C78,198 96,215 116,222 C136,229 158,205 178,198 C198,191 218,208 242,216 C266,224 288,198 312,191 C336,184 356,201 378,195 C388,192 394,190 400,188" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.7" strokeLinecap="round"/>
-                      <path d="M0,248 C26,241 42,228 66,224 C86,220 106,233 126,237 C146,241 166,226 186,222 C206,218 226,232 250,236 C274,240 294,222 318,218 C342,214 362,228 384,224 C390,223 395,222 400,221" 
+                      <path d="M0,254 C28,246 44,232 68,227 C88,222 108,236 128,241 C148,246 168,228 188,223 C208,218 228,233 252,238 C276,243 296,223 320,218 C344,213 364,228 386,223 C392,222 396,221 400,220" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6" strokeLinecap="round"/>
                       
                       {/* Natural flowing brush strokes */}
-                      <path d="M75,110 C93,107 111,103 129,111 C147,119 165,113 183,117 C201,121 219,117 237,123 C255,129 273,125 291,128 C309,131 327,127 345,121 C357,118 365,116 369,115" 
+                      <path d="M40,105 C58,102 76,98 94,106 C112,114 130,108 148,112 C166,116 184,112 202,118 C220,124 238,120 256,123 C274,126 292,122 310,116 C322,113 330,111 334,110" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.35" strokeLinecap="round"/>
-                      <path d="M55,162 C72,159 89,155 106,163 C123,171 140,165 157,168 C174,171 191,167 208,173 C225,179 242,175 259,178 C276,181 293,177 310,171 C321,168 328,166 332,165" 
+                      <path d="M25,158 C42,155 59,151 76,159 C93,167 110,161 127,164 C144,167 161,163 178,169 C195,175 212,171 229,174 C246,177 263,173 280,167 C291,164 298,162 302,161" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.4" strokeLinecap="round"/>
-                      <path d="M95,138 C113,135 131,131 149,139 C167,147 185,141 203,145 C221,149 239,145 257,151 C275,157 293,153 311,156 C329,159 347,155 365,149" 
+                      <path d="M60,135 C78,132 96,128 114,136 C132,144 150,138 168,142 C186,146 204,142 222,148 C240,154 258,150 276,153 C294,156 312,152 330,146" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.35" fill="none" opacity="0.38" strokeLinecap="round"/>
                       {/* Delicate wispy strokes */}
-                      <path d="M170,92 C188,89 206,85 224,93 C242,101 260,96 278,99 C286,100 294,99 298,98" 
+                      <path d="M120,85 C138,82 156,78 174,86 C192,94 210,89 228,92 C236,93 244,92 248,91" 
                             stroke="hsl(330 60% 75%)" strokeWidth="0.3" fill="none" opacity="0.28" strokeLinecap="round"/>
                     </svg>
                   </div>
                 </div>
               </div>
             </div>
-            <p className="text-lg font-light text-primary max-w-2xl mx-auto leading-relaxed mt-20 font-serif">
+            <p className="text-lg font-light text-text-primary max-w-2xl mx-auto leading-relaxed mt-20 font-serif">
               Upload your style inspiration, and let Al find the perfect secondhand pieces from across multiple platforms.
               <br /><br />
               <span className="text-base">Sustainable fashion, curated for you.</span>

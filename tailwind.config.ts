@@ -59,6 +59,7 @@ export default {
           DEFAULT: "hsl(var(--burgundy))",
           foreground: "hsl(var(--burgundy-foreground))",
         },
+        "text-primary": "hsl(var(--text-primary))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
