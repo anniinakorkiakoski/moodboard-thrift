@@ -1,7 +1,14 @@
 import { useState, useCallback } from 'react';
-import { Upload, ImagePlus, Sparkles } from 'lucide-react';
+import { Upload, ImagePlus, Sparkles, Edit2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+
+interface UploadedImage {
+  url: string;
+  caption: string;
+  aspectRatio: number;
+}
 
 interface GalleryUploadProps {
   onUpload: (files: File[]) => void;
@@ -10,7 +17,8 @@ interface GalleryUploadProps {
 
 export const GalleryUpload = ({ onUpload, isLoading = false }: GalleryUploadProps) => {
   const [dragActive, setDragActive] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [editingCaption, setEditingCaption] = useState<number | null>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -48,13 +56,28 @@ export const GalleryUpload = ({ onUpload, isLoading = false }: GalleryUploadProp
       const reader = new FileReader();
       reader.onload = (e) => {
         if (e.target?.result) {
-          setUploadedImages(prev => [...prev, e.target!.result as string]);
+          const img = new Image();
+          img.onload = () => {
+            const aspectRatio = img.width / img.height;
+            setUploadedImages(prev => [...prev, {
+              url: e.target!.result as string,
+              caption: '',
+              aspectRatio
+            }]);
+          };
+          img.src = e.target.result as string;
         }
       };
       reader.readAsDataURL(file);
     });
 
     onUpload(imageFiles);
+  };
+
+  const updateCaption = (index: number, caption: string) => {
+    setUploadedImages(prev => prev.map((img, i) => 
+      i === index ? { ...img, caption } : img
+    ));
   };
 
   const platforms = [
@@ -90,15 +113,51 @@ export const GalleryUpload = ({ onUpload, isLoading = false }: GalleryUploadProp
               >
                 <div className="p-16 text-center space-y-8">
                   {uploadedImages.length > 0 ? (
-                    <div className="space-y-8">
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                  <div className="space-y-8">
+                      {/* Masonry Gallery Layout */}
+                      <div className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
                         {uploadedImages.map((image, index) => (
-                          <div key={index} className="aspect-square overflow-hidden shadow-md bg-white border">
-                            <img 
-                              src={image} 
-                              alt={`Upload ${index + 1}`}
-                              className="w-full h-full object-cover"
-                            />
+                          <div key={index} className="break-inside-avoid mb-6 group">
+                            <div className="bg-white border border-muted shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] overflow-hidden">
+                              <div className="relative">
+                                <img 
+                                  src={image.url} 
+                                  alt={`Inspiration ${index + 1}`}
+                                  className="w-full h-auto object-cover"
+                                  style={{ aspectRatio: image.aspectRatio }}
+                                />
+                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white"
+                                    onClick={() => setEditingCaption(editingCaption === index ? null : index)}
+                                  >
+                                    <Edit2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="p-3">
+                                {editingCaption === index ? (
+                                  <Input
+                                    value={image.caption}
+                                    onChange={(e) => updateCaption(index, e.target.value)}
+                                    onBlur={() => setEditingCaption(null)}
+                                    onKeyDown={(e) => e.key === 'Enter' && setEditingCaption(null)}
+                                    placeholder="What do you love about this?"
+                                    className="text-xs border-none p-0 h-auto focus-visible:ring-0 text-text-refined font-light"
+                                    autoFocus
+                                  />
+                                ) : (
+                                  <p 
+                                    className="text-xs text-text-refined font-light leading-relaxed cursor-pointer min-h-[16px]"
+                                    onClick={() => setEditingCaption(index)}
+                                  >
+                                    {image.caption || 'Click to add a note...'}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
