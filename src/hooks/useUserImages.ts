@@ -61,7 +61,7 @@ export const useUserImages = () => {
           aspect_ratio: aspectRatio
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (dbError) throw dbError;
 
