@@ -10,6 +10,7 @@ interface StyleProfile {
 export const useStyleProfile = () => {
   const [profile, setProfile] = useState<StyleProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -41,33 +42,27 @@ export const useStyleProfile = () => {
   };
 
   const updateProfile = async (updates: Partial<StyleProfile>) => {
+    if (saving) return; // Prevent multiple simultaneous saves
+    
+    setSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: existing } = await supabase
+      // Use upsert for atomic operation
+      const { error } = await supabase
         .from('user_style_profiles')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (existing) {
-        const { error } = await supabase
-          .from('user_style_profiles')
-          .update(updates)
-          .eq('user_id', user.id);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('user_style_profiles')
-          .insert({
+        .upsert(
+          {
             user_id: user.id,
             ...updates
-          });
+          },
+          {
+            onConflict: 'user_id'
+          }
+        );
 
-        if (error) throw error;
-      }
+      if (error) throw error;
 
       setProfile(prev => ({ ...prev!, ...updates }));
       toast({
@@ -81,8 +76,10 @@ export const useStyleProfile = () => {
         description: "Failed to update your style profile.",
         variant: "destructive"
       });
+    } finally {
+      setSaving(false);
     }
   };
 
-  return { profile, loading, updateProfile };
+  return { profile, loading, saving, updateProfile };
 };

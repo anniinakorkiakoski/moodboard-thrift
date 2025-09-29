@@ -46,7 +46,7 @@ const DREAM_BRANDS = [
 ];
 
 export const StyleProfileSelector = () => {
-  const { profile, loading, updateProfile } = useStyleProfile();
+  const { profile, loading, saving, updateProfile } = useStyleProfile();
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
@@ -142,8 +142,9 @@ export const StyleProfileSelector = () => {
           onClick={handleSave} 
           className="w-full"
           size="lg"
+          disabled={saving}
         >
-          Save My Style Profile
+          {saving ? "Saving..." : "Save My Style Profile"}
         </Button>
       </Card>
     </div>
