@@ -202,9 +202,9 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
             <div className="p-16 text-center space-y-8">
               {displayImages.length > 0 ? (
                 <div className="space-y-8">
-                  <div className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+                  <div className="columns-3 md:columns-4 lg:columns-5 gap-4 space-y-4">
                     {displayImages.map((image) => (
-                      <div key={image.id} className="break-inside-avoid mb-6 group">
+                      <div key={image.id} className="break-inside-avoid mb-4 group">
                         <div className="bg-white border border-muted shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] overflow-hidden">
                           <div className="relative">
                             <img 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { GalleryUpload } from '@/components/GalleryUpload';
 import { StylerFinds } from '@/components/StylerFinds';
 import { BundleDisplay } from '@/components/BundleDisplay';
+import { LibrarySidebar } from '@/components/LibrarySidebar';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
@@ -181,12 +182,19 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Main Picture Feed - User's Uploaded Images */}
-          <GalleryUpload 
-            onUpload={handleUpload}
-            onImageSearch={handleImageSearch}
-            isLoading={isSearching} 
-          />
+          {/* Main Picture Feed with Sidebar */}
+          <div className="flex gap-0">
+            <div className="w-2/3 pr-4">
+              <GalleryUpload 
+                onUpload={handleUpload}
+                onImageSearch={handleImageSearch}
+                isLoading={isSearching} 
+              />
+            </div>
+            <div className="w-1/3">
+              <LibrarySidebar />
+            </div>
+          </div>
         </div>
       </section>
 
