@@ -193,6 +193,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_style_profiles: {
+        Row: {
+          created_at: string
+          dream_brands: string[] | null
+          id: string
+          style_tags: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dream_brands?: string[] | null
+          id?: string
+          style_tags?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dream_brands?: string[] | null
+          id?: string
+          style_tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       visual_searches: {
         Row: {
           analysis_data: Json | null

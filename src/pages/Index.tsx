@@ -6,7 +6,7 @@ import { BundleDisplay } from '@/components/BundleDisplay';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Sparkles } from 'lucide-react';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -69,6 +69,16 @@ const Index = () => {
               <span className="text-sm text-muted-foreground">
                 {user.email}
               </span>
+              <Link to="/style-profile">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  My Style
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 size="sm"
