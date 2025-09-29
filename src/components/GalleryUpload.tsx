@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useUserImages } from '@/hooks/useUserImages';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+// Force refresh - fixed updateCaption duplicate declaration issue
 
 interface UploadedImage {
   url: string;
