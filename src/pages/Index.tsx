@@ -184,9 +184,9 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Your Cura Gallery Section */}
+            {/* Cura Gallery Section */}
             <div className="relative min-h-screen bg-gradient-to-b from-background to-secondary/10">
-              <div className="container mx-auto px-8 py-16">
+              <div className="container mx-auto px-8 pt-0 pb-16">
               <div className="text-center mb-20">
                 <h2 className="text-4xl font-black text-primary mb-6 uppercase tracking-wider">Cura Gallery</h2>
                 <p className="text-lg font-light text-muted-foreground leading-relaxed max-w-2xl mx-auto">
