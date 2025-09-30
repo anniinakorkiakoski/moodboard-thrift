@@ -175,7 +175,7 @@ const Index = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center items-center min-h-[180px]">
+              <div className="flex justify-center items-center py-24">
                 <p className="text-lg font-light text-text-primary max-w-2xl mx-auto leading-relaxed font-serif px-4 text-center">
                   Upload your style inspiration, and let Al find the perfect secondhand pieces from across multiple platforms.
                   <br /><br />
@@ -184,11 +184,11 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Luxurious Gallery Section */}
+            {/* Your Cura Gallery Section */}
             <div className="relative min-h-screen bg-gradient-to-b from-background to-secondary/10">
               <div className="container mx-auto px-8 py-16">
               <div className="text-center mb-20">
-                <h2 className="text-4xl font-black text-primary mb-6 uppercase tracking-wider">Curated Gallery</h2>
+                <h2 className="text-4xl font-black text-primary mb-6 uppercase tracking-wider">Your Cura Gallery</h2>
                 <p className="text-lg font-light text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                   Share your style inspiration and discover premium secondhand pieces curated specifically for your aesthetic
                 </p>
