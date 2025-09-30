@@ -113,28 +113,31 @@ const Index = () => {
                 <div className="flex items-center w-full max-w-[2000px]">
                   {/* Left burgundy extension with artistic linework */}
                   <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden min-w-0">
-                    {/* Subtle artistic line work */}
+                    {/* Organic artistic line work */}
                     <div className="absolute inset-0 opacity-18">
                       <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none">
-                        {/* Realistic puffy cloud formations - positioned well above mountains */}
-                        <path d="M35,65 Q45,58 55,60 Q65,62 70,55 Q75,48 85,50 Q95,52 100,58 Q105,64 115,62 Q125,60 130,65 Q135,70 140,65 Q145,60 150,62 Q155,64 158,60" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M80,85 Q92,78 104,82 Q116,86 125,80 Q134,74 146,78 Q158,82 168,77 Q178,72 188,76 Q198,80 205,76" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="1" fill="none" opacity="0.45" strokeLinecap="round" strokeLinejoin="round"/>
+                        {/* Organic puffy clouds with natural bumps - positioned well above mountains */}
+                        <path d="M35,65 Q42,58 52,61 Q65,64 72,56 Q78,49 87,52 Q96,55 103,60 Q109,65 118,62 Q127,59 135,66 Q142,73 149,67 Q155,61 162,64 Q168,67 172,62" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M210,75 Q222,69 235,73 Q248,77 258,71 Q268,65 279,69 Q290,73 301,68 Q312,63 323,67 Q334,71 344,66 Q354,61 365,65 Q375,69 382,64" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="1.1" fill="none" opacity="0.5" strokeLinecap="round" strokeLinejoin="round"/>
                         
-                        {/* Small wispy clouds higher up */}
-                        <path d="M120,40 Q130,36 140,38 Q150,40 158,36 Q166,32 174,36 Q182,40 188,37" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.4" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M260,60 Q272,55 284,58 Q296,61 306,56 Q316,51 326,55 Q336,59 343,56" 
+                        {/* Smaller wispy clouds with natural variation */}
+                        <path d="M85,45 Q95,40 106,43 Q117,46 127,41 Q137,36 148,40 Q158,44 167,40 Q176,36 184,39" 
                               stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.42" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M245,55 Q258,50 271,54 Q284,58 296,52 Q308,46 320,51 Q332,56 343,52 Q354,48 363,52" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.38" strokeLinecap="round" strokeLinejoin="round"/>
                         
-                        {/* Organic mountain silhouettes - positioned lower, well separated from clouds */}
-                        <path d="M0,220 C18,208 32,185 48,178 C64,171 78,192 94,198 C110,204 128,175 148,168 C168,161 186,180 206,188 C226,196 246,165 270,158 C294,151 314,172 334,166 C354,160 372,150 388,145 C394,143 397,142 400,141" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.85" strokeLinecap="round"/>
-                        <path d="M0,238 C22,228 38,210 58,204 C78,198 96,215 116,222 C136,229 158,205 178,198 C198,191 218,208 242,216 C266,224 288,198 312,191 C336,184 356,201 378,195 C388,192 394,190 400,188" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.7" strokeLinecap="round"/>
-                        <path d="M0,254 C28,246 44,232 68,227 C88,222 108,236 128,241 C148,246 168,228 188,223 C208,218 228,233 252,238 C276,243 296,223 320,218 C344,213 364,228 386,223 C392,222 396,221 400,220" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6" strokeLinecap="round"/>
+                        {/* Organic mountain ranges with natural flowing slopes and varied heights */}
+                        <path d="M0,215 C15,203 28,180 45,174 C62,168 75,188 89,195 C103,202 118,172 138,165 C158,158 175,179 195,187 C215,195 232,168 255,162 C278,156 295,175 315,169 C335,163 352,148 375,143 C385,141 392,140 400,139" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.88" strokeLinecap="round"/>
+                        <path d="M0,235 C20,225 35,208 55,202 C75,196 92,212 112,219 C132,226 151,203 175,196 C199,189 218,206 242,214 C266,222 285,199 309,193 C333,187 352,204 376,198 C386,196 393,194 400,192" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.7" fill="none" opacity="0.75" strokeLinecap="round"/>
+                        <path d="M0,250 C25,242 42,228 65,223 C85,218 102,232 125,237 C148,242 165,225 188,220 C211,215 228,230 255,235 C282,240 299,222 325,217 C351,212 368,227 388,222 C394,221 397,220 400,219" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.65" strokeLinecap="round"/>
+                        {/* Additional organic ridge line for depth */}
+                        <path d="M0,268 C32,260 48,245 72,241 C96,237 115,248 140,253 C165,258 182,242 208,238 C234,234 252,247 278,252 C304,257 322,241 348,237 C374,233 390,246 400,243" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.5" strokeLinecap="round"/>
                       </svg>
                     </div>
                   </div>
@@ -148,28 +151,31 @@ const Index = () => {
                   
                   {/* Right burgundy extension with artistic linework */}
                   <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden min-w-0">
-                    {/* Subtle artistic line work - MIRRORED from left side */}
+                    {/* Organic artistic line work - MIRRORED from left side */}
                     <div className="absolute inset-0 opacity-18">
                       <svg className="w-full h-full" viewBox="0 0 400 320" preserveAspectRatio="none" style={{ transform: 'scaleX(-1)' }}>
-                        {/* Realistic puffy cloud formations - positioned well above mountains */}
-                        <path d="M35,65 Q45,58 55,60 Q65,62 70,55 Q75,48 85,50 Q95,52 100,58 Q105,64 115,62 Q125,60 130,65 Q135,70 140,65 Q145,60 150,62 Q155,64 158,60" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M80,85 Q92,78 104,82 Q116,86 125,80 Q134,74 146,78 Q158,82 168,77 Q178,72 188,76 Q198,80 205,76" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="1" fill="none" opacity="0.45" strokeLinecap="round" strokeLinejoin="round"/>
+                        {/* Organic puffy clouds with natural bumps - positioned well above mountains */}
+                        <path d="M35,65 Q42,58 52,61 Q65,64 72,56 Q78,49 87,52 Q96,55 103,60 Q109,65 118,62 Q127,59 135,66 Q142,73 149,67 Q155,61 162,64 Q168,67 172,62" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M210,75 Q222,69 235,73 Q248,77 258,71 Q268,65 279,69 Q290,73 301,68 Q312,63 323,67 Q334,71 344,66 Q354,61 365,65 Q375,69 382,64" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="1.1" fill="none" opacity="0.5" strokeLinecap="round" strokeLinejoin="round"/>
                         
-                        {/* Small wispy clouds higher up */}
-                        <path d="M120,40 Q130,36 140,38 Q150,40 158,36 Q166,32 174,36 Q182,40 188,37" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.4" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M260,60 Q272,55 284,58 Q296,61 306,56 Q316,51 326,55 Q336,59 343,56" 
+                        {/* Smaller wispy clouds with natural variation */}
+                        <path d="M85,45 Q95,40 106,43 Q117,46 127,41 Q137,36 148,40 Q158,44 167,40 Q176,36 184,39" 
                               stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.42" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M245,55 Q258,50 271,54 Q284,58 296,52 Q308,46 320,51 Q332,56 343,52 Q354,48 363,52" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.38" strokeLinecap="round" strokeLinejoin="round"/>
                         
-                        {/* Organic mountain silhouettes - positioned lower, well separated from clouds */}
-                        <path d="M0,220 C18,208 32,185 48,178 C64,171 78,192 94,198 C110,204 128,175 148,168 C168,161 186,180 206,188 C226,196 246,165 270,158 C294,151 314,172 334,166 C354,160 372,150 388,145 C394,143 397,142 400,141" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.8" fill="none" opacity="0.85" strokeLinecap="round"/>
-                        <path d="M0,238 C22,228 38,210 58,204 C78,198 96,215 116,222 C136,229 158,205 178,198 C198,191 218,208 242,216 C266,224 288,198 312,191 C336,184 356,201 378,195 C388,192 394,190 400,188" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.7" strokeLinecap="round"/>
-                        <path d="M0,254 C28,246 44,232 68,227 C88,222 108,236 128,241 C148,246 168,228 188,223 C208,218 228,233 252,238 C276,243 296,223 320,218 C344,213 364,228 386,223 C392,222 396,221 400,220" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6" strokeLinecap="round"/>
+                        {/* Organic mountain ranges with natural flowing slopes and varied heights */}
+                        <path d="M0,215 C15,203 28,180 45,174 C62,168 75,188 89,195 C103,202 118,172 138,165 C158,158 175,179 195,187 C215,195 232,168 255,162 C278,156 295,175 315,169 C335,163 352,148 375,143 C385,141 392,140 400,139" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.88" strokeLinecap="round"/>
+                        <path d="M0,235 C20,225 35,208 55,202 C75,196 92,212 112,219 C132,226 151,203 175,196 C199,189 218,206 242,214 C266,222 285,199 309,193 C333,187 352,204 376,198 C386,196 393,194 400,192" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.7" fill="none" opacity="0.75" strokeLinecap="round"/>
+                        <path d="M0,250 C25,242 42,228 65,223 C85,218 102,232 125,237 C148,242 165,225 188,220 C211,215 228,230 255,235 C282,240 299,222 325,217 C351,212 368,227 388,222 C394,221 397,220 400,219" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.65" strokeLinecap="round"/>
+                        {/* Additional organic ridge line for depth */}
+                        <path d="M0,268 C32,260 48,245 72,241 C96,237 115,248 140,253 C165,258 182,242 208,238 C234,234 252,247 278,252 C304,257 322,241 348,237 C374,233 390,246 400,243" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.4" fill="none" opacity="0.5" strokeLinecap="round"/>
                       </svg>
                     </div>
                   </div>
