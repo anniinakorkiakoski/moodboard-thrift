@@ -174,7 +174,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
             </div>
             <div className="space-y-4">
               <h3 className="text-xl font-light font-serif text-primary">Sign in to save your inspiration</h3>
-              <p className="text-sm font-light text-foreground/80 leading-relaxed max-w-md mx-auto font-serif">
+              <p className="text-sm font-light text-foreground/90 leading-relaxed max-w-md mx-auto font-serif">
                 Create an account to save and manage your image collections permanently
               </p>
             </div>

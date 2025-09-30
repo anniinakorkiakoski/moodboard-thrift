@@ -176,7 +176,7 @@ const Index = () => {
                 </div>
               </div>
               <div className="h-80 flex justify-center items-center">
-                <p className="text-lg font-light text-foreground/80 max-w-xl mx-auto leading-relaxed font-serif text-center">
+                <p className="text-lg font-light text-foreground/90 max-w-xl mx-auto leading-relaxed font-serif text-center">
                   Upload your style inspiration, and let Al find the perfect secondhand pieces from across multiple platforms.
                   <br /><br />
                   <span className="text-lg">Sustainable fashion, curated for you.</span>
@@ -189,7 +189,7 @@ const Index = () => {
               <div className="container mx-auto px-8 pt-0 pb-16">
               <div className="text-center mb-20">
                 <h2 className="text-4xl font-black text-primary mb-6 uppercase tracking-wider">Cura Gallery</h2>
-                <p className="text-lg font-light text-foreground/80 leading-relaxed max-w-2xl mx-auto font-serif">
+                <p className="text-lg font-light text-foreground/90 leading-relaxed max-w-2xl mx-auto font-serif">
                   Share your style inspiration and discover premium secondhand pieces curated specifically for your aesthetic
                 </p>
               </div>
@@ -228,7 +228,7 @@ const Index = () => {
             {/* Section title */}
             <div className="text-center mb-16">
               <h2 className="text-3xl font-black text-primary mb-4 uppercase tracking-wider">The Process</h2>
-              <p className="text-base font-light text-foreground/80 leading-relaxed tracking-wide font-serif">
+              <p className="text-base font-light text-foreground/90 leading-relaxed tracking-wide font-serif">
                 Three simple steps to curate your perfect wardrobe
               </p>
             </div>
