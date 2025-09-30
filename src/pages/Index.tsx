@@ -179,7 +179,7 @@ const Index = () => {
                 <p className="text-lg font-light text-foreground/80 max-w-xl mx-auto leading-relaxed font-serif text-center">
                   Upload your style inspiration, and let Al find the perfect secondhand pieces from across multiple platforms.
                   <br /><br />
-                  <span className="text-base">Sustainable fashion, curated for you.</span>
+                  <span className="text-lg">Sustainable fashion, curated for you.</span>
                 </p>
               </div>
             </div>
