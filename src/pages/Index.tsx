@@ -188,7 +188,7 @@ const Index = () => {
             <div className="relative min-h-screen bg-gradient-to-b from-background to-secondary/10">
               <div className="container mx-auto px-8 pt-0 pb-16">
               <div className="text-center mb-20">
-                <h2 className="text-4xl font-black text-primary mb-6 uppercase tracking-wider">Cura Gallery</h2>
+                <h2 className="text-4xl font-black text-primary mb-6 uppercase tracking-wider" style={{ fontWeight: '900', textShadow: '2px 2px 4px rgba(0,0,0,0.1)', letterSpacing: '0.2em' }}>Cura Gallery</h2>
                 <p className="text-lg font-light text-foreground/90 leading-relaxed max-w-2xl mx-auto font-serif">
                   Share your style inspiration and discover premium secondhand pieces curated specifically for your aesthetic
                 </p>
@@ -227,7 +227,7 @@ const Index = () => {
             
             {/* Section title */}
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-black text-primary mb-4 uppercase tracking-wider">The Process</h2>
+              <h2 className="text-3xl font-black text-primary mb-4 uppercase tracking-wider" style={{ fontWeight: '900', textShadow: '2px 2px 4px rgba(0,0,0,0.1)', letterSpacing: '0.2em' }}>The Process</h2>
               <p className="text-base font-light text-foreground/90 leading-relaxed tracking-wide font-serif">
                 Three simple steps to curate your perfect wardrobe
               </p>
