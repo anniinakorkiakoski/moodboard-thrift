@@ -14,6 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
+      catalog_admin_uploads: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          items_count: number | null
+          platform: string
+          status: string | null
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          items_count?: number | null
+          platform: string
+          status?: string | null
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          items_count?: number | null
+          platform?: string
+          status?: string | null
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
+      catalog_items: {
+        Row: {
+          attributes: Json | null
+          condition: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          embedding: string | null
+          external_id: string
+          id: string
+          image_url: string | null
+          indexed_at: string | null
+          is_active: boolean | null
+          item_url: string
+          last_verified_at: string | null
+          location: string | null
+          platform: string
+          price: number | null
+          shipping_info: string | null
+          size: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          attributes?: Json | null
+          condition?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          embedding?: string | null
+          external_id: string
+          id?: string
+          image_url?: string | null
+          indexed_at?: string | null
+          is_active?: boolean | null
+          item_url: string
+          last_verified_at?: string | null
+          location?: string | null
+          platform: string
+          price?: number | null
+          shipping_info?: string | null
+          size?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          attributes?: Json | null
+          condition?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          embedding?: string | null
+          external_id?: string
+          id?: string
+          image_url?: string | null
+          indexed_at?: string | null
+          is_active?: boolean | null
+          item_url?: string
+          last_verified_at?: string | null
+          location?: string | null
+          platform?: string
+          price?: number | null
+          shipping_info?: string | null
+          size?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       connections: {
         Row: {
           created_at: string
@@ -55,6 +154,8 @@ export type Database = {
           id: string
           image_url: string | null
           item_url: string
+          match_explanation: string | null
+          matched_attributes: Json | null
           platform: Database["public"]["Enums"]["platform_type"]
           price: number | null
           search_id: string
@@ -68,6 +169,8 @@ export type Database = {
           id?: string
           image_url?: string | null
           item_url: string
+          match_explanation?: string | null
+          matched_attributes?: Json | null
           platform: Database["public"]["Enums"]["platform_type"]
           price?: number | null
           search_id: string
@@ -81,6 +184,8 @@ export type Database = {
           id?: string
           image_url?: string | null
           item_url?: string
+          match_explanation?: string | null
+          matched_attributes?: Json | null
           platform?: Database["public"]["Enums"]["platform_type"]
           price?: number | null
           search_id?: string
@@ -256,7 +361,10 @@ export type Database = {
       visual_searches: {
         Row: {
           analysis_data: Json | null
+          attributes: Json | null
           created_at: string
+          crop_data: Json | null
+          embedding: string | null
           id: string
           image_url: string
           status: Database["public"]["Enums"]["search_status"]
@@ -265,7 +373,10 @@ export type Database = {
         }
         Insert: {
           analysis_data?: Json | null
+          attributes?: Json | null
           created_at?: string
+          crop_data?: Json | null
+          embedding?: string | null
           id?: string
           image_url: string
           status?: Database["public"]["Enums"]["search_status"]
@@ -274,7 +385,10 @@ export type Database = {
         }
         Update: {
           analysis_data?: Json | null
+          attributes?: Json | null
           created_at?: string
+          crop_data?: Json | null
+          embedding?: string | null
           id?: string
           image_url?: string
           status?: Database["public"]["Enums"]["search_status"]
@@ -288,7 +402,98 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      binary_quantize: {
+        Args: { "": string } | { "": unknown }
+        Returns: unknown
+      }
+      halfvec_avg: {
+        Args: { "": number[] }
+        Returns: unknown
+      }
+      halfvec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      halfvec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      halfvec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      hnsw_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_sparsevec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnswhandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflathandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      l2_norm: {
+        Args: { "": unknown } | { "": unknown }
+        Returns: number
+      }
+      l2_normalize: {
+        Args: { "": string } | { "": unknown } | { "": unknown }
+        Returns: string
+      }
+      sparsevec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      sparsevec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      sparsevec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      vector_avg: {
+        Args: { "": number[] }
+        Returns: string
+      }
+      vector_dims: {
+        Args: { "": string } | { "": unknown }
+        Returns: number
+      }
+      vector_norm: {
+        Args: { "": string }
+        Returns: number
+      }
+      vector_out: {
+        Args: { "": string }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: { "": string }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
     }
     Enums: {
       platform_type:

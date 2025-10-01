@@ -12,13 +12,17 @@ export interface SearchResult {
   image_url: string | null;
   similarity_score: number;
   description: string;
+  matched_attributes?: any;
+  match_explanation?: string;
 }
 
 export interface VisualSearch {
   id: string;
   image_url: string;
-  status: 'pending' | 'analyzing' | 'searching' | 'completed' | 'no_matches';
+  status: 'pending' | 'analyzing' | 'searching' | 'completed' | 'no_matches' | 'tentative_matches';
   analysis_data: any;
+  attributes?: any;
+  crop_data?: any;
   created_at: string;
 }
 
@@ -29,7 +33,7 @@ export const useVisualSearch = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const startSearch = async (imageUrl: string) => {
+  const startSearch = async (imageUrl: string, cropData?: any) => {
     setLoading(true);
     try {
       const { data: user } = await supabase.auth.getUser();
@@ -42,6 +46,7 @@ export const useVisualSearch = () => {
           user_id: user.user.id,
           image_url: imageUrl,
           status: 'pending',
+          crop_data: cropData,
         })
         .select()
         .single();
@@ -52,7 +57,7 @@ export const useVisualSearch = () => {
 
       // Call edge function to perform search
       const { data, error } = await supabase.functions.invoke('visual-search', {
-        body: { imageUrl, searchId: search.id },
+        body: { imageUrl, searchId: search.id, cropData },
       });
 
       if (error) throw error;
@@ -60,11 +65,14 @@ export const useVisualSearch = () => {
       // Fetch updated search and results
       await fetchSearchResults(search.id);
 
+      const status = data.status;
       toast({
-        title: data.status === 'no_matches' ? 'No matches found' : 'Search completed',
-        description: data.status === 'no_matches' 
-          ? 'Consider requesting a personal thrift service.' 
-          : `Found ${data.resultsCount} curated matches`,
+        title: status === 'no_matches' ? 'No matches found' : status === 'tentative_matches' ? 'Found similar items' : 'Search completed',
+        description: status === 'no_matches' 
+          ? 'Consider hiring a professional thrifter to source this item.' 
+          : status === 'tentative_matches'
+          ? `Found ${data.resultsCount} tentative matches. Please verify if they match your needs.`
+          : `Found ${data.highQualityCount} high-quality curated matches`,
       });
 
       return search.id;
