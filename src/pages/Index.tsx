@@ -24,6 +24,11 @@ const Index = () => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+
+      // If animation already showing on page load, mark as seen to prevent double-play
+      if (showLogoAnimation && !hasSeenAnimation) {
+        setHasSeenAnimation(true);
+      }
       
       // Show animation only for already logged-in users on first load
       if (user && !hasSeenAnimation) {
@@ -46,7 +51,7 @@ const Index = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [hasSeenAnimation]);
+  }, [hasSeenAnimation, showLogoAnimation]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

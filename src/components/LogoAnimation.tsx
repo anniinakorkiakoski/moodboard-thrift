@@ -26,58 +26,46 @@ export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-background flex items-center justify-center overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 z-50 bg-background/95 flex items-center justify-center overflow-hidden pointer-events-none">
       <div className="relative w-full h-screen flex items-center justify-center">
-        {/* Top bar - starts as thin top border of square, expands to full extender */}
+        {/* Top bar - thin border expanding horizontally and subtly sliding left */}
         <div
-          className={`absolute bg-accent-foreground transition-all duration-[1500ms] ease-in-out ${
-            animationState === 'initial'
-              ? 'w-80 h-1 left-1/2 -translate-x-1/2'
-              : 'w-full h-80 left-0 top-0'
-          }`}
+          className={`absolute bg-accent-foreground transition-all duration-[1500ms] ease-in-out left-1/2 ${
+            animationState === 'initial' ? 'w-80' : 'w-screen'
+          } h-2`}
           style={
             animationState === 'initial'
-              ? { top: 'calc(50% - 10rem)' }
-              : { top: '0' }
+              ? { top: 'calc(50% - 10rem)', transform: 'translate(-50%, 0)' }
+              : { top: 'calc(50% - 10rem)', transform: 'translate(calc(-50% - 32px), 0)' }
           }
         />
 
-        {/* Bottom bar - starts as thin bottom border of square, expands to full extender */}
+        {/* Bottom bar - thin border expanding horizontally and subtly sliding right */}
         <div
-          className={`absolute bg-accent-foreground transition-all duration-[1500ms] ease-in-out ${
-            animationState === 'initial'
-              ? 'w-80 h-1 left-1/2 -translate-x-1/2'
-              : 'w-full h-80 left-0 bottom-0'
-          }`}
+          className={`absolute bg-accent-foreground transition-all duration-[1500ms] ease-in-out left-1/2 ${
+            animationState === 'initial' ? 'w-80' : 'w-screen'
+          } h-2`}
           style={
             animationState === 'initial'
-              ? { top: 'calc(50% + 10rem)' }
-              : { bottom: '0' }
+              ? { top: 'calc(50% + 10rem)', transform: 'translate(-50%, 0)' }
+              : { top: 'calc(50% + 10rem)', transform: 'translate(calc(-50% + 32px), 0)' }
           }
         />
 
         {/* Left border - part of initial square frame only */}
         <div
-          className={`absolute w-1 h-80 bg-accent-foreground transition-opacity duration-700 ${
+          className={`absolute w-2 h-80 bg-accent-foreground transition-opacity duration-700 ${
             animationState === 'initial' ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{
-            top: '50%',
-            left: 'calc(50% - 10rem)',
-            transform: 'translateY(-50%)'
-          }}
+          style={{ top: '50%', left: 'calc(50% - 10rem)', transform: 'translateY(-50%)' }}
         />
 
         {/* Right border - part of initial square frame only */}
         <div
-          className={`absolute w-1 h-80 bg-accent-foreground transition-opacity duration-700 ${
+          className={`absolute w-2 h-80 bg-accent-foreground transition-opacity duration-700 ${
             animationState === 'initial' ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{
-            top: '50%',
-            left: 'calc(50% + 10rem)',
-            transform: 'translateY(-50%)'
-          }}
+          style={{ top: '50%', left: 'calc(50% + 10rem)', transform: 'translateY(-50%)' }}
         />
 
         {/* CURA Text */}
@@ -91,9 +79,7 @@ export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
             {/* URA - Fades in during expansion */}
             <span
               className={`text-8xl md:text-9xl font-black text-accent-foreground leading-none tracking-tighter transition-all duration-1000 delay-300 ${
-                animationState === 'initial'
-                  ? 'opacity-0 -translate-x-8'
-                  : 'opacity-100 translate-x-0'
+                animationState === 'initial' ? 'opacity-0 -translate-x-8' : 'opacity-100 translate-x-0'
               }`}
             >
               URA
