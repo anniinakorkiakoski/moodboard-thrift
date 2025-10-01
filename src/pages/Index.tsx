@@ -119,17 +119,6 @@ const Index = () => {
                         {/* Single detailed cloud with seamless horizontal extensions */}
                         <path d="M0,65 L35,65 Q42,58 52,61 Q65,64 72,56 Q78,49 87,52 Q96,55 103,60 Q109,65 118,62 Q127,59 135,66 Q142,73 149,67 Q155,61 162,64 Q168,67 172,62 L400,62" 
                               stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
-                        
-                        {/* Truly organic mountain ranges - irregular, natural silhouettes */}
-                        <path d="M0,230 C12,225 18,215 28,208 C35,203 41,212 48,218 C58,227 71,205 85,198 C102,188 118,202 135,209 C149,215 161,187 178,175 C198,160 215,178 232,185 C251,193 268,172 287,165 C308,157 325,171 342,168 C361,164 378,152 400,148" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.9" strokeLinecap="round"/>
-                        <path d="M0,248 C15,243 23,232 35,227 C48,221 59,235 72,242 C87,250 103,228 121,221 C142,212 158,226 176,233 C196,241 214,219 235,212 C258,204 276,218 295,215 C316,211 334,199 355,196 C378,192 392,188 400,186" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.7" fill="none" opacity="0.75" strokeLinecap="round"/>
-                        <path d="M0,265 C18,260 29,248 44,244 C61,239 75,251 91,258 C109,266 127,245 148,239 C171,232 189,246 209,253 C231,261 249,240 271,234 C295,227 313,241 333,238 C355,234 374,223 395,220 C398,219 399,219 400,219" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.65" strokeLinecap="round"/>
-                        {/* Foreground ridges with gentle slopes */}
-                        <path d="M0,278 C22,275 38,265 56,262 C76,258 93,268 112,274 C133,281 152,263 174,258 C198,252 218,264 240,270 C264,277 284,260 307,255 C332,249 353,260 376,257 C388,255 394,254 400,253" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.55" strokeLinecap="round"/>
                       </svg>
                     </div>
                   </div>
@@ -149,17 +138,6 @@ const Index = () => {
                         {/* Single detailed cloud with seamless horizontal extensions */}
                         <path d="M0,65 L35,65 Q42,58 52,61 Q65,64 72,56 Q78,49 87,52 Q96,55 103,60 Q109,65 118,62 Q127,59 135,66 Q142,73 149,67 Q155,61 162,64 Q168,67 172,62 L400,62" 
                               stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
-                        
-                        {/* Truly organic mountain ranges - irregular, natural silhouettes */}
-                        <path d="M0,230 C12,225 18,215 28,208 C35,203 41,212 48,218 C58,227 71,205 85,198 C102,188 118,202 135,209 C149,215 161,187 178,175 C198,160 215,178 232,185 C251,193 268,172 287,165 C308,157 325,171 342,168 C361,164 378,152 400,148" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.9" strokeLinecap="round"/>
-                        <path d="M0,248 C15,243 23,232 35,227 C48,221 59,235 72,242 C87,250 103,228 121,221 C142,212 158,226 176,233 C196,241 214,219 235,212 C258,204 276,218 295,215 C316,211 334,199 355,196 C378,192 392,188 400,186" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.7" fill="none" opacity="0.75" strokeLinecap="round"/>
-                        <path d="M0,265 C18,260 29,248 44,244 C61,239 75,251 91,258 C109,266 127,245 148,239 C171,232 189,246 209,253 C231,261 249,240 271,234 C295,227 313,241 333,238 C355,234 374,223 395,220 C398,219 399,219 400,219" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.6" fill="none" opacity="0.65" strokeLinecap="round"/>
-                        {/* Foreground ridges with gentle slopes */}
-                        <path d="M0,278 C22,275 38,265 56,262 C76,258 93,268 112,274 C133,281 152,263 174,258 C198,252 218,264 240,270 C264,277 284,260 307,255 C332,249 353,260 376,257 C388,255 394,254 400,253" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.55" strokeLinecap="round"/>
                       </svg>
                     </div>
                   </div>
