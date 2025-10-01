@@ -88,6 +88,27 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
           : t.avatar_url,
       }));
 
+      // Sort to put Maya Chen and Drew Martinez at the top
+      const featuredNames = ['Maya Chen', 'Drew Martinez'];
+      withLocalAvatars.sort((a, b) => {
+        const aIsFeatured = featuredNames.includes(a.display_name);
+        const bIsFeatured = featuredNames.includes(b.display_name);
+        
+        if (aIsFeatured && !bIsFeatured) return -1;
+        if (!aIsFeatured && bIsFeatured) return 1;
+        
+        // For featured profiles, maintain order (Maya then Drew)
+        if (aIsFeatured && bIsFeatured) {
+          return featuredNames.indexOf(a.display_name) - featuredNames.indexOf(b.display_name);
+        }
+        
+        // For non-featured, sort by match score then rating
+        if (b.match_score !== a.match_score) {
+          return b.match_score - a.match_score;
+        }
+        return b.rating - a.rating;
+      });
+
       setThrifters(withLocalAvatars);
     } catch (error) {
       console.error('Error fetching thrifters:', error);
