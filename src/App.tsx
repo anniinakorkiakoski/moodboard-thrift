@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import { Auth } from "./pages/Auth";
 import { VisualSearchResults } from "./pages/VisualSearchResults";
 import { StyleProfile } from "./pages/StyleProfile";
+import { OurMission } from "./pages/OurMission";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/search" element={<VisualSearchResults />} />
           <Route path="/style-profile" element={<StyleProfile />} />
+          <Route path="/our-mission" element={<OurMission />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

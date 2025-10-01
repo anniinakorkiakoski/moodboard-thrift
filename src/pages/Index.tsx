@@ -8,7 +8,7 @@ import { LogoAnimation } from '@/components/LogoAnimation';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
-import { LogOut, User, Sparkles } from 'lucide-react';
+import { LogOut, User, Sparkles, Heart } from 'lucide-react';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -92,6 +92,16 @@ const Index = () => {
         <div className="container mx-auto flex justify-end">
           {user ? (
             <div className="flex items-center gap-4">
+              <Link to="/our-mission">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-burgundy hover:bg-burgundy/10"
+                >
+                  <Heart className="w-4 h-4 mr-2" />
+                  Our Mission
+                </Button>
+              </Link>
               <span className="text-sm text-muted-foreground">
                 {user.email}
               </span>
@@ -116,16 +126,28 @@ const Index = () => {
               </Button>
             </div>
           ) : (
-            <Link to="/auth">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
-              >
-                <User className="w-4 h-4 mr-2" />
-                Sign In
-              </Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link to="/our-mission">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-burgundy hover:bg-burgundy/10"
+                >
+                  <Heart className="w-4 h-4 mr-2" />
+                  Our Mission
+                </Button>
+              </Link>
+              <Link to="/auth">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Sign In
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
       </header>
