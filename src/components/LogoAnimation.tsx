@@ -11,13 +11,13 @@ export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
     // Start animation after brief delay
     const startTimer = setTimeout(() => {
       setAnimationState('expanding');
-    }, 300);
+    }, 500);
 
     // Complete animation
     const completeTimer = setTimeout(() => {
       setAnimationState('complete');
       onComplete?.();
-    }, 2300);
+    }, 2500);
 
     return () => {
       clearTimeout(startTimer);
@@ -27,39 +27,35 @@ export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-background flex items-center justify-center overflow-hidden">
-      {/* Top burgundy bar */}
+      {/* Top frame border - starts as part of square, extends to full width bar */}
       <div
-        className={`absolute h-80 bg-accent-foreground transition-all duration-[1500ms] ease-in-out ${
+        className={`absolute bg-accent-foreground transition-all duration-[1500ms] ease-in-out ${
           animationState === 'initial'
-            ? 'w-80 top-1/2 left-1/2 -translate-x-1/2 -translate-y-full border-b-4 border-accent-foreground'
-            : 'w-screen top-0 left-0 translate-x-0 translate-y-0'
+            ? 'w-80 h-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-[10rem]'
+            : 'w-screen h-80 top-0 left-0 translate-x-0 translate-y-0'
         }`}
       />
 
-      {/* Bottom burgundy bar */}
+      {/* Bottom frame border - starts as part of square, extends to full width bar */}
       <div
-        className={`absolute h-80 bg-accent-foreground transition-all duration-[1500ms] ease-in-out ${
+        className={`absolute bg-accent-foreground transition-all duration-[1500ms] ease-in-out ${
           animationState === 'initial'
-            ? 'w-80 top-1/2 left-1/2 -translate-x-1/2 translate-y-0 border-t-4 border-accent-foreground'
-            : 'w-screen bottom-0 left-0 translate-x-0 translate-y-0'
+            ? 'w-80 h-4 top-1/2 left-1/2 -translate-x-1/2 translate-y-[10rem]'
+            : 'w-screen h-80 bottom-0 left-0 translate-x-0 translate-y-0'
         }`}
       />
 
-      {/* Left burgundy bar (vertical part of square initially) */}
+      {/* Left frame border - part of initial square, fades out during expansion */}
       <div
-        className={`absolute w-4 bg-accent-foreground transition-all duration-[1500ms] ease-in-out ${
-          animationState === 'initial'
-            ? 'h-80 left-1/2 top-1/2 -translate-x-full -translate-y-1/2'
-            : 'h-80 left-0 top-0 -translate-x-full'
+        className={`absolute w-4 h-80 bg-accent-foreground top-1/2 left-1/2 -translate-x-[10rem] -translate-y-1/2 transition-opacity duration-500 ${
+          animationState === 'initial' ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
-      {/* Right burgundy bar (vertical part of square initially) */}
+      {/* Right frame border - part of initial square, fades out during expansion */}
       <div
-        className={`absolute w-4 bg-accent-foreground transition-all duration-[1500ms] ease-in-out ${
-          animationState === 'initial'
-            ? 'h-80 left-1/2 top-1/2 translate-x-0 -translate-y-1/2'
-            : 'h-80 right-0 top-0 translate-x-full'
+        className={`absolute w-4 h-80 bg-accent-foreground top-1/2 left-1/2 translate-x-[10rem] -translate-y-1/2 transition-opacity duration-500 ${
+          animationState === 'initial' ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
@@ -67,11 +63,7 @@ export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
         <div className="flex items-center justify-center">
           {/* C - Always visible */}
-          <span
-            className={`text-8xl md:text-9xl font-black text-accent-foreground leading-none tracking-tighter transition-opacity duration-300 ${
-              animationState === 'initial' ? 'opacity-100' : 'opacity-100'
-            }`}
-          >
+          <span className="text-8xl md:text-9xl font-black text-accent-foreground leading-none tracking-tighter">
             C
           </span>
 

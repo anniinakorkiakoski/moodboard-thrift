@@ -16,7 +16,7 @@ const Index = () => {
   const [showResults, setShowResults] = useState(false);
   const [searchedImage, setSearchedImage] = useState<{ url: string; caption: string } | null>(null);
   const [user, setUser] = useState<any>(null);
-  const [showLogoAnimation, setShowLogoAnimation] = useState(false);
+  const [showLogoAnimation, setShowLogoAnimation] = useState(true); // Show on page load
   const [hasSeenAnimation, setHasSeenAnimation] = useState(false);
 
   useEffect(() => {
