@@ -60,15 +60,28 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
         };
       }) || [];
 
-      // Sort by match score, then by rating
-      thriftersWithScores.sort((a, b) => {
-        if (b.match_score !== a.match_score) {
-          return b.match_score - a.match_score;
-        }
-        return b.rating - a.rating;
-      });
+      // Map known display names to local trendy office portraits (cache-busted)
+      const nameToFile: Record<string, string> = {
+        'Maya Chen': '/thrifters/maya-chen.jpg',
+        'Alex Rivers': '/thrifters/alex-rivers.jpg',
+        'Jordan Blake': '/thrifters/jordan-blake.jpg',
+        'Sam Morrison': '/thrifters/sam-morrison.jpg',
+        'Riley Park': '/thrifters/riley-park.jpg',
+        'Casey Taylor': '/thrifters/casey-taylor.jpg',
+        'Drew Martinez': '/thrifters/drew-martinez.jpg',
+        'Avery Kim': '/thrifters/avery-kim.jpg',
+        'Morgan Lee': '/thrifters/morgan-lee.jpg',
+        'Sage Williams': '/thrifters/sage-williams.jpg',
+      };
 
-      setThrifters(thriftersWithScores);
+      const withLocalAvatars = thriftersWithScores.map((t) => ({
+        ...t,
+        avatar_url: nameToFile[t.display_name]
+          ? `${nameToFile[t.display_name]}?v=3`
+          : t.avatar_url,
+      }));
+
+      setThrifters(withLocalAvatars);
     } catch (error) {
       console.error('Error fetching thrifters:', error);
       toast({
@@ -131,6 +144,7 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
                 <img
                   src={thrifter.avatar_url}
                   alt={thrifter.display_name}
+                  loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               ) : (
