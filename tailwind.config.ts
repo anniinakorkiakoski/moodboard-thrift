@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         'sans': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
         'serif': ['Crimson Text', 'Georgia', 'Times New Roman', 'serif'],
+        'lora': ['Lora', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
