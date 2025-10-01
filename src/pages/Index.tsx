@@ -119,6 +119,14 @@ const Index = () => {
                         {/* Single detailed cloud with seamless horizontal extensions */}
                         <path d="M0,65 L35,65 Q42,58 52,61 Q65,64 72,56 Q78,49 87,52 Q96,55 103,60 Q109,65 118,62 Q127,59 135,66 Q142,73 149,67 Q155,61 162,64 Q168,67 172,62 L400,62" 
                               stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
+                        
+                        {/* Mountain with sharp peaks */}
+                        <path d="M0,240 L50,240 L75,210 L85,225 L95,200 L105,215 L125,235 L400,235" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="1" fill="none" opacity="0.7" strokeLinecap="round" strokeLinejoin="round"/>
+                        
+                        {/* Lower softer hill */}
+                        <path d="M0,270 Q100,250 200,255 Q300,260 400,265" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.6" strokeLinecap="round"/>
                       </svg>
                     </div>
                   </div>
@@ -138,6 +146,14 @@ const Index = () => {
                         {/* Single detailed cloud with seamless horizontal extensions */}
                         <path d="M0,65 L35,65 Q42,58 52,61 Q65,64 72,56 Q78,49 87,52 Q96,55 103,60 Q109,65 118,62 Q127,59 135,66 Q142,73 149,67 Q155,61 162,64 Q168,67 172,62 L400,62" 
                               stroke="hsl(330 60% 75%)" strokeWidth="1.2" fill="none" opacity="0.55" strokeLinecap="round" strokeLinejoin="round"/>
+                        
+                        {/* Mountain with sharp peaks */}
+                        <path d="M0,240 L50,240 L75,210 L85,225 L95,200 L105,215 L125,235 L400,235" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="1" fill="none" opacity="0.7" strokeLinecap="round" strokeLinejoin="round"/>
+                        
+                        {/* Lower softer hill */}
+                        <path d="M0,270 Q100,250 200,255 Q300,260 400,265" 
+                              stroke="hsl(330 60% 75%)" strokeWidth="0.9" fill="none" opacity="0.6" strokeLinecap="round"/>
                       </svg>
                     </div>
                   </div>
