@@ -30,9 +30,9 @@
     --muted: 0 0% 95%;
     --muted-foreground: 0 0% 40%;
 
-    /* Hot Pink Accent with Burgundy Text */
-    --accent: 330 100% 70%;
-    --accent-foreground: 340 75% 25%;
+    /* Hot Pink Accent - changed to burgundy accent */
+    --accent: 340 60% 45%;
+    --accent-foreground: 0 0% 98%;
 
     /* Burgundy for buttons and accents */
     --burgundy: 340 75% 25%;
@@ -104,8 +104,8 @@
     --muted: 200 10% 18%;
     --muted-foreground: 156 8% 65%;
 
-    --accent: 330 100% 75%;
-    --accent-foreground: 340 75% 25%;
+    --accent: 340 60% 50%;
+    --accent-foreground: 0 0% 98%;
 
     --earth: 30 15% 25%;
     --earth-foreground: 30 15% 85%;
