@@ -153,9 +153,9 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center relative overflow-hidden">
+      <section className="min-h-screen flex flex-col justify-center relative overflow-hidden py-20">
         <div className="w-full px-0">
-            <div className="text-center space-y-16 mb-16">
+            <div className="text-center space-y-24 mb-32">
               <div className="mt-16 flex justify-center w-full">
                 <div className="flex items-center w-full max-w-[2000px]">
                   {/* Left burgundy extension */}
@@ -174,21 +174,23 @@ const Index = () => {
                   </div>
                 </div>
               </div>
-              <div className="h-80 flex justify-center items-center">
-                <p className="text-lg font-light text-foreground/90 max-w-xl mx-auto leading-relaxed font-serif text-center">
-                  Upload your style inspiration, and let Al find the perfect secondhand pieces from across multiple platforms.
-                  <br /><br />
-                  <span className="text-lg">Sustainable fashion, curated for you.</span>
+              <div className="px-8 py-16">
+                <p className="text-sm md:text-base font-light text-foreground/70 max-w-lg mx-auto leading-loose font-lora text-center">
+                  Upload your style inspiration, and let AI find the perfect secondhand pieces from across multiple platforms.
+                </p>
+                <p className="text-xs md:text-sm font-light text-foreground/60 max-w-md mx-auto mt-6 font-lora text-center italic">
+                  Sustainable fashion, curated for you.
                 </p>
               </div>
             </div>
 
             {/* Cura Gallery Section */}
-            <div className="relative min-h-screen bg-gradient-to-b from-background to-secondary/10">
-              <div className="container mx-auto px-8 pt-0 pb-16">
-              <div className="text-center mb-20">
-                <h2 className="text-4xl font-black text-primary mb-6 uppercase tracking-wider" style={{ fontWeight: '950', textShadow: '2px 2px 4px rgba(0,0,0,0.1)', letterSpacing: '0.2em' }}>Cura Gallery</h2>
-                <p className="text-lg font-light text-foreground/90 leading-relaxed max-w-2xl mx-auto font-serif">
+            <div className="relative min-h-screen py-20">
+              <div className="container mx-auto px-8 pt-0 pb-32">
+              <div className="text-center mb-24 space-y-6">
+                <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">Cura Gallery</h2>
+                <div className="w-16 h-px bg-primary/40 mx-auto"></div>
+                <p className="text-sm md:text-base font-light text-foreground/70 leading-loose max-w-xl mx-auto font-lora">
                   Share your style inspiration and discover premium secondhand pieces curated specifically for your aesthetic
                 </p>
               </div>
@@ -220,91 +222,66 @@ const Index = () => {
       )}
 
       {/* The Process - Now at the bottom */}
-      <section className="py-24 bg-secondary/20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+      <section className="py-32 bg-background">
+        <div className="container mx-auto px-8">
+          <div className="max-w-5xl mx-auto">
             
             {/* Section title */}
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-black text-primary mb-4 uppercase tracking-wider" style={{ fontWeight: '950', textShadow: '2px 2px 4px rgba(0,0,0,0.1)', letterSpacing: '0.2em' }}>The Process</h2>
-              <p className="text-base font-light text-foreground/90 leading-relaxed tracking-wide font-serif">
+            <div className="text-center mb-24 space-y-6">
+              <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">The Process</h2>
+              <div className="w-16 h-px bg-primary/40 mx-auto"></div>
+              <p className="text-sm md:text-base font-light text-foreground/70 leading-loose font-lora">
                 Three simple steps to curate your perfect wardrobe
               </p>
             </div>
 
-            {/* Process Steps - Unified Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            {/* Process Steps - Magazine layout */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
               
               {/* Step 1 */}
-              <div className="group">
-                <div className="bg-white border border-muted shadow-sm hover:shadow-lg transition-all duration-300 p-8 h-full hover-scale">
+              <div className="group space-y-8">
+                <div className="bg-white border border-muted/40 shadow-sm hover:shadow-md transition-all duration-300 p-10 h-full">
                   <div className="flex flex-col items-center text-center space-y-6">
-                    <div className="w-16 h-16 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-xl font-medium text-burgundy-foreground">01</span>
+                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-base font-medium text-burgundy-foreground">01</span>
                     </div>
-                    <div className="space-y-3">
-                      <h3 className="text-xl font-black text-primary uppercase tracking-wider">Share</h3>
-                      <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                    <div className="space-y-4">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">Share</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-lora">
                         Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
                       </p>
-                      <details className="mt-4 text-left">
-                        <summary className="text-xs font-medium text-burgundy cursor-pointer hover:text-burgundy/80 transition-colors uppercase tracking-wide">
-                          Become a better sharer →
-                        </summary>
-                        <div className="mt-3 pt-3 border-t border-muted">
-                          <p className="text-xs font-light text-muted-foreground leading-relaxed">
-                            Caption your images with what you love about each piece. Describe the colors, textures, silhouettes, or moods that draw you in. These notes not only help you organize your thoughts but also train our AI to understand your unique style and discover better matches for you.
-                          </p>
-                        </div>
-                      </details>
                     </div>
-                  </div>
-                </div>
-                
-                {/* Connector Arrow - Hidden on mobile */}
-                <div className="hidden md:flex justify-center mt-6">
-                  <div className="w-8 h-px bg-burgundy/30 relative">
-                    <div className="absolute right-0 top-0 w-2 h-px bg-burgundy/30 transform rotate-45 origin-right"></div>
-                    <div className="absolute right-0 top-0 w-2 h-px bg-burgundy/30 transform -rotate-45 origin-right"></div>
                   </div>
                 </div>
               </div>
 
               {/* Step 2 */}
-              <div className="group">
-                <div className="bg-white border border-muted shadow-sm hover:shadow-lg transition-all duration-300 p-8 h-full hover-scale">
+              <div className="group space-y-8">
+                <div className="bg-white border border-muted/40 shadow-sm hover:shadow-md transition-all duration-300 p-10 h-full">
                   <div className="flex flex-col items-center text-center space-y-6">
-                    <div className="w-16 h-16 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-xl font-medium text-burgundy-foreground">02</span>
+                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-base font-medium text-burgundy-foreground">02</span>
                     </div>
-                    <div className="space-y-3">
-                      <h3 className="text-xl font-black text-primary uppercase tracking-wider">Discover</h3>
-                      <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                    <div className="space-y-4">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">Discover</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-lora">
                         Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
                       </p>
                     </div>
                   </div>
                 </div>
-                
-                {/* Connector Arrow - Hidden on mobile */}
-                <div className="hidden md:flex justify-center mt-6">
-                  <div className="w-8 h-px bg-burgundy/30 relative">
-                    <div className="absolute right-0 top-0 w-2 h-px bg-burgundy/30 transform rotate-45 origin-right"></div>
-                    <div className="absolute right-0 top-0 w-2 h-px bg-burgundy/30 transform -rotate-45 origin-right"></div>
-                  </div>
-                </div>
               </div>
 
               {/* Step 3 */}
-              <div className="group">
-                <div className="bg-white border border-muted shadow-sm hover:shadow-lg transition-all duration-300 p-8 h-full hover-scale">
+              <div className="group space-y-8">
+                <div className="bg-white border border-muted/40 shadow-sm hover:shadow-md transition-all duration-300 p-10 h-full">
                   <div className="flex flex-col items-center text-center space-y-6">
-                    <div className="w-16 h-16 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-xl font-medium text-burgundy-foreground">03</span>
+                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-base font-medium text-burgundy-foreground">03</span>
                     </div>
-                    <div className="space-y-3">
-                      <h3 className="text-xl font-black text-primary uppercase tracking-wider">Curate</h3>
-                      <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                    <div className="space-y-4">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">Curate</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-lora">
                         Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
                       </p>
                     </div>

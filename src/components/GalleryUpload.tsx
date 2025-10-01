@@ -202,79 +202,94 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
             <div className="p-16 text-center space-y-8">
               {displayImages.length > 0 ? (
                 <div className="space-y-8">
-                  <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
-                    {displayImages.map((image) => (
-                      <div key={image.id} className="break-inside-avoid mb-4 group">
-                        <div className="bg-white border border-muted shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] overflow-hidden">
-                          <div className="relative">
-                            <img 
-                              src={image.url} 
-                              alt={image.caption || 'Inspiration image'}
-                              className="w-full h-auto object-cover"
-                              style={{ aspectRatio: image.aspectRatio }}
-                            />
-                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white"
-                                onClick={() => onImageSearch?.({
-                                  url: image.url,
-                                  caption: image.caption,
-                                  aspectRatio: image.aspectRatio
-                                })}
-                              >
-                                <Search className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white"
-                                onClick={() => setEditingCaption(editingCaption === image.id ? null : image.id)}
-                              >
-                                <Edit2 className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white"
-                                onClick={() => handleDeleteImage(image.id, image.filePath)}
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
+                  {/* Editorial picture wall with varied sizes */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 auto-rows-[200px]">
+                    {displayImages.map((image, index) => {
+                      // Create varied sizes for editorial effect
+                      const sizeVariants = [
+                        'col-span-2 row-span-2', // Large square
+                        'col-span-1 row-span-2', // Tall portrait
+                        'col-span-2 row-span-1', // Wide landscape
+                        'col-span-1 row-span-1', // Small square
+                        'col-span-2 row-span-2', // Large square
+                        'col-span-1 row-span-1', // Small square
+                      ];
+                      
+                      const sizeClass = sizeVariants[index % sizeVariants.length];
+                      
+                      return (
+                        <div key={image.id} className={`${sizeClass} group relative`}>
+                          <div className="bg-white border border-muted shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02] overflow-hidden h-full">
+                            <div className="relative h-full">
+                              <img 
+                                src={image.url} 
+                                alt={image.caption || 'Inspiration image'}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
+                                  onClick={() => onImageSearch?.({
+                                    url: image.url,
+                                    caption: image.caption,
+                                    aspectRatio: image.aspectRatio
+                                  })}
+                                >
+                                  <Search className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
+                                  onClick={() => setEditingCaption(editingCaption === image.id ? null : image.id)}
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
+                                  onClick={() => handleDeleteImage(image.id, image.filePath)}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
+                              
+                              {/* Caption overlay on hover */}
+                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {editingCaption === image.id ? (
+                                  <Input
+                                    value={image.caption}
+                                    onChange={(e) => {
+                                      const newValue = e.target.value;
+                                      displayImages.find(img => img.id === image.id)!.caption = newValue;
+                                    }}
+                                    onBlur={(e) => handleUpdateCaption(image.id, e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        handleUpdateCaption(image.id, (e.target as HTMLInputElement).value);
+                                      }
+                                    }}
+                                    placeholder="What do you love about this?"
+                                    className="text-xs border-none p-1 h-auto focus-visible:ring-0 text-white bg-transparent font-light font-lora"
+                                    autoFocus
+                                  />
+                                ) : (
+                                  <p 
+                                    className="text-xs text-white font-light leading-relaxed cursor-pointer min-h-[16px] font-lora"
+                                    onClick={() => setEditingCaption(image.id)}
+                                  >
+                                    {image.caption || 'Add a note...'}
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
-                          <div className="p-3">
-                            {editingCaption === image.id ? (
-                              <Input
-                                value={image.caption}
-                                onChange={(e) => {
-                                  const newValue = e.target.value;
-                                  // Update local display immediately for better UX
-                                  displayImages.find(img => img.id === image.id)!.caption = newValue;
-                                }}
-                                onBlur={(e) => handleUpdateCaption(image.id, e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    handleUpdateCaption(image.id, (e.target as HTMLInputElement).value);
-                                  }
-                                }}
-                                placeholder="What do you love about this?"
-                                className="text-xs border-none p-0 h-auto focus-visible:ring-0 text-text-refined font-light"
-                                autoFocus
-                              />
-                            ) : (
-                              <p 
-                                className="text-xs text-text-refined font-light leading-relaxed cursor-pointer min-h-[16px]"
-                                onClick={() => setEditingCaption(image.id)}
-                              >
-                                {image.caption || 'What do you love about this piece?'}
-                              </p>
-                            )}
-                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   <div className="flex items-center justify-center gap-6">
                     <Button variant="outline" size="lg" disabled={isLoading || loading} className="relative border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground">
