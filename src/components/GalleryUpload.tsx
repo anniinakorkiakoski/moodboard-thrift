@@ -295,7 +295,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                                     className="text-xs text-white font-light leading-relaxed cursor-pointer min-h-[16px] font-lora"
                                     onClick={() => setEditingCaption(image.id)}
                                   >
-                                    {image.caption || 'Add a note...'}
+                                    {image.caption || 'What do you love about this?'}
                                   </p>
                                 )}
                               </div>
