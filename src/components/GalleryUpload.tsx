@@ -146,12 +146,26 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
   };
 
   const platforms = [
-    { name: 'Pinterest', initial: 'P', color: 'bg-red-500' },
     { name: 'Vinted', initial: 'V', color: 'bg-orange-500' },
+    { name: 'Depop', initial: 'D', color: 'bg-green-500' },
+    { name: 'Vestiaire Collective', initial: 'VC', color: 'bg-black' },
+    { name: 'The RealReal', initial: 'TRR', color: 'bg-gray-800' },
+    { name: 'thredUP', initial: 'TU', color: 'bg-blue-600' },
+    { name: 'eBay', initial: 'E', color: 'bg-red-600' },
+    { name: 'Facebook Marketplace', initial: 'FB', color: 'bg-blue-500' },
+    { name: 'Shpock', initial: 'S', color: 'bg-purple-600' },
+    { name: 'Grailed', initial: 'G', color: 'bg-gray-700' },
+    { name: 'Poshmark', initial: 'P', color: 'bg-pink-600' },
+    { name: 'ASOS Marketplace', initial: 'AM', color: 'bg-green-600' },
+    { name: 'Hardly Ever Worn It', initial: 'HEWI', color: 'bg-burgundy' },
+    { name: 'Marrkt', initial: 'M', color: 'bg-indigo-600' },
+    { name: 'True Vintage', initial: 'TV', color: 'bg-amber-700' },
+    { name: 'FINDS', initial: 'F', color: 'bg-teal-600' },
+    { name: 'Zalando Pre-Owned', initial: 'Z', color: 'bg-orange-600' },
+    { name: 'Etsy', initial: 'Et', color: 'bg-orange-500' },
     { name: 'Tise', initial: 'T', color: 'bg-blue-500' },
-    { name: 'Emmy', initial: 'E', color: 'bg-pink-500' },
-    { name: 'The RealReal', initial: 'R', color: 'bg-black' },
-    { name: 'Depop', initial: 'D', color: 'bg-green-500' }
+    { name: 'Selpy', initial: 'Se', color: 'bg-purple-500' },
+    { name: 'Emmy', initial: 'Em', color: 'bg-pink-500' }
   ];
 
   const displayImages = images.map(img => ({
