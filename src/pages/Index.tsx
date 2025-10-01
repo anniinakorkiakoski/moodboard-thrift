@@ -176,7 +176,7 @@ const Index = () => {
               </div>
               <div className="px-8 py-16">
                 <p className="text-sm md:text-base font-light text-foreground/70 max-w-lg mx-auto leading-loose font-lora text-center">
-                  Upload your style inspiration, and let AI find the perfect secondhand pieces from across multiple platforms.
+                  Upload your style inspiration, and let AI and professional thrifters and stylists find the perfect secondhand pieces from across multiple platforms.
                 </p>
                 <p className="text-xs md:text-sm font-light text-foreground/60 max-w-md mx-auto mt-6 font-lora text-center italic">
                   Sustainable fashion, curated for you.
