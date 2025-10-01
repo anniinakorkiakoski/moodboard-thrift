@@ -77,7 +77,7 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
       const withLocalAvatars = thriftersWithScores.map((t) => ({
         ...t,
         avatar_url: nameToFile[t.display_name]
-          ? `${nameToFile[t.display_name]}?v=3`
+          ? `${nameToFile[t.display_name]}?v=4`
           : t.avatar_url,
       }));
 
