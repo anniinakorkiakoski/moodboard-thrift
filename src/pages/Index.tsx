@@ -179,18 +179,18 @@ const Index = () => {
               <div className="mt-16 flex justify-center w-full">
                 <div className="flex items-center w-full max-w-[2000px]">
                   {/* Left burgundy extension */}
-                  <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden min-w-0">
+                  <div className="flex-1 h-80 bg-burgundy relative overflow-hidden min-w-0">
                   </div>
                   
                   {/* Center transparent square */}
                   <div className="w-80 h-80 bg-transparent flex items-center justify-center flex-shrink-0">
-                    <h1 className="text-8xl md:text-9xl font-black text-accent-foreground leading-none text-center tracking-tighter">
+                    <h1 className="text-8xl md:text-9xl font-black text-burgundy leading-none text-center tracking-tighter">
                       CURA
                     </h1>
                   </div>
                   
                   {/* Right burgundy extension */}
-                  <div className="flex-1 h-80 bg-accent-foreground relative overflow-hidden min-w-0">
+                  <div className="flex-1 h-80 bg-burgundy relative overflow-hidden min-w-0">
                   </div>
                 </div>
               </div>
