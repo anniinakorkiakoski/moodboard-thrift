@@ -361,33 +361,6 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
             </div>
           </Card>
         </div>
-        
-        <div className="text-center space-y-8">
-          <p className="text-xs font-light tracking-wider text-muted-foreground uppercase">
-            Sourcing from
-          </p>
-          
-          <div className="flex items-center justify-center gap-12 flex-wrap">
-            {platforms.map((platform, index) => (
-              <div 
-                key={platform.name}
-                className="group cursor-pointer"
-                style={{
-                  animationDelay: `${index * 100}ms`
-                }}
-              >
-                <div className="bg-white border border-muted shadow-sm p-4 hover:shadow-md transition-all duration-300 group-hover:scale-105 min-w-[120px]">
-                  <div className="flex items-center justify-center gap-3">
-                    <div className={`w-8 h-8 ${platform.color} flex items-center justify-center`}>
-                      <span className="text-white text-xs font-bold">{platform.initial}</span>
-                    </div>
-                    <span className="text-xs font-light text-primary">{platform.name}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -293,6 +293,58 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Sourcing From Section */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-8">
+          <div className="text-center space-y-12">
+            <div className="space-y-6">
+              <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">Sourcing From</h2>
+              <div className="w-16 h-px bg-primary/40 mx-auto"></div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+              {[
+                { name: 'Vinted', initial: 'V', color: 'bg-orange-500' },
+                { name: 'Depop', initial: 'D', color: 'bg-green-500' },
+                { name: 'Vestiaire Collective', initial: 'VC', color: 'bg-black' },
+                { name: 'The RealReal', initial: 'TRR', color: 'bg-gray-800' },
+                { name: 'thredUP', initial: 'TU', color: 'bg-blue-600' },
+                { name: 'eBay', initial: 'E', color: 'bg-red-600' },
+                { name: 'Facebook Marketplace', initial: 'FB', color: 'bg-blue-500' },
+                { name: 'Shpock', initial: 'S', color: 'bg-purple-600' },
+                { name: 'Grailed', initial: 'G', color: 'bg-gray-700' },
+                { name: 'Poshmark', initial: 'P', color: 'bg-pink-600' },
+                { name: 'ASOS Marketplace', initial: 'AM', color: 'bg-green-600' },
+                { name: 'Hardly Ever Worn It', initial: 'HEWI', color: 'bg-burgundy' },
+                { name: 'Marrkt', initial: 'M', color: 'bg-indigo-600' },
+                { name: 'True Vintage', initial: 'TV', color: 'bg-amber-700' },
+                { name: 'FINDS', initial: 'F', color: 'bg-teal-600' },
+                { name: 'Zalando Pre-Owned', initial: 'Z', color: 'bg-orange-600' },
+                { name: 'Etsy', initial: 'Et', color: 'bg-orange-500' },
+                { name: 'Tise', initial: 'T', color: 'bg-blue-500' },
+                { name: 'Selpy', initial: 'Se', color: 'bg-purple-500' },
+                { name: 'Emmy', initial: 'Em', color: 'bg-pink-500' }
+              ].map((platform, index) => (
+                <div 
+                  key={platform.name}
+                  className="group cursor-pointer"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <div className="bg-white border border-muted/40 shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-105 p-4">
+                    <div className="flex flex-col items-center justify-center gap-2 text-center">
+                      <div className={`w-8 h-8 ${platform.color} flex items-center justify-center flex-shrink-0`}>
+                        <span className="text-white text-[10px] font-bold">{platform.initial}</span>
+                      </div>
+                      <span className="text-[10px] font-light text-foreground/70 font-lora leading-tight">{platform.name}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };
