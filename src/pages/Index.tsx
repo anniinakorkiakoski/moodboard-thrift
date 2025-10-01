@@ -4,6 +4,7 @@ import { GalleryUpload } from '@/components/GalleryUpload';
 import { StylerFinds } from '@/components/StylerFinds';
 import { BundleDisplay } from '@/components/BundleDisplay';
 import { LibrarySidebar } from '@/components/LibrarySidebar';
+import { LogoAnimation } from '@/components/LogoAnimation';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
@@ -15,22 +16,37 @@ const Index = () => {
   const [showResults, setShowResults] = useState(false);
   const [searchedImage, setSearchedImage] = useState<{ url: string; caption: string } | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [showLogoAnimation, setShowLogoAnimation] = useState(false);
+  const [hasSeenAnimation, setHasSeenAnimation] = useState(false);
 
   useEffect(() => {
     // Check current user
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      
+      // Show animation only for already logged-in users on first load
+      if (user && !hasSeenAnimation) {
+        setShowLogoAnimation(true);
+        setHasSeenAnimation(true);
+      }
     };
     getUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const newUser = session?.user ?? null;
+      setUser(newUser);
+      
+      // Show animation on sign in event
+      if (event === 'SIGNED_IN' && newUser && !hasSeenAnimation) {
+        setShowLogoAnimation(true);
+        setHasSeenAnimation(true);
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [hasSeenAnimation]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -62,6 +78,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Logo Animation Overlay */}
+      {showLogoAnimation && (
+        <LogoAnimation onComplete={() => setShowLogoAnimation(false)} />
+      )}
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-10 p-4">
         <div className="container mx-auto flex justify-end">
