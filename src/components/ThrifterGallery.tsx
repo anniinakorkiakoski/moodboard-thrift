@@ -34,21 +34,18 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
 
   const fetchMatchedThrifters = async () => {
     try {
-      // Fetch all verified thrifters with their style profiles
+      // Fetch all verified thrifters
       const { data: thriftersData, error } = await supabase
         .from('thrifters')
-        .select(`
-          *,
-          user_style_profiles!inner(style_tags)
-        `)
+        .select('*')
         .eq('is_verified', true)
         .order('rating', { ascending: false });
 
       if (error) throw error;
 
-      // Calculate match scores based on overlapping style tags
+      // Calculate match scores based on overlapping specialties with user's style tags
       const thriftersWithScores = thriftersData?.map((thrifter: any) => {
-        const thrifterTags = thrifter.user_style_profiles?.style_tags || [];
+        const thrifterTags = thrifter.specialties || [];
         const matchingTags = userStyleTags.filter(tag => 
           thrifterTags.includes(tag)
         );
