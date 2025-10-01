@@ -74,10 +74,17 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
         'Sage Williams': '/thrifters/sage-williams.jpg',
       };
 
+      // Map names to versions: Maya Chen v4, Casey/Drew v5, others v6
+      const nameToVersion: Record<string, number> = {
+        'Maya Chen': 4,
+        'Casey Taylor': 5,
+        'Drew Martinez': 5,
+      };
+
       const withLocalAvatars = thriftersWithScores.map((t) => ({
         ...t,
         avatar_url: nameToFile[t.display_name]
-          ? `${nameToFile[t.display_name]}?v=5`
+          ? `${nameToFile[t.display_name]}?v=${nameToVersion[t.display_name] || 6}`
           : t.avatar_url,
       }));
 
