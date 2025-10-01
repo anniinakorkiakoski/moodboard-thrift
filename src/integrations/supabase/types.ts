@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      connections: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          initiated_by: string
+          message: string | null
+          status: string
+          thrifter_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          initiated_by: string
+          message?: string | null
+          status?: string
+          thrifter_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          initiated_by?: string
+          message?: string | null
+          status?: string
+          thrifter_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       search_results: {
         Row: {
           created_at: string

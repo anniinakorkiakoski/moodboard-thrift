@@ -8,7 +8,7 @@ import { LogoAnimation } from '@/components/LogoAnimation';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
-import { LogOut, User, Sparkles, Heart } from 'lucide-react';
+import { LogOut, User, Sparkles, Heart, Users } from 'lucide-react';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -115,6 +115,16 @@ const Index = () => {
                   My Style
                 </Button>
               </Link>
+              <Link to="/connect">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Connect
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 size="sm"
@@ -135,6 +145,16 @@ const Index = () => {
                 >
                   <Heart className="w-4 h-4 mr-2" />
                   Our Mission
+                </Button>
+              </Link>
+              <Link to="/connect">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-burgundy hover:bg-burgundy/10"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Connect
                 </Button>
               </Link>
               <Link to="/auth">
