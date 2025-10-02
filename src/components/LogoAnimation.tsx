@@ -8,6 +8,7 @@ interface LogoAnimationProps {
 // Stages: initial (tight box + C) -> expanding (box grows) -> extending (top/bottom extenders slide) -> complete
 export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
   const [animationState, setAnimationState] = useState<'initial' | 'expanding' | 'extending' | 'complete'>('initial');
+  const [visibleLetters, setVisibleLetters] = useState<number>(1); // 1=C, 2=CU, 3=CUR, 4=CURA
 
   // Dimensions (px) and timings (ms)
   const THICKNESS = 10; // extra thick borders
@@ -15,18 +16,25 @@ export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
   const FINAL_SIZE = 320; // final logo box
 
   useEffect(() => {
-    // Stage timings for cinematic but snappy effect (~1.8s total)
+    // Stage timings for cinematic but snappy effect (~2.2s total)
     const t1 = setTimeout(() => setAnimationState('expanding'), 100);
     const t2 = setTimeout(() => setAnimationState('extending'), 950);
-    const t3 = setTimeout(() => {
+    // Letters appear sequentially during extending
+    const t3 = setTimeout(() => setVisibleLetters(2), 1050); // U appears
+    const t4 = setTimeout(() => setVisibleLetters(3), 1200); // R appears
+    const t5 = setTimeout(() => setVisibleLetters(4), 1350); // A appears
+    const t6 = setTimeout(() => {
       setAnimationState('complete');
       onComplete?.();
-    }, 1800);
+    }, 2200);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      clearTimeout(t4);
+      clearTimeout(t5);
+      clearTimeout(t6);
     };
   }, [onComplete]);
 
@@ -71,92 +79,64 @@ export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
             style={{ width: THICKNESS, right: 0 }}
           />
 
-          {/* C - scales subtly with the box to feel organic */}
+          {/* CURA letters - C moves left as others appear */}
           <div className="absolute inset-0 flex items-center justify-center z-30">
-            <span
-              className="font-black leading-none tracking-tighter text-burgundy"
-              style={{
-                fontSize: 96,
-                transform: animationState === 'initial' ? 'scale(0.88)' : 'scale(1)',
-                transition: animationState === 'initial' ? 'none' : `transform 800ms ${ease}`,
-                willChange: 'transform',
-              }}
-            >
-              C
-            </span>
+            <div className="flex items-center" style={{ fontSize: 96 }}>
+              {['C', 'U', 'R', 'A'].map((letter, index) => (
+                <span
+                  key={letter}
+                  className="font-black leading-none tracking-tighter text-burgundy"
+                  style={{
+                    opacity: index < visibleLetters ? 1 : 0,
+                    transform: index < visibleLetters ? 'translateX(0)' : 'translateX(-20px)',
+                    transition: `opacity 300ms ${ease}, transform 300ms ${ease}`,
+                    willChange: 'opacity, transform',
+                  }}
+                >
+                  {letter}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Extenders - appear during extending stage; central box edges remain to avoid visual gaps */}
-        {/* Top extender slides left */}
+        {/* Top extender - full-height burgundy block sliding left */}
         <div
           className="absolute left-1/2 bg-burgundy z-10"
           style={{
-            top: `calc(50% - ${FINAL_SIZE / 2}px)`,
-            height: THICKNESS,
+            top: `calc(50% - ${FINAL_SIZE / 2}px - ${THICKNESS}px)`,
+            height: FINAL_SIZE + THICKNESS * 2,
             width: '100vw',
             transform:
               animationState === 'extending' || animationState === 'complete'
-                ? 'translate(calc(-50% - 64px), 0)'
-                : 'translate(-50%, 0)',
+                ? 'translate(calc(-50% - 160px), 0)'
+                : 'translate(calc(-50% + 160px), 0)',
             transition:
-              animationState === 'initial'
+              animationState === 'initial' || animationState === 'expanding'
                 ? 'none'
-                : `transform 700ms ${ease}`,
+                : `transform 900ms ${ease}`,
             willChange: 'transform',
           }}
         />
 
-        {/* Bottom extender slides right */}
+        {/* Bottom extender - full-height burgundy block sliding right */}
         <div
           className="absolute left-1/2 bg-burgundy z-10"
           style={{
-            top: `calc(50% + ${FINAL_SIZE / 2}px)`,
-            height: THICKNESS,
+            top: `calc(50% - ${FINAL_SIZE / 2}px - ${THICKNESS}px)`,
+            height: FINAL_SIZE + THICKNESS * 2,
             width: '100vw',
             transform:
               animationState === 'extending' || animationState === 'complete'
-                ? 'translate(calc(-50% + 64px), 0)'
-                : 'translate(-50%, 0)',
+                ? 'translate(calc(-50% + 160px), 0)'
+                : 'translate(calc(-50% - 160px), 0)',
             transition:
-              animationState === 'initial'
+              animationState === 'initial' || animationState === 'expanding'
                 ? 'none'
-                : `transform 700ms ${ease}`,
+                : `transform 900ms ${ease}`,
             willChange: 'transform',
           }}
         />
-
-        {/* URA - enters only after extenders start moving for a seamless reveal */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
-          <div className="flex items-center justify-center">
-            {/* Spacer to align with the existing C visually */}
-            <span
-              className="font-black leading-none tracking-tighter text-burgundy select-none"
-              aria-hidden
-              style={{ fontSize: 96, opacity: 0, width: 0 }}
-            >
-              C
-            </span>
-            <span
-              className="font-black leading-none tracking-tighter text-burgundy"
-              style={{
-                fontSize: 96,
-                opacity: animationState === 'extending' || animationState === 'complete' ? 1 : 0,
-                transform:
-                  animationState === 'extending' || animationState === 'complete'
-                    ? 'translateX(0)'
-                    : 'translateX(-32px)',
-                transition:
-                  animationState === 'initial'
-                    ? 'none'
-                    : `opacity 600ms ${ease}, transform 600ms ${ease}`,
-                willChange: 'opacity, transform',
-              }}
-            >
-              URA
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );
