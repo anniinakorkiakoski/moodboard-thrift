@@ -7,13 +7,105 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper: Extract item attributes using AI
+async function extractItemAttributes(itemUrl: string, imageUrl?: string) {
+  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY not configured');
+
+  const messages: any[] = [{
+    role: 'user',
+    content: imageUrl 
+      ? [
+          { type: 'text', text: `Analyze this fashion item and extract detailed attributes. URL: ${itemUrl}` },
+          { type: 'image_url', image_url: { url: imageUrl } }
+        ]
+      : `Analyze this fashion item from the URL and extract detailed attributes: ${itemUrl}`
+  }];
+
+  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'google/gemini-2.5-flash',
+      messages,
+      tools: [{
+        type: 'function',
+        function: {
+          name: 'extract_attributes',
+          description: 'Extract detailed fashion item attributes',
+          parameters: {
+            type: 'object',
+            properties: {
+              title: { type: 'string' },
+              description: { type: 'string' },
+              itemType: { type: 'string' },
+              category: { type: 'string' },
+              fabricType: { type: 'string' },
+              primaryColors: { type: 'array', items: { type: 'string' } },
+              pattern: { type: 'string' },
+              silhouette: { type: 'string' },
+              era: { type: 'string' },
+              aesthetic: { type: 'string' },
+              condition: { type: 'string' }
+            },
+            required: ['itemType']
+          }
+        }
+      }],
+      tool_choice: { type: 'function', function: { name: 'extract_attributes' } }
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`AI extraction failed: ${error}`);
+  }
+
+  const data = await response.json();
+  const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+  if (!toolCall) throw new Error('No attributes extracted');
+
+  return JSON.parse(toolCall.function.arguments);
+}
+
+// Helper: Parse CSV data
+function parseCSV(csvText: string): any[] {
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  
+  return lines.slice(1).map(line => {
+    const values = line.split(',').map(v => v.trim());
+    const item: any = {};
+    headers.forEach((header, i) => {
+      item[header] = values[i];
+    });
+    return item;
+  });
+}
+
+// Helper: Check for duplicates
+async function checkDuplicate(supabase: any, platform: string, externalId: string) {
+  const { data } = await supabase
+    .from('catalog_items')
+    .select('id')
+    .eq('platform', platform)
+    .eq('external_id', externalId)
+    .maybeSingle();
+  
+  return !!data;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { items, action } = await req.json();
+    const body = await req.json();
+    const { action } = body;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -287,21 +379,171 @@ serve(async (req) => {
       });
     }
 
-    if (action === 'add_custom' && items) {
-      // Add custom items from admin UI
+    // Manual item upload with AI extraction
+    if (action === 'add_manual') {
+      const { itemUrl, imageUrl, platform } = body;
+      
+      console.log('Manual upload:', { itemUrl, platform });
+      
+      // Extract attributes using AI
+      const extracted = await extractItemAttributes(itemUrl, imageUrl);
+      
+      // Create catalog item
+      const externalId = `manual-${Date.now()}`;
+      const isDuplicate = await checkDuplicate(supabase, platform, externalId);
+      
+      if (isDuplicate) {
+        return new Response(JSON.stringify({ 
+          error: 'Duplicate item already exists' 
+        }), {
+          status: 409,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const catalogItem = {
+        platform,
+        external_id: externalId,
+        title: extracted.title || 'Untitled Item',
+        description: extracted.description || '',
+        item_url: itemUrl,
+        image_url: imageUrl,
+        condition: extracted.condition || 'good',
+        attributes: {
+          itemType: extracted.itemType,
+          category: extracted.category,
+          fabricType: extracted.fabricType,
+          primaryColors: extracted.primaryColors || [],
+          pattern: extracted.pattern,
+          silhouette: extracted.silhouette,
+          era: extracted.era,
+          aesthetic: extracted.aesthetic
+        }
+      };
+
       const { data, error } = await supabase
         .from('catalog_items')
-        .insert(items)
-        .select();
+        .insert(catalogItem)
+        .select()
+        .single();
 
       if (error) throw error;
 
+      console.log('Manual item added:', data.id);
+
       return new Response(JSON.stringify({ 
         success: true,
-        itemsAdded: data.length
+        item: data
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // CSV bulk import
+    if (action === 'import_csv') {
+      const { csvData } = body;
+      
+      console.log('CSV import started');
+      
+      const items = parseCSV(csvData);
+      const results: { added: number; skipped: number; errors: Array<{ item: string; error: string }> } = { 
+        added: 0, 
+        skipped: 0, 
+        errors: [] 
+      };
+      
+      for (const item of items) {
+        try {
+          const isDuplicate = await checkDuplicate(
+            supabase, 
+            item.platform, 
+            item.external_id
+          );
+          
+          if (isDuplicate) {
+            results.skipped++;
+            continue;
+          }
+
+          const catalogItem = {
+            platform: item.platform,
+            external_id: item.external_id,
+            title: item.title,
+            description: item.description || '',
+            price: item.price ? parseFloat(item.price) : null,
+            currency: item.currency || 'USD',
+            item_url: item.item_url,
+            image_url: item.image_url,
+            size: item.size,
+            condition: item.condition || 'good',
+            attributes: typeof item.attributes === 'string' 
+              ? JSON.parse(item.attributes) 
+              : item.attributes
+          };
+
+          await supabase
+            .from('catalog_items')
+            .insert(catalogItem);
+
+          results.added++;
+        } catch (err: any) {
+          results.errors.push({ item: item.external_id, error: err.message });
+        }
+      }
+
+      console.log('CSV import completed:', results);
+
+      return new Response(JSON.stringify({ 
+        success: true,
+        ...results
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Marketplace API sync (framework for future integrations)
+    if (action === 'sync_marketplace') {
+      const { marketplace, apiKey } = body;
+      
+      console.log('Marketplace sync:', marketplace);
+
+      // This is a framework - actual API implementations would go here
+      switch (marketplace) {
+        case 'vinted':
+          // TODO: Implement Vinted API integration
+          return new Response(JSON.stringify({ 
+            error: 'Vinted API integration not yet implemented. Add your API credentials and implementation.' 
+          }), {
+            status: 501,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+          
+        case 'depop':
+          // TODO: Implement Depop API integration
+          return new Response(JSON.stringify({ 
+            error: 'Depop API integration not yet implemented. Add your API credentials and implementation.' 
+          }), {
+            status: 501,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+          
+        case 'etsy':
+          // TODO: Implement Etsy API integration
+          return new Response(JSON.stringify({ 
+            error: 'Etsy API integration not yet implemented. Add your API credentials and implementation.' 
+          }), {
+            status: 501,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+          
+        default:
+          return new Response(JSON.stringify({ 
+            error: 'Unsupported marketplace' 
+          }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+      }
     }
 
     return new Response(JSON.stringify({ error: 'Invalid action' }), {

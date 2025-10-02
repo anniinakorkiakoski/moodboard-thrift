@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Database, Plus } from 'lucide-react';
+import { Loader2, Database, Plus, Upload, Link as LinkIcon, FileUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const CatalogAdmin = () => {
@@ -11,6 +16,16 @@ export const CatalogAdmin = () => {
   const [stats, setStats] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Manual upload state
+  const [manualForm, setManualForm] = useState({
+    itemUrl: '',
+    imageUrl: '',
+    platform: 'vinted'
+  });
+
+  // CSV upload state
+  const [csvFile, setCsvFile] = useState<File | null>(null);
 
   const addSampleData = async () => {
     setLoading(true);
@@ -60,6 +75,88 @@ export const CatalogAdmin = () => {
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
+    }
+  };
+
+  const handleManualUpload = async () => {
+    if (!manualForm.itemUrl) {
+      toast({
+        title: 'Missing information',
+        description: 'Please provide at least an item URL',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('catalog-ingest', {
+        body: {
+          action: 'add_manual',
+          ...manualForm
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Item added!',
+        description: 'The item has been extracted and added to the catalog',
+      });
+
+      setManualForm({ itemUrl: '', imageUrl: '', platform: 'vinted' });
+      fetchStats();
+    } catch (error) {
+      console.error('Error adding manual item:', error);
+      toast({
+        title: 'Failed to add item',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCSVUpload = async () => {
+    if (!csvFile) {
+      toast({
+        title: 'No file selected',
+        description: 'Please select a CSV file to upload',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const csvData = await csvFile.text();
+      
+      const { data, error } = await supabase.functions.invoke('catalog-ingest', {
+        body: {
+          action: 'import_csv',
+          csvData
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'CSV imported!',
+        description: `Added ${data.added} items, skipped ${data.skipped} duplicates`,
+      });
+
+      setCsvFile(null);
+      fetchStats();
+    } catch (error) {
+      console.error('Error importing CSV:', error);
+      toast({
+        title: 'Failed to import CSV',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,61 +212,209 @@ export const CatalogAdmin = () => {
             </Card>
           )}
 
-          {/* Quick Actions */}
-          <div className="grid gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Database className="w-5 h-5" />
-                  Add Sample Data
-                </CardTitle>
-                <CardDescription>
-                  Add 10 sample catalog items for testing the visual search feature.
-                  These items include various clothing types with detailed attributes.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  onClick={addSampleData}
-                  disabled={loading}
-                  className="bg-burgundy text-burgundy-foreground hover:bg-burgundy/90"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Adding Sample Data...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add 10 Sample Items
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
+          {/* Ingestion Methods */}
+          <Tabs defaultValue="manual" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="manual">Manual Upload</TabsTrigger>
+              <TabsTrigger value="csv">CSV Import</TabsTrigger>
+              <TabsTrigger value="api">API Sync</TabsTrigger>
+            </TabsList>
 
-            <Card className="border-muted">
-              <CardHeader>
-                <CardTitle className="text-muted-foreground">
-                  Production Integration (Coming Soon)
-                </CardTitle>
-                <CardDescription>
-                  Connect to marketplace APIs to automatically index items from Vinted, Depop, Etsy, and more.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>📋 Planned features:</p>
-                <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>Automated daily/hourly syncing from marketplace APIs</li>
-                  <li>Manual item upload with attribute extraction</li>
-                  <li>Bulk CSV import</li>
-                  <li>Item deactivation when sold</li>
-                  <li>Duplicate detection</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+            {/* Manual Upload Tab */}
+            <TabsContent value="manual">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <LinkIcon className="w-5 h-5" />
+                    Manual Item Upload
+                  </CardTitle>
+                  <CardDescription>
+                    Add individual items by providing a URL. AI will extract attributes automatically.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="itemUrl">Item URL *</Label>
+                    <Input
+                      id="itemUrl"
+                      placeholder="https://vinted.com/items/..."
+                      value={manualForm.itemUrl}
+                      onChange={(e) => setManualForm({ ...manualForm, itemUrl: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="imageUrl">Image URL (optional)</Label>
+                    <Input
+                      id="imageUrl"
+                      placeholder="https://..."
+                      value={manualForm.imageUrl}
+                      onChange={(e) => setManualForm({ ...manualForm, imageUrl: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="platform">Platform</Label>
+                    <Select
+                      value={manualForm.platform}
+                      onValueChange={(value) => setManualForm({ ...manualForm, platform: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="vinted">Vinted</SelectItem>
+                        <SelectItem value="depop">Depop</SelectItem>
+                        <SelectItem value="etsy">Etsy</SelectItem>
+                        <SelectItem value="poshmark">Poshmark</SelectItem>
+                        <SelectItem value="therealreal">The RealReal</SelectItem>
+                        <SelectItem value="vestiaire_collective">Vestiaire Collective</SelectItem>
+                        <SelectItem value="grailed">Grailed</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button
+                    onClick={handleManualUpload}
+                    disabled={loading}
+                    className="w-full bg-burgundy text-burgundy-foreground hover:bg-burgundy/90"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Extracting & Adding...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 mr-2" />
+                        Add Item
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* CSV Import Tab */}
+            <TabsContent value="csv">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileUp className="w-5 h-5" />
+                    Bulk CSV Import
+                  </CardTitle>
+                  <CardDescription>
+                    Upload a CSV file with multiple items. Required columns: platform, external_id, title, item_url
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="csvFile">CSV File</Label>
+                    <Input
+                      id="csvFile"
+                      type="file"
+                      accept=".csv"
+                      onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+                    />
+                  </div>
+
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    <p className="font-medium">CSV Format:</p>
+                    <code className="text-xs block bg-muted p-2 rounded">
+                      platform,external_id,title,description,price,currency,item_url,image_url,size,condition,attributes
+                    </code>
+                  </div>
+
+                  <Button
+                    onClick={handleCSVUpload}
+                    disabled={loading || !csvFile}
+                    className="w-full bg-burgundy text-burgundy-foreground hover:bg-burgundy/90"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Importing...
+                      </>
+                    ) : (
+                      <>
+                        <FileUp className="w-4 h-4 mr-2" />
+                        Import CSV
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* API Sync Tab */}
+            <TabsContent value="api">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="w-5 h-5" />
+                    Marketplace API Integration
+                  </CardTitle>
+                  <CardDescription>
+                    Connect to marketplace APIs for automated catalog syncing (implementation required)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <p className="font-medium">🔧 Integration Framework Ready</p>
+                    <p>To enable API syncing, you'll need to:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-2">
+                      <li>Obtain API credentials from each marketplace</li>
+                      <li>Implement marketplace-specific API calls in the edge function</li>
+                      <li>Add API keys as Supabase secrets</li>
+                      <li>Set up automated cron jobs for periodic syncing</li>
+                    </ul>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {['Vinted', 'Depop', 'Etsy', 'Poshmark', 'The RealReal', 'Vestiaire'].map(marketplace => (
+                      <Button key={marketplace} variant="outline" disabled>
+                        {marketplace}
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
+          {/* Quick Test Data */}
+          <Card className="border-dashed">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-muted-foreground">
+                <Database className="w-5 h-5" />
+                Quick Test Data
+              </CardTitle>
+              <CardDescription>
+                Add 10 sample items for testing (useful for development)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={addSampleData}
+                disabled={loading}
+                variant="outline"
+                className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Sample Data
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
 
           {/* Info */}
           <Card className="bg-muted/30">
