@@ -8,21 +8,21 @@ export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
   const [animationState, setAnimationState] = useState<'initial' | 'expanding' | 'extending' | 'complete'>('initial');
 
   useEffect(() => {
-    // Stage 1: Box expansion
+    // Stage 1: Box expansion starts immediately
     const expandTimer = setTimeout(() => {
       setAnimationState('expanding');
-    }, 300);
+    }, 400);
 
-    // Stage 2: Border extension and letter reveal
+    // Stage 2: Border extension - starts AFTER expansion completes
     const extendTimer = setTimeout(() => {
       setAnimationState('extending');
-    }, 1200);
+    }, 1600);
 
     // Complete animation
     const completeTimer = setTimeout(() => {
       setAnimationState('complete');
       onComplete?.();
-    }, 2700);
+    }, 2800);
 
     return () => {
       clearTimeout(expandTimer);
@@ -31,80 +31,102 @@ export const LogoAnimation = ({ onComplete }: LogoAnimationProps) => {
     };
   }, [onComplete]);
 
-  // Calculate dimensions based on state
-  const boxSize = animationState === 'initial' ? 'w-32 h-32' : 'w-80 h-80';
-  const cScale = animationState === 'initial' ? 'scale-75' : 'scale-100';
-  const topTransform = animationState === 'extending' ? 'translate(calc(-50% - 32px), 0)' : 'translate(-50%, 0)';
-  const bottomTransform = animationState === 'extending' ? 'translate(calc(-50% + 32px), 0)' : 'translate(-50%, 0)';
-
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 flex items-center justify-center overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 z-50 bg-background flex items-center justify-center overflow-hidden pointer-events-none">
       <div className="relative w-full h-screen flex items-center justify-center">
-        {/* Top bar - expands then slides left */}
+        {/* Top bar - expands with box, then slides left */}
         <div
-          className={`absolute bg-accent-foreground left-1/2 h-2 transition-all ease-in-out ${
-            animationState === 'initial' ? 'w-32 duration-[900ms]' : 
-            animationState === 'expanding' ? 'w-80 duration-[900ms]' : 
-            'w-screen duration-[1000ms]'
+          className={`absolute left-1/2 h-[3px] bg-[hsl(340,75%,25%)] ${
+            animationState === 'initial' ? 'w-28' : 
+            animationState === 'expanding' ? 'w-80' : 
+            'w-screen'
           }`}
           style={{
             top: 'calc(50% - 10rem)',
-            transform: animationState === 'extending' ? topTransform : 'translate(-50%, 0)'
+            transform: animationState === 'extending' ? 'translate(calc(-50% - 40px), 0)' : 'translate(-50%, 0)',
+            transition: animationState === 'initial' 
+              ? 'none' 
+              : animationState === 'expanding'
+              ? 'width 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
+              : 'transform 1000ms cubic-bezier(0.4, 0, 0.2, 1), width 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
 
-        {/* Bottom bar - expands then slides right */}
+        {/* Bottom bar - expands with box, then slides right */}
         <div
-          className={`absolute bg-accent-foreground left-1/2 h-2 transition-all ease-in-out ${
-            animationState === 'initial' ? 'w-32 duration-[900ms]' : 
-            animationState === 'expanding' ? 'w-80 duration-[900ms]' : 
-            'w-screen duration-[1000ms]'
+          className={`absolute left-1/2 h-[3px] bg-[hsl(340,75%,25%)] ${
+            animationState === 'initial' ? 'w-28' : 
+            animationState === 'expanding' ? 'w-80' : 
+            'w-screen'
           }`}
           style={{
             top: 'calc(50% + 10rem)',
-            transform: animationState === 'extending' ? bottomTransform : 'translate(-50%, 0)'
+            transform: animationState === 'extending' ? 'translate(calc(-50% + 40px), 0)' : 'translate(-50%, 0)',
+            transition: animationState === 'initial' 
+              ? 'none' 
+              : animationState === 'expanding'
+              ? 'width 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
+              : 'transform 1000ms cubic-bezier(0.4, 0, 0.2, 1), width 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
 
-        {/* Left border - part of initial square, fades during expansion */}
+        {/* Left border - part of initial tight square only */}
         <div
-          className={`absolute w-2 bg-accent-foreground transition-all duration-[900ms] ease-in-out ${
-            animationState === 'initial' ? 'h-32 opacity-100' : 'h-80 opacity-0'
+          className={`absolute w-[3px] bg-[hsl(340,75%,25%)] ${
+            animationState === 'initial' ? 'h-28 opacity-100' : 'h-28 opacity-0'
           }`}
           style={{ 
             top: '50%', 
-            left: animationState === 'initial' ? 'calc(50% - 4rem)' : 'calc(50% - 10rem)', 
-            transform: 'translateY(-50%)' 
+            left: 'calc(50% - 3.5rem)',
+            transform: 'translateY(-50%)',
+            transition: animationState === 'initial' 
+              ? 'none' 
+              : 'opacity 500ms cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
 
-        {/* Right border - part of initial square, fades during expansion */}
+        {/* Right border - part of initial tight square only */}
         <div
-          className={`absolute w-2 bg-accent-foreground transition-all duration-[900ms] ease-in-out ${
-            animationState === 'initial' ? 'h-32 opacity-100' : 'h-80 opacity-0'
+          className={`absolute w-[3px] bg-[hsl(340,75%,25%)] ${
+            animationState === 'initial' ? 'h-28 opacity-100' : 'h-28 opacity-0'
           }`}
           style={{ 
             top: '50%', 
-            left: animationState === 'initial' ? 'calc(50% + 4rem)' : 'calc(50% + 10rem)', 
-            transform: 'translateY(-50%)' 
+            left: 'calc(50% + 3.5rem)',
+            transform: 'translateY(-50%)',
+            transition: animationState === 'initial' 
+              ? 'none' 
+              : 'opacity 500ms cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
 
         {/* CURA Text */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
           <div className="flex items-center justify-center">
-            {/* C - Scales with box during expansion */}
-            <span className={`text-8xl md:text-9xl font-black text-accent-foreground leading-none tracking-tighter transition-transform duration-[900ms] ease-in-out ${cScale}`}>
+            {/* C - burgundy color, stays centered */}
+            <span 
+              className="text-8xl md:text-9xl font-black leading-none tracking-tighter"
+              style={{ 
+                color: 'hsl(340, 75%, 25%)',
+                transition: 'none'
+              }}
+            >
               C
             </span>
 
-            {/* URA - Fades in during extension phase */}
+            {/* URA - Fades and slides in during extension phase only */}
             <span
-              className={`text-8xl md:text-9xl font-black text-accent-foreground leading-none tracking-tighter transition-all duration-[800ms] ease-in-out ${
-                animationState === 'extending' || animationState === 'complete' 
-                  ? 'opacity-100 translate-x-0' 
-                  : 'opacity-0 -translate-x-8'
-              }`}
+              className="text-8xl md:text-9xl font-black leading-none tracking-tighter"
+              style={{
+                color: 'hsl(340, 75%, 25%)',
+                opacity: animationState === 'extending' || animationState === 'complete' ? 1 : 0,
+                transform: animationState === 'extending' || animationState === 'complete' 
+                  ? 'translateX(0)' 
+                  : 'translateX(-32px)',
+                transition: animationState === 'extending' || animationState === 'complete'
+                  ? 'opacity 800ms cubic-bezier(0.4, 0, 0.2, 1), transform 800ms cubic-bezier(0.4, 0, 0.2, 1)'
+                  : 'none'
+              }}
             >
               URA
             </span>
