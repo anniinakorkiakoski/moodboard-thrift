@@ -84,9 +84,10 @@ export const ThrifterTerms = () => {
                 <p>CURA operates on a transparent commission model:</p>
                 <ul className="list-disc pl-6 space-y-1">
                   <li>You charge customers: <strong>Item Cost + Your Commission (typically 10%)</strong></li>
-                  <li>CURA platform fee: <strong>5% of your total commission</strong></li>
-                  <li>Example: Item costs $100, you add $10 commission → CURA receives $0.50 (5% of $10)</li>
-                  <li>Payments must be processed through CURA's payment system</li>
+                  <li>CURA platform fee: <strong>5% of the TOTAL transaction amount</strong></li>
+                  <li>Example: Item costs €100, you add €10 commission → Customer pays €110 → CURA receives €5.50 (5% of €110)</li>
+                  <li>You receive: €110 - €5.50 = €104.50</li>
+                  <li>All payments must be processed through CURA's payment system</li>
                 </ul>
               </div>
 
@@ -134,7 +135,7 @@ export const ThrifterTerms = () => {
               htmlFor="terms"
               className="text-sm leading-relaxed cursor-pointer"
             >
-              I have read and agree to all terms and conditions outlined above. I understand that I am responsible for maintaining trustworthiness, paying the 5% platform fee on all commissions, and that violations may result in legal action and account termination.
+              I have read and agree to all terms and conditions outlined above. I understand that I am responsible for maintaining trustworthiness, paying the 5% platform fee on all total transaction amounts, and that violations may result in legal action and account termination.
             </label>
           </div>
 
