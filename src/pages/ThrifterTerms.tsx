@@ -103,7 +103,18 @@ export const ThrifterTerms = () => {
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-primary">4. Code of Conduct</h3>
+                <h3 className="text-lg font-semibold text-primary">4. Booking & Customer Management</h3>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Set your maximum active customer capacity to avoid overbooking</li>
+                  <li>Manage your waitlist professionally when at capacity</li>
+                  <li>Select customers from your waitlist based on compatibility and fit</li>
+                  <li>Update customer status (active/completed) regularly</li>
+                  <li>Communicate availability and timelines clearly to customers</li>
+                </ul>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-primary">5. Code of Conduct</h3>
                 <ul className="list-disc pl-6 space-y-1">
                   <li>Respond to customer inquiries within 24 hours</li>
                   <li>Complete agreed-upon thrifting assignments within stated timeframes</li>
@@ -114,7 +125,7 @@ export const ThrifterTerms = () => {
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-primary">5. Consequences of Violations</h3>
+                <h3 className="text-lg font-semibold text-primary">6. Consequences of Violations</h3>
                 <ul className="list-disc pl-6 space-y-1">
                   <li>First violation: Warning and account review</li>
                   <li>Repeated violations: Account suspension</li>

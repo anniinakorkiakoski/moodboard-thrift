@@ -1,38 +1,40 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Users, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { Loader2, Users, Clock, CheckCircle } from 'lucide-react';
 
-interface Thrifter {
+interface ThrifterProfile {
   id: string;
   max_active_customers: number;
   current_active_customers: number;
+  display_name: string;
 }
 
 interface Connection {
   id: string;
   customer_id: string;
   status: string;
-  message: string;
+  message: string | null;
+  waitlist_notes: string | null;
   priority: number;
-  waitlist_notes: string;
   created_at: string;
 }
 
 export const ThrifterDashboard = () => {
-  const [thrifter, setThrifter] = useState<Thrifter | null>(null);
-  const [activeConnections, setActiveConnections] = useState<Connection[]>([]);
-  const [waitlist, setWaitlist] = useState<Connection[]>([]);
-  const [maxCustomers, setMaxCustomers] = useState(5);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<ThrifterProfile | null>(null);
+  const [maxCustomers, setMaxCustomers] = useState(5);
+  const [waitlist, setWaitlist] = useState<Connection[]>([]);
+  const [activeCustomers, setActiveCustomers] = useState<Connection[]>([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadThrifterData();
@@ -41,32 +43,31 @@ export const ThrifterDashboard = () => {
   const loadThrifterData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
 
-      // Get thrifter profile
-      const { data: thrifterData, error: thrifterError } = await supabase
+      const { data: thrifterData, error: profileError } = await supabase
         .from('thrifters')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (thrifterError) throw thrifterError;
-      
-      setThrifter(thrifterData);
+      if (profileError) throw profileError;
+      if (!thrifterData) {
+        toast({
+          title: "Not a Thrifter",
+          description: "You need to create a thrifter profile first.",
+          variant: "destructive"
+        });
+        navigate('/');
+        return;
+      }
+
+      setProfile(thrifterData);
       setMaxCustomers(thrifterData.max_active_customers);
 
-      // Get active connections
-      const { data: activeData, error: activeError } = await supabase
-        .from('connections')
-        .select('*')
-        .eq('thrifter_id', thrifterData.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (activeError) throw activeError;
-      setActiveConnections(activeData || []);
-
-      // Get waitlist
       const { data: waitlistData, error: waitlistError } = await supabase
         .from('connections')
         .select('*')
@@ -77,6 +78,16 @@ export const ThrifterDashboard = () => {
 
       if (waitlistError) throw waitlistError;
       setWaitlist(waitlistData || []);
+
+      const { data: activeData, error: activeError } = await supabase
+        .from('connections')
+        .select('*')
+        .eq('thrifter_id', thrifterData.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (activeError) throw activeError;
+      setActiveCustomers(activeData || []);
 
     } catch (error: any) {
       toast({
@@ -90,22 +101,22 @@ export const ThrifterDashboard = () => {
   };
 
   const updateMaxCustomers = async () => {
-    if (!thrifter) return;
+    if (!profile) return;
 
     try {
       const { error } = await supabase
         .from('thrifters')
         .update({ max_active_customers: maxCustomers })
-        .eq('id', thrifter.id);
+        .eq('id', profile.id);
 
       if (error) throw error;
 
       toast({
         title: "Updated",
-        description: "Customer capacity limit updated successfully."
+        description: "Customer capacity updated successfully."
       });
 
-      loadThrifterData();
+      setProfile({ ...profile, max_active_customers: maxCustomers });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -116,12 +127,12 @@ export const ThrifterDashboard = () => {
   };
 
   const acceptFromWaitlist = async (connectionId: string) => {
-    if (!thrifter) return;
+    if (!profile) return;
 
-    if (thrifter.current_active_customers >= thrifter.max_active_customers) {
+    if (profile.current_active_customers >= profile.max_active_customers) {
       toast({
         title: "Capacity Full",
-        description: "You've reached your maximum active customers limit.",
+        description: "You've reached your maximum active customers. Complete or remove some customers first.",
         variant: "destructive"
       });
       return;
@@ -137,7 +148,7 @@ export const ThrifterDashboard = () => {
 
       toast({
         title: "Customer Accepted",
-        description: "Customer has been moved to your active list."
+        description: "Customer moved from waitlist to active."
       });
 
       loadThrifterData();
@@ -150,38 +161,19 @@ export const ThrifterDashboard = () => {
     }
   };
 
-  const rejectFromWaitlist = async (connectionId: string) => {
+  const completeCustomer = async (connectionId: string) => {
     try {
       const { error } = await supabase
         .from('connections')
-        .update({ status: 'rejected' })
+        .update({ status: 'completed' })
         .eq('id', connectionId);
 
       if (error) throw error;
 
       toast({
-        title: "Request Declined",
-        description: "Customer request has been declined."
+        title: "Marked Complete",
+        description: "Customer marked as completed."
       });
-
-      loadThrifterData();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  };
-
-  const updatePriority = async (connectionId: string, newPriority: number) => {
-    try {
-      const { error } = await supabase
-        .from('connections')
-        .update({ priority: newPriority })
-        .eq('id', connectionId);
-
-      if (error) throw error;
 
       loadThrifterData();
     } catch (error: any) {
@@ -194,154 +186,168 @@ export const ThrifterDashboard = () => {
   };
 
   if (loading) {
-    return <div className="p-8">Loading...</div>;
-  }
-
-  if (!thrifter) {
     return (
-      <div className="p-8">
-        <Card className="p-6">
-          <p>You need to create a thrifter profile first.</p>
-        </Card>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  const spotsAvailable = thrifter.max_active_customers - thrifter.current_active_customers;
+  const spotsAvailable = profile ? profile.max_active_customers - profile.current_active_customers : 0;
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-serif font-light text-primary">Thrifter Dashboard</h1>
-          <Badge variant={spotsAvailable > 0 ? "default" : "destructive"}>
-            {spotsAvailable} spots available
-          </Badge>
+          <Button variant="outline" onClick={() => navigate('/')}>
+            Back to Home
+          </Button>
         </div>
 
-        {/* Capacity Settings */}
-        <Card className="p-6">
-          <h2 className="text-2xl font-serif text-primary mb-4">Capacity Settings</h2>
-          <div className="flex items-end gap-4">
-            <div className="flex-1">
-              <Label htmlFor="maxCustomers">Maximum Active Customers</Label>
-              <Input
-                id="maxCustomers"
-                type="number"
-                min="1"
-                max="50"
-                value={maxCustomers}
-                onChange={(e) => setMaxCustomers(parseInt(e.target.value))}
-                className="mt-1"
-              />
-            </div>
-            <Button onClick={updateMaxCustomers}>
-              Update Limit
-            </Button>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Currently serving {thrifter.current_active_customers} of {thrifter.max_active_customers} customers
-          </p>
-        </Card>
-
-        {/* Active Customers */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Users className="h-5 w-5 text-primary" />
-            <h2 className="text-2xl font-serif text-primary">Active Customers</h2>
-            <Badge>{activeConnections.length}</Badge>
-          </div>
-          {activeConnections.length === 0 ? (
-            <p className="text-muted-foreground">No active customers yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {activeConnections.map((connection) => (
-                <Card key={connection.id} className="p-4 bg-muted/50">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <p className="font-medium">Customer: {connection.customer_id.slice(0, 8)}...</p>
-                      {connection.message && (
-                        <p className="text-sm text-muted-foreground mt-1">{connection.message}</p>
-                      )}
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Started: {new Date(connection.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
+        {profile && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Customer Capacity</CardTitle>
+              <CardDescription>
+                Manage how many customers you can help at once
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Active</p>
+                    <p className="text-2xl font-bold">{profile.current_active_customers}</p>
                   </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </Card>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Available Spots</p>
+                    <p className="text-2xl font-bold text-green-600">{spotsAvailable}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Waitlist</p>
+                    <p className="text-2xl font-bold">{waitlist.length}</p>
+                  </div>
+                </div>
+              </div>
 
-        {/* Waitlist */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Clock className="h-5 w-5 text-primary" />
-            <h2 className="text-2xl font-serif text-primary">Waitlist</h2>
-            <Badge variant="outline">{waitlist.length}</Badge>
-          </div>
-          {waitlist.length === 0 ? (
-            <p className="text-muted-foreground">No customers waiting.</p>
-          ) : (
-            <div className="space-y-4">
-              {waitlist.map((connection) => (
-                <Card key={connection.id} className="p-4">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="font-medium">Customer: {connection.customer_id.slice(0, 8)}...</p>
+              <div className="flex items-end gap-4 pt-4">
+                <div className="flex-1">
+                  <Label htmlFor="maxCustomers">Maximum Active Customers</Label>
+                  <Input
+                    id="maxCustomers"
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={maxCustomers}
+                    onChange={(e) => setMaxCustomers(parseInt(e.target.value) || 1)}
+                    className="mt-2"
+                  />
+                </div>
+                <Button onClick={updateMaxCustomers}>
+                  Update Capacity
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Tabs defaultValue="waitlist" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="waitlist">
+              Waitlist ({waitlist.length})
+            </TabsTrigger>
+            <TabsTrigger value="active">
+              Active Customers ({activeCustomers.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="waitlist" className="space-y-4">
+            {waitlist.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">No customers in waitlist</p>
+                </CardContent>
+              </Card>
+            ) : (
+              waitlist.map((connection) => (
+                <Card key={connection.id}>
+                  <CardContent className="py-6">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary">Waitlist</Badge>
+                          {connection.priority > 0 && (
+                            <Badge variant="outline">Priority: {connection.priority}</Badge>
+                          )}
+                        </div>
                         {connection.message && (
-                          <p className="text-sm mt-1">{connection.message}</p>
+                          <p className="text-sm text-foreground">{connection.message}</p>
                         )}
                         {connection.waitlist_notes && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Notes: {connection.waitlist_notes}
-                          </p>
+                          <p className="text-sm text-muted-foreground italic">{connection.waitlist_notes}</p>
                         )}
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground">
                           Requested: {new Date(connection.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <Badge variant="secondary">Priority: {connection.priority}</Badge>
-                    </div>
-
-                    <Separator />
-
-                    <div className="flex gap-2">
                       <Button
-                        size="sm"
                         onClick={() => acceptFromWaitlist(connection.id)}
                         disabled={spotsAvailable <= 0}
-                        className="flex-1"
+                        className="bg-burgundy hover:bg-burgundy/90"
                       >
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Accept
+                        Accept Customer
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => rejectFromWaitlist(connection.id)}
-                        className="flex-1"
-                      >
-                        <XCircle className="h-4 w-4 mr-1" />
-                        Decline
-                      </Button>
-                      <Input
-                        type="number"
-                        placeholder="Priority"
-                        value={connection.priority}
-                        onChange={(e) => updatePriority(connection.id, parseInt(e.target.value) || 0)}
-                        className="w-24"
-                        min="0"
-                      />
                     </div>
-                  </div>
+                  </CardContent>
                 </Card>
-              ))}
-            </div>
-          )}
-        </Card>
+              ))
+            )}
+          </TabsContent>
+
+          <TabsContent value="active" className="space-y-4">
+            {activeCustomers.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">No active customers</p>
+                </CardContent>
+              </Card>
+            ) : (
+              activeCustomers.map((connection) => (
+                <Card key={connection.id}>
+                  <CardContent className="py-6">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <Badge>Active</Badge>
+                        {connection.message && (
+                          <p className="text-sm text-foreground">{connection.message}</p>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          Started: {new Date(connection.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => completeCustomer(connection.id)}
+                        variant="outline"
+                      >
+                        Mark Complete
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

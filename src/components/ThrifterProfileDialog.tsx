@@ -18,6 +18,8 @@ interface Thrifter {
   specialties: string[];
   style_tags?: string[];
   pricing_info?: string;
+  max_active_customers: number;
+  current_active_customers: number;
 }
 
 interface ThrifterProfileDialogProps {
@@ -73,6 +75,10 @@ export const ThrifterProfileDialog = ({
     try {
       const defaultMessage = "Hey! I'd love to get curated by you.";
       const finalMessage = customMessage.trim() || defaultMessage;
+      
+      // Check if thrifter has capacity
+      const hasCapacity = thrifter.current_active_customers < thrifter.max_active_customers;
+      const status = hasCapacity ? 'pending' : 'waitlist';
 
       const { error } = await supabase
         .from('connections')
@@ -81,17 +87,19 @@ export const ThrifterProfileDialog = ({
           thrifter_id: thrifter.id,
           initiated_by: 'customer',
           message: finalMessage,
-          status: 'pending',
+          status: status,
         });
 
       if (error) throw error;
 
       toast({
-        title: "Request sent!",
-        description: `Your connection request has been sent to ${thrifter.display_name}.`,
+        title: hasCapacity ? "Request sent!" : "Added to waitlist",
+        description: hasCapacity 
+          ? `Your connection request has been sent to ${thrifter.display_name}.`
+          : `${thrifter.display_name} is at capacity. You've been added to their waitlist.`,
       });
       
-      setConnectionStatus('pending');
+      setConnectionStatus(status);
       setCustomMessage('');
       onOpenChange(false);
     } catch (error: any) {
@@ -194,12 +202,28 @@ export const ThrifterProfileDialog = ({
           )}
 
           {/* Connection Status or Form */}
+          <div className="bg-accent/10 p-3 rounded-lg mb-4">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-foreground/70">Availability:</span>
+              <span className="font-medium">
+                {thrifter.max_active_customers - thrifter.current_active_customers} spots available
+              </span>
+            </div>
+            {thrifter.current_active_customers >= thrifter.max_active_customers && (
+              <p className="text-xs text-muted-foreground mt-1">
+                At capacity - new requests will be added to waitlist
+              </p>
+            )}
+          </div>
+
           {connectionStatus ? (
             <div className="bg-accent/10 p-4 rounded-lg">
               <p className="text-sm font-medium text-center">
                 {connectionStatus === 'pending' && 'Request pending - waiting for response'}
-                {connectionStatus === 'accepted' && 'Connected! You can now collaborate'}
-                {connectionStatus === 'declined' && 'Request was declined'}
+                {connectionStatus === 'waitlist' && 'You\'re on the waitlist - thrifter will reach out when available'}
+                {connectionStatus === 'active' && 'Connected! You\'re working together'}
+                {connectionStatus === 'accepted' && 'Request accepted!'}
+                {connectionStatus === 'rejected' && 'Request was declined'}
               </p>
             </div>
           ) : (
@@ -222,7 +246,10 @@ export const ThrifterProfileDialog = ({
                 className="w-full"
                 variant="cta"
               >
-                {sending ? 'Sending...' : 'Send Connection Request'}
+                {sending ? 'Sending...' : 
+                  thrifter.current_active_customers >= thrifter.max_active_customers 
+                    ? 'Join Waitlist' 
+                    : 'Send Connection Request'}
               </Button>
             </div>
           )}

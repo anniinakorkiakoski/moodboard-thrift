@@ -15,6 +15,8 @@ interface Thrifter {
   specialties: string[];
   style_tags?: string[];
   match_score?: number;
+  max_active_customers: number;
+  current_active_customers: number;
 }
 
 interface ThrifterGalleryProps {
