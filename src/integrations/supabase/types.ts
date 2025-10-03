@@ -120,9 +120,11 @@ export type Database = {
           id: string
           initiated_by: string
           message: string | null
+          priority: number | null
           status: string
           thrifter_id: string
           updated_at: string
+          waitlist_notes: string | null
         }
         Insert: {
           created_at?: string
@@ -130,9 +132,11 @@ export type Database = {
           id?: string
           initiated_by: string
           message?: string | null
+          priority?: number | null
           status?: string
           thrifter_id: string
           updated_at?: string
+          waitlist_notes?: string | null
         }
         Update: {
           created_at?: string
@@ -140,9 +144,11 @@ export type Database = {
           id?: string
           initiated_by?: string
           message?: string | null
+          priority?: number | null
           status?: string
           thrifter_id?: string
           updated_at?: string
+          waitlist_notes?: string | null
         }
         Relationships: []
       }
@@ -258,9 +264,11 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
+          current_active_customers: number | null
           display_name: string
           id: string
           is_verified: boolean | null
+          max_active_customers: number | null
           pricing_info: string | null
           rating: number | null
           specialties: string[] | null
@@ -272,9 +280,11 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          current_active_customers?: number | null
           display_name: string
           id?: string
           is_verified?: boolean | null
+          max_active_customers?: number | null
           pricing_info?: string | null
           rating?: number | null
           specialties?: string[] | null
@@ -286,9 +296,11 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          current_active_customers?: number | null
           display_name?: string
           id?: string
           is_verified?: boolean | null
+          max_active_customers?: number | null
           pricing_info?: string | null
           rating?: number | null
           specialties?: string[] | null
@@ -429,6 +441,10 @@ export type Database = {
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown
+      }
+      get_active_customer_count: {
+        Args: { thrifter_uuid: string }
+        Returns: number
       }
       halfvec_avg: {
         Args: { "": number[] }

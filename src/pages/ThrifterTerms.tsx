@@ -44,7 +44,7 @@ export const ThrifterTerms = () => {
         description: "You can now start offering your thrifting services."
       });
 
-      navigate('/');
+      navigate('/thrifter-dashboard');
     } catch (error: any) {
       toast({
         title: "Error",
