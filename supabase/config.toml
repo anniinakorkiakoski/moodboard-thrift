@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.catalog-ingest]
 verify_jwt = true
+
+[functions.catalog-scraper]
+verify_jwt = true

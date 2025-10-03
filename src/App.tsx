@@ -10,6 +10,7 @@ import { StyleProfile } from "./pages/StyleProfile";
 import { OurMission } from "./pages/OurMission";
 import { Connect } from "./pages/Connect";
 import { CatalogAdmin } from "./pages/CatalogAdmin";
+import CatalogScraper from "./pages/CatalogScraper";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/our-mission" element={<OurMission />} />
           <Route path="/connect" element={<Connect />} />
           <Route path="/catalog-admin" element={<CatalogAdmin />} />
+          <Route path="/catalog-scraper" element={<CatalogScraper />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

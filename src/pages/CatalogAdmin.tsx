@@ -183,6 +183,28 @@ export const CatalogAdmin = () => {
             </p>
           </div>
 
+          {/* AI Scraper Call-to-Action */}
+          <Card className="border-burgundy/20 bg-gradient-to-r from-burgundy/5 to-transparent">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-burgundy">
+                <Database className="w-5 h-5" />
+                AI-Powered Catalog Building
+              </CardTitle>
+              <CardDescription>
+                Let AI automatically find and add items from fashion platforms
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={() => navigate('/catalog-scraper')}
+                className="w-full bg-burgundy text-burgundy-foreground hover:bg-burgundy/90"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Launch AI Scraper
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Stats Card */}
           {stats && (
             <Card>
