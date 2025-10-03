@@ -5,12 +5,15 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 export const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [userRole, setUserRole] = useState<'customer' | 'thrifter'>('customer');
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -31,7 +34,7 @@ export const Auth = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -40,6 +43,29 @@ export const Auth = () => {
         });
         
         if (error) throw error;
+        
+        if (data.user) {
+          // Insert user role
+          const { error: roleError } = await supabase
+            .from('user_roles')
+            .insert({
+              user_id: data.user.id,
+              role: userRole,
+              terms_accepted_at: userRole === 'customer' ? new Date().toISOString() : null
+            });
+
+          if (roleError) throw roleError;
+
+          // If thrifter, redirect to terms page
+          if (userRole === 'thrifter') {
+            toast({
+              title: "Account Created",
+              description: "Please review and accept our thrifter terms."
+            });
+            navigate('/thrifter-terms');
+            return;
+          }
+        }
         
         toast({
           title: "Account Created",
@@ -83,6 +109,26 @@ export const Auth = () => {
 
         <Card className="p-6">
           <form onSubmit={handleAuth} className="space-y-4">
+            {isSignUp && (
+              <div className="space-y-3">
+                <Label className="text-base font-medium">I want to join as a:</Label>
+                <RadioGroup value={userRole} onValueChange={(value) => setUserRole(value as 'customer' | 'thrifter')}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="customer" id="customer" />
+                    <Label htmlFor="customer" className="font-normal cursor-pointer">
+                      Customer - I want to find unique thrifted items
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="thrifter" id="thrifter" />
+                    <Label htmlFor="thrifter" className="font-normal cursor-pointer">
+                      Thrifter - I want to help others find great items
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
+
             <div>
               <Input
                 type="email"

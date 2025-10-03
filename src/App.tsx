@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import { Auth } from "./pages/Auth";
+import { ThrifterTerms } from "./pages/ThrifterTerms";
 import { VisualSearchResults } from "./pages/VisualSearchResults";
 import { StyleProfile } from "./pages/StyleProfile";
 import { OurMission } from "./pages/OurMission";
@@ -24,6 +25,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/thrifter-terms" element={<ThrifterTerms />} />
           <Route path="/search" element={<VisualSearchResults />} />
           <Route path="/style-profile" element={<StyleProfile />} />
           <Route path="/our-mission" element={<OurMission />} />
