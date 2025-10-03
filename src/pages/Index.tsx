@@ -206,7 +206,7 @@ const Index = () => {
 
             {/* Cura Gallery Section */}
             <div className="relative min-h-screen py-20">
-              <div className="container mx-auto px-8 pt-0 pb-32">
+              <div className="container mx-auto px-8 pt-0 pb-8">
               <div className="text-center mb-24 space-y-6">
                 <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">Cura Gallery</h2>
                 <div className="w-16 h-px bg-primary/40 mx-auto"></div>
@@ -242,7 +242,7 @@ const Index = () => {
       )}
 
       {/* The Process - Now at the bottom */}
-      <section className="py-32 bg-background">
+      <section className="pt-8 pb-32 bg-background">
         <div className="container mx-auto px-8">
           <div className="max-w-5xl mx-auto">
             
