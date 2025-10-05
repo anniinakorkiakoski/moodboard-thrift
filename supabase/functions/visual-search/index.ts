@@ -121,31 +121,53 @@ serve(async (req) => {
       })
       .eq('id', searchId);
 
-    // Step 2: Generate search embedding
-    console.log('Generating search embedding...');
-    const embeddingResponse = await fetch('https://ai.gateway.lovable.dev/v1/embeddings', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'text-embedding-3-small',
-        input: `${attributes.itemType} ${attributes.category} ${attributes.fabricType} ${attributes.primaryColors?.join(' ')} ${attributes.pattern} ${attributes.silhouette} ${attributes.aesthetic}`.toLowerCase()
-      }),
-    });
+    // Step 2: Generate search query from attributes
+    const searchQuery = `${attributes.category || attributes.itemType} ${attributes.fabricType || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.pattern || ''}`.trim();
+    console.log('Generated search query:', searchQuery);
 
-    if (!embeddingResponse.ok) {
-      console.error('Embedding generation failed');
+    // Step 3: Scrape live results from multiple platforms
+    console.log('Scraping live results from platforms...');
+    
+    const platforms = [
+      { platform: 'vinted', countries: ['fi', 'se', 'dk', 'no', 'ee'] },
+      { platform: 'depop', countries: ['com'] },
+      { platform: 'tise', countries: ['fi', 'no', 'se', 'dk'] }
+    ];
+
+    const scrapeTasks = [];
+    for (const { platform, countries } of platforms) {
+      for (const country of countries) {
+        scrapeTasks.push(
+          fetch(`${supabaseUrl}/functions/v1/catalog-scraper`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${supabaseServiceKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              platform,
+              country,
+              searchQuery,
+              maxItems: 5
+            })
+          }).then(res => res.json()).catch(err => {
+            console.error(`Scrape failed for ${platform}.${country}:`, err);
+            return null;
+          })
+        );
+      }
     }
 
-    // Step 3: Search catalog using vector similarity
-    console.log('Searching catalog...');
+    const scrapeResults = await Promise.all(scrapeTasks);
+    console.log('Scraping completed, processing results...');
+
+    // Step 4: Get all items that were just added to catalog
     const { data: catalogResults, error: searchError } = await supabase
       .from('catalog_items')
       .select('*')
       .eq('is_active', true)
-      .limit(50);
+      .gte('created_at', new Date(Date.now() - 60000).toISOString()) // Items from last minute
+      .limit(100);
 
     if (searchError) {
       console.error('Catalog search error:', searchError);
