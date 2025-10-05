@@ -121,60 +121,176 @@ serve(async (req) => {
       })
       .eq('id', searchId);
 
-    // Step 2: Generate search query from attributes
+    // Step 2: Generate search query and URLs from attributes
     const searchQuery = `${attributes.category || attributes.itemType} ${attributes.fabricType || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.pattern || ''}`.trim();
     console.log('Generated search query:', searchQuery);
 
-    // Step 3: Scrape live results from multiple platforms
-    console.log('Scraping live results from platforms...');
+    // Step 3: Search multiple platforms directly
+    console.log('Searching multiple platforms...');
     
-    const platforms = [
-      { platform: 'vinted', countries: ['fi', 'se', 'dk', 'no', 'ee'] },
-      { platform: 'depop', countries: ['com'] },
-      { platform: 'tise', countries: ['fi', 'no', 'se', 'dk'] }
+    const searchUrls = [
+      `https://www.vinted.fi/catalog?search_text=${encodeURIComponent(searchQuery)}`,
+      `https://www.vinted.se/catalog?search_text=${encodeURIComponent(searchQuery)}`,
+      `https://www.vinted.dk/catalog?search_text=${encodeURIComponent(searchQuery)}`,
+      `https://www.depop.com/search/?q=${encodeURIComponent(searchQuery)}`,
+      `https://www.tise.fi/search?q=${encodeURIComponent(searchQuery)}`,
     ];
 
-    const scrapeTasks = [];
-    for (const { platform, countries } of platforms) {
-      for (const country of countries) {
-        scrapeTasks.push(
-          fetch(`${supabaseUrl}/functions/v1/catalog-scraper`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${supabaseServiceKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              platform,
-              country,
-              searchQuery,
-              maxItems: 5
-            })
-          }).then(res => res.json()).catch(err => {
-            console.error(`Scrape failed for ${platform}.${country}:`, err);
-            return null;
+    // Use AI to extract items from search result pages
+    const allItems: any[] = [];
+    
+    for (const url of searchUrls.slice(0, 3)) { // Process first 3 platforms
+      try {
+        console.log('Fetching:', url);
+        
+        const pageResponse = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          },
+        });
+        
+        if (!pageResponse.ok) {
+          console.error('Failed to fetch:', url, pageResponse.status);
+          continue;
+        }
+        
+        const html = await pageResponse.text();
+        const truncatedHtml = html.substring(0, 50000); // First 50k chars
+        
+        console.log('Extracting items with AI...');
+        
+        // Extract items using AI
+        const extractResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [{
+              role: 'user',
+              content: `Extract fashion item listings from this search results page. Find item URLs, image URLs, titles, and prices.\n\nHTML:\n${truncatedHtml}`
+            }],
+            tools: [{
+              type: 'function',
+              function: {
+                name: 'extract_items',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    items: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          itemUrl: { type: 'string' },
+                          imageUrl: { type: 'string' },
+                          title: { type: 'string' },
+                          price: { type: 'string' },
+                          currency: { type: 'string' }
+                        },
+                        required: ['itemUrl']
+                      }
+                    }
+                  },
+                  required: ['items']
+                }
+              }
+            }],
+            tool_choice: { type: 'function', function: { name: 'extract_items' } }
           })
-        );
+        });
+        
+        if (extractResponse.ok) {
+          const extractData = await extractResponse.json();
+          const toolCall = extractData.choices?.[0]?.message?.tool_calls?.[0];
+          if (toolCall) {
+            const result = JSON.parse(toolCall.function.arguments);
+            const platform = url.includes('vinted') ? 'vinted' : url.includes('depop') ? 'depop' : 'tise';
+            
+            // Add items to our list with platform info
+            result.items.forEach((item: any) => {
+              allItems.push({
+                ...item,
+                platform,
+                attributes: {}, // Will be analyzed later
+              });
+            });
+            
+            console.log(`Extracted ${result.items.length} items from ${platform}`);
+          }
+        }
+      } catch (err) {
+        console.error('Error processing URL:', url, err);
       }
     }
 
-    const scrapeResults = await Promise.all(scrapeTasks);
-    console.log('Scraping completed, processing results...');
+    console.log(`Total items extracted: ${allItems.length}`);
 
-    // Step 4: Get all items that were just added to catalog
-    const { data: catalogResults, error: searchError } = await supabase
-      .from('catalog_items')
-      .select('*')
-      .eq('is_active', true)
-      .gte('created_at', new Date(Date.now() - 60000).toISOString()) // Items from last minute
-      .limit(100);
+    // Step 4: Analyze each item's image to get attributes
+    const catalogResults = [];
 
-    if (searchError) {
-      console.error('Catalog search error:', searchError);
+    
+    for (const item of allItems.slice(0, 20)) { // Process top 20 items
+      if (!item.imageUrl) continue;
+      
+      try {
+        // Analyze item image with AI
+        const itemAnalysisResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [
+              {
+                role: 'system',
+                content: `Extract clothing attributes in JSON format with these fields:
+{
+  "itemType": "main garment type",
+  "category": "specific category",
+  "fabricType": "material type",
+  "primaryColors": ["color 1", "color 2"],
+  "pattern": "pattern type",
+  "silhouette": "overall shape"
+}`
+              },
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: 'Analyze this clothing item and return ONLY valid JSON.'
+                  },
+                  {
+                    type: 'image_url',
+                    image_url: { url: item.imageUrl }
+                  }
+                ]
+              }
+            ],
+          }),
+        });
+        
+        if (itemAnalysisResponse.ok) {
+          const itemData = await itemAnalysisResponse.json();
+          const content = itemData.choices[0].message.content;
+          const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/) || content.match(/(\{[\s\S]*\})/);
+          
+          if (jsonMatch) {
+            item.attributes = JSON.parse(jsonMatch[1]);
+          }
+        }
+      } catch (err) {
+        console.error('Error analyzing item image:', err);
+      }
     }
 
     // Calculate similarity scores and match attributes
-    const results = (catalogResults || []).map(item => {
+    const results = (allItems || []).map(item => {
       const score = calculateAttributeSimilarity(attributes, item.attributes || {});
       const matchedAttrs = findMatchedAttributes(attributes, item.attributes || {});
       
