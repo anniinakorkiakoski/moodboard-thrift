@@ -14,13 +14,24 @@ interface ScrapedItem {
   price?: string;
 }
 
-// Platform-specific search URLs
-const PLATFORM_SEARCH_URLS: Record<string, (query: string) => string> = {
-  vinted: (query) => `https://www.vinted.com/catalog?search_text=${encodeURIComponent(query)}`,
+// Platform-specific search URLs with country support
+const PLATFORM_SEARCH_URLS: Record<string, (query: string, country?: string) => string> = {
+  vinted: (query, country = 'com') => `https://www.vinted.${country}/catalog?search_text=${encodeURIComponent(query)}`,
   depop: (query) => `https://www.depop.com/search/?q=${encodeURIComponent(query)}`,
   poshmark: (query) => `https://poshmark.com/search?query=${encodeURIComponent(query)}`,
   etsy: (query) => `https://www.etsy.com/search?q=${encodeURIComponent(query)}&explicit=1&category=vintage-clothing`,
   grailed: (query) => `https://www.grailed.com/shop?q=${encodeURIComponent(query)}`,
+  tise: (query, country = 'fi') => `https://www.tise.${country}/search?q=${encodeURIComponent(query)}`,
+};
+
+// Supported country codes per platform
+const PLATFORM_COUNTRIES: Record<string, string[]> = {
+  vinted: ['fi', 'se', 'dk', 'no', 'ee', 'es', 'it', 'com', 'pt', 'fr', 'de', 'at', 'be', 'nl', 'lu', 'cz', 'lt', 'lv', 'pl', 'uk'],
+  depop: ['com'],
+  poshmark: ['com'],
+  etsy: ['com'],
+  grailed: ['com'],
+  tise: ['fi', 'no', 'se', 'dk'],
 };
 
 async function fetchPageContent(url: string): Promise<string> {
@@ -141,7 +152,7 @@ serve(async (req) => {
   }
 
   try {
-    const { platform, searchQuery, maxItems = 10 } = await req.json();
+    const { platform, searchQuery, maxItems = 10, country } = await req.json();
 
     if (!platform || !searchQuery) {
       return new Response(JSON.stringify({ 
@@ -161,14 +172,24 @@ serve(async (req) => {
       });
     }
 
-    console.log(`Starting scrape: platform=${platform}, query=${searchQuery}`);
+    // Validate country code if provided
+    if (country && PLATFORM_COUNTRIES[platform] && !PLATFORM_COUNTRIES[platform].includes(country)) {
+      return new Response(JSON.stringify({ 
+        error: `Unsupported country '${country}' for platform '${platform}'. Supported: ${PLATFORM_COUNTRIES[platform].join(', ')}` 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    console.log(`Starting scrape: platform=${platform}, country=${country || 'default'}, query=${searchQuery}`);
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Fetch search results page
-    const searchUrl = PLATFORM_SEARCH_URLS[platform](searchQuery);
+    const searchUrl = PLATFORM_SEARCH_URLS[platform](searchQuery, country);
     const html = await fetchPageContent(searchUrl);
 
     // Extract items with AI
@@ -203,7 +224,9 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       platform,
+      country: country || 'default',
       searchQuery,
+      searchUrl,
       itemsFound: scrapedItems.length,
       itemsProcessed: itemsToProcess.length,
       ...results
