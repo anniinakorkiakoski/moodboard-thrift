@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import magazineRunwayCollage from '@/assets/magazine-runway-collage.jpg';
-import laptopGalleryClean from '@/assets/laptop-gallery-clean.jpg';
+import magazineTightOak from '@/assets/magazine-tight-oak.jpg';
+import laptopTightOak from '@/assets/laptop-tight-oak.jpg';
 
 export const HowToUse = () => {
   const navigate = useNavigate();
@@ -102,7 +102,7 @@ export const HowToUse = () => {
 
               <div className="md:sticky md:top-8">
                 <img 
-                  src={magazineRunwayCollage} 
+                  src={magazineTightOak} 
                   alt="Fashion magazine runway collage" 
                   className="w-full h-auto shadow-lg"
                 />
@@ -121,7 +121,7 @@ export const HowToUse = () => {
             <div className="grid md:grid-cols-[1fr,2fr] gap-12 items-start">
               <div className="md:sticky md:top-8">
                 <img 
-                  src={laptopGalleryClean} 
+                  src={laptopTightOak} 
                   alt="Cura Gallery on laptop" 
                   className="w-full h-auto shadow-lg"
                 />
