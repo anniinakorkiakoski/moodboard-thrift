@@ -1,31 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
+import { SourceLogo } from './SourceLogo';
 
-interface SourcePlatform {
-  name: string;
-  logo?: string;
-}
-
-const sources: SourcePlatform[] = [
-  { name: 'Vinted' },
-  { name: 'Depop', logo: '/logos/depop.png' },
-  { name: 'Vestiaire Collective', logo: '/logos/vestiaire.png' },
-  { name: 'The RealReal', logo: '/logos/therealreal.png' },
-  { name: 'thredUP' },
-  { name: 'eBay' },
-  { name: 'Facebook Marketplace' },
-  { name: 'Shpock' },
-  { name: 'Grailed' },
-  { name: 'Poshmark' },
-  { name: 'ASOS Marketplace' },
-  { name: 'Hardly Ever Worn It' },
-  { name: 'Marrkt' },
-  { name: 'True Vintage' },
-  { name: 'FINDS' },
-  { name: 'Zalando Pre-Owned' },
-  { name: 'Etsy' },
-  { name: 'Tise' },
-  { name: 'Selpy' },
-  { name: 'Emmy' }
+const sources = [
+  'Vinted',
+  'Depop',
+  'Vestiaire Collective',
+  'The RealReal',
+  'thredUP',
+  'eBay',
+  'Facebook Marketplace',
+  'Shpock',
+  'Grailed',
+  'Poshmark',
+  'ASOS Marketplace',
+  'Hardly Ever Worn It',
+  'Marrkt',
+  'True Vintage',
+  'FINDS',
+  'Zalando Pre-Owned',
+  'Etsy',
+  'Tise',
+  'Selpy',
+  'Emmy'
 ];
 
 export const SourceChain = () => {
@@ -84,20 +80,12 @@ export const SourceChain = () => {
         style={{ scrollBehavior: 'auto' }}
       >
         {duplicatedSources.map((source, index) => (
-          <div key={`${source.name}-${index}`} className="flex items-center flex-shrink-0">
+          <div key={`${source}-${index}`} className="flex items-center flex-shrink-0">
             {/* Logo node */}
             <div className="group relative flex items-center px-8 py-4 bg-background border-2 border-foreground hover:bg-foreground transition-all duration-300 hover:scale-105">
-              {source.logo ? (
-                <img 
-                  src={source.logo} 
-                  alt={source.name}
-                  className="h-8 w-auto object-contain filter brightness-0 group-hover:brightness-100 group-hover:invert transition-all duration-300"
-                />
-              ) : (
-                <span className="text-foreground group-hover:text-background text-sm font-bold tracking-wider uppercase whitespace-nowrap transition-colors duration-300">
-                  {source.name}
-                </span>
-              )}
+              <div className="text-foreground group-hover:text-background transition-colors duration-300">
+                <SourceLogo name={source} />
+              </div>
             </div>
             
             {/* Chain link line */}
