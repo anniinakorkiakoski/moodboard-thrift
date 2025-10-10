@@ -105,6 +105,16 @@ const Index = () => {
                   Our Mission
                 </Button>
               </Link>
+              <Link to="/how-to-use">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-burgundy hover:bg-burgundy/10"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  How to Use
+                </Button>
+              </Link>
               <span className="text-sm text-muted-foreground">
                 {user.email}
               </span>

@@ -10,6 +10,7 @@ import { ThrifterDashboard } from "./pages/ThrifterDashboard";
 import { VisualSearchResults } from "./pages/VisualSearchResults";
 import { StyleProfile } from "./pages/StyleProfile";
 import { OurMission } from "./pages/OurMission";
+import { HowToUse } from "./pages/HowToUse";
 import { Connect } from "./pages/Connect";
 import { CatalogAdmin } from "./pages/CatalogAdmin";
 import CatalogScraper from "./pages/CatalogScraper";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/search" element={<VisualSearchResults />} />
           <Route path="/style-profile" element={<StyleProfile />} />
           <Route path="/our-mission" element={<OurMission />} />
+          <Route path="/how-to-use" element={<HowToUse />} />
           <Route path="/connect" element={<Connect />} />
           <Route path="/catalog-admin" element={<CatalogAdmin />} />
           <Route path="/catalog-scraper" element={<CatalogScraper />} />
