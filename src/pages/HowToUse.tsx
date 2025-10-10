@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import curaGalleryMacbook from '@/assets/cura-gallery-macbook.jpg';
-import vogueMagazineTable from '@/assets/vogue-magazine-table.jpg';
+import magazineCloseUp from '@/assets/magazine-close-up.jpg';
+import laptopGalleryVertical from '@/assets/laptop-gallery-vertical.jpg';
 
 export const HowToUse = () => {
   const navigate = useNavigate();
@@ -33,82 +33,81 @@ export const HowToUse = () => {
           </header>
 
           {/* Step 1: Share */}
-          <section className="max-w-2xl mx-auto space-y-12 px-8">
-            <div className="space-y-6">
-              <h2 className="text-xs font-bold text-primary uppercase tracking-[0.25em] text-center">
-                Step One
-              </h2>
-              <h3 className="text-2xl md:text-3xl font-light font-lora text-primary text-center">
-                Share
-              </h3>
-              <p className="text-sm font-light font-lora text-foreground/60 text-center">
-                Build Your Visual Story
-              </p>
-            </div>
-            
-            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
-              The first step in your style journey is creating a moodboard that speaks to who you are. 
-              Think of your Cura Gallery as a visual diary — a collection of images that capture not just 
-              what you like, but why you're drawn to certain aesthetics, silhouettes, and moods. This is 
-              where intuition meets expression.
-            </p>
-            
-            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
-              Draw inspiration from everywhere:
-            </p>
+          <section className="max-w-5xl mx-auto px-8">
+            <div className="grid md:grid-cols-[2fr,1fr] gap-12 items-start">
+              <div className="space-y-12">
+                <div className="space-y-6">
+                  <h2 className="text-xs font-bold text-primary uppercase tracking-[0.25em] text-center md:text-left">
+                    Step One
+                  </h2>
+                  <h3 className="text-2xl md:text-3xl font-light font-lora text-primary text-center md:text-left">
+                    Share
+                  </h3>
+                  <p className="text-sm font-light font-lora text-foreground/60 text-center md:text-left">
+                    Build Your Visual Story
+                  </p>
+                </div>
+                
+                <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
+                  The first step in your style journey is creating a moodboard that speaks to who you are. 
+                  Think of your Cura Gallery as a visual diary — a collection of images that capture not just 
+                  what you like, but why you're drawn to certain aesthetics, silhouettes, and moods. This is 
+                  where intuition meets expression.
+                </p>
+                
+                <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
+                  Draw inspiration from everywhere:
+                </p>
 
-            <ul className="space-y-3 text-sm font-light font-lora text-foreground/70 leading-loose pl-6">
-              <li>That perfectly composed Pinterest board you return to again and again</li>
-              <li>Editorial spreads torn from magazines, saved for their artistic vision</li>
-              <li>Screenshots from social media — street style that stopped you mid-scroll</li>
-              <li>Photographs of your own wardrobe's greatest hits, the pieces you reach for instinctively</li>
-              <li>Runway moments that redefined your understanding of a silhouette</li>
-              <li>Vintage finds that speak to a different era's elegance</li>
-            </ul>
-            
-            <aside className="bg-burgundy/5 p-8 border-l-2 border-burgundy mt-8">
-              <p className="text-xs font-light text-foreground/60 mb-3 uppercase tracking-wider font-lora">
-                The question we'll ask:
-              </p>
-              <p className="text-base md:text-lg font-light font-lora text-primary italic">
-                "What do you love about this?"
-              </p>
-              <p className="text-sm font-light font-lora text-foreground/60 mt-4 leading-relaxed">
-                Your words matter as much as your images. Whether it's the drape of a sleeve, the confidence of a 
-                silhouette, or simply the feeling a piece evokes — these notes become the emotional compass guiding 
-                your search. They transform visual preference into something deeper: a reflection of who you are and 
-                how you want to feel in what you wear.
-              </p>
-            </aside>
+                <ul className="space-y-3 text-sm font-light font-lora text-foreground/70 leading-loose pl-6">
+                  <li>That perfectly composed Pinterest board you return to again and again</li>
+                  <li>Editorial spreads torn from magazines, saved for their artistic vision</li>
+                  <li>Screenshots from social media — street style that stopped you mid-scroll</li>
+                  <li>Photographs of your own wardrobe's greatest hits, the pieces you reach for instinctively</li>
+                  <li>Runway moments that redefined your understanding of a silhouette</li>
+                  <li>Vintage finds that speak to a different era's elegance</li>
+                </ul>
+                
+                <aside className="bg-burgundy/5 p-8 border-l-2 border-burgundy mt-8">
+                  <p className="text-xs font-light text-foreground/60 mb-3 uppercase tracking-wider font-lora">
+                    The question we'll ask:
+                  </p>
+                  <p className="text-base md:text-lg font-light font-lora text-primary italic">
+                    "What do you love about this?"
+                  </p>
+                  <p className="text-sm font-light font-lora text-foreground/60 mt-4 leading-relaxed">
+                    Your words matter as much as your images. Whether it's the drape of a sleeve, the confidence of a 
+                    silhouette, or simply the feeling a piece evokes — these notes become the emotional compass guiding 
+                    your search. They transform visual preference into something deeper: a reflection of who you are and 
+                    how you want to feel in what you wear.
+                  </p>
+                </aside>
 
-            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
-              As you arrange these images and add your reflections, patterns will emerge naturally. Colors that 
-              complement each other, textures that tell a story, proportions that feel inherently right. This 
-              moodboard becomes more than inspiration — it's a blueprint for the wardrobe you're meant to have.
-            </p>
+                <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
+                  As you arrange these images and add your reflections, patterns will emerge naturally. Colors that 
+                  complement each other, textures that tell a story, proportions that feel inherently right. This 
+                  moodboard becomes more than inspiration — it's a blueprint for the wardrobe you're meant to have.
+                </p>
 
-            <div className="bg-burgundy/5 p-6 mt-8">
-              <p className="text-xs font-light font-lora text-foreground/60 uppercase tracking-wider mb-3">
-                Don't forget:
-              </p>
-              <p className="text-sm font-light font-lora text-foreground/70 leading-loose">
-                Visit the "My Style" section to select your style categories and dream brands. These preferences 
-                help match you with the right pieces — and the right people who can find them for you.
-              </p>
-            </div>
-          </section>
+                <div className="bg-burgundy/5 p-6 mt-8">
+                  <p className="text-xs font-light font-lora text-foreground/60 uppercase tracking-wider mb-3">
+                    Don't forget:
+                  </p>
+                  <p className="text-sm font-light font-lora text-foreground/70 leading-loose">
+                    Visit the "My Style" section to select your style categories and dream brands. These preferences 
+                    help match you with the right pieces — and the right people who can find them for you.
+                  </p>
+                </div>
+              </div>
 
-          {/* Editorial Image - Gallery */}
-          <section className="py-20">
-            <div className="max-w-3xl mx-auto px-8">
-              <div className="relative">
+              <div className="md:sticky md:top-8">
                 <img 
-                  src={curaGalleryMacbook} 
-                  alt="Cura Gallery moodboard on MacBook" 
-                  className="w-full h-auto shadow-lg"
+                  src={magazineCloseUp} 
+                  alt="Fashion magazine on oak table" 
+                  className="w-full h-auto shadow-lg rounded-sm"
                 />
-                <p className="text-xs font-light text-foreground/40 mt-4 text-center font-lora tracking-wide">
-                  Your visual inspiration, curated
+                <p className="text-xs font-light text-foreground/40 mt-3 text-center font-lora tracking-wide">
+                  Editorial inspiration
                 </p>
               </div>
             </div>
@@ -118,93 +117,92 @@ export const HowToUse = () => {
           <div className="w-16 h-px bg-primary/20 mx-auto"></div>
 
           {/* Step 2: Discover */}
-          <section className="max-w-2xl mx-auto space-y-12 px-8">
-            <div className="space-y-6">
-              <h2 className="text-xs font-bold text-primary uppercase tracking-[0.25em] text-center">
-                Step Two
-              </h2>
-              <h3 className="text-2xl md:text-3xl font-light font-lora text-primary text-center">
-                Discover
-              </h3>
-              <p className="text-sm font-light font-lora text-foreground/60 text-center">
-                Let Intelligence Work for You
-              </p>
-            </div>
-            
-            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
-              With your moodboard complete, you have two paths to discovery — each designed to transform your 
-              visual inspiration into a curated wardrobe. Choose the approach that feels right for your journey.
-            </p>
-
-            <div className="space-y-8 pt-4">
-              <div className="bg-burgundy/5 p-8 border-l-2 border-burgundy">
-                <h4 className="text-sm font-bold text-primary uppercase tracking-wider mb-4">
-                  AI-Powered Search
-                </h4>
-                <p className="text-sm font-light font-lora text-foreground/70 leading-loose mb-4">
-                  Click the search button and let our AI work thoughtfully across multiple resale platforms. 
-                  The algorithm considers your visual preferences, the emotional context from your notes, and 
-                  your selected brands simultaneously — understanding not just what you see, but why it resonates.
-                </p>
-                <p className="text-sm font-light font-lora text-foreground/70 leading-loose">
-                  Within moments, you'll receive a curated selection of pieces that align with your aesthetic DNA. 
-                  The search learns from the relationships between your inspiration images, suggesting items that 
-                  would naturally complement what you've shown interest in.
-                </p>
-              </div>
-
-              <div className="text-center py-4">
-                <p className="text-xs font-light font-lora text-foreground/40 uppercase tracking-widest">
-                  Or
-                </p>
-              </div>
-
-              <div className="bg-burgundy/5 p-8 border-l-2 border-burgundy">
-                <h4 className="text-sm font-bold text-primary uppercase tracking-wider mb-4">
-                  Connect with Professional Thrifters
-                </h4>
-                <p className="text-sm font-light font-lora text-foreground/70 leading-loose mb-4">
-                  Sometimes, the human touch makes all the difference. Visit the Connect page to discover 
-                  professional thrifters and stylists who share your aesthetic sensibility. Our matching system 
-                  uses both your "My Style" selections and theirs to suggest collaborators whose taste naturally 
-                  aligns with yours.
-                </p>
-                <p className="text-sm font-light font-lora text-foreground/70 leading-loose mb-4">
-                  Browse their curated portfolios — visual proof of their eye for quality and their understanding 
-                  of different aesthetics. Each thrifter brings their own expertise: perhaps someone specializes 
-                  in vintage Chanel, another in emerging designers, or maybe they have an uncanny ability to find 
-                  that perfect pair of vintage Levi's.
-                </p>
-                <p className="text-sm font-light font-lora text-foreground/70 leading-loose">
-                  When you find someone whose work resonates, open a message chat. Share your moodboard, discuss 
-                  your vision, and let their expertise guide you to pieces you might never have discovered on your own. 
-                  This is personal shopping, reimagined for the secondhand era.
-                </p>
-              </div>
-            </div>
-
-            <aside className="py-12">
-              <blockquote className="text-center">
-                <p className="text-lg md:text-xl font-light font-lora text-primary italic leading-relaxed max-w-xl mx-auto">
-                  Whether through algorithms or artisans, the goal remains the same: transforming inspiration 
-                  into reality.
-                </p>
-              </blockquote>
-            </aside>
-          </section>
-
-          {/* Editorial Image - Magazine */}
-          <section className="py-20">
-            <div className="max-w-3xl mx-auto px-8">
-              <div className="relative">
+          <section className="max-w-5xl mx-auto px-8">
+            <div className="grid md:grid-cols-[1fr,2fr] gap-12 items-start">
+              <div className="md:sticky md:top-8">
                 <img 
-                  src={vogueMagazineTable} 
-                  alt="Fashion magazine on oak table" 
-                  className="w-full h-auto shadow-lg"
+                  src={laptopGalleryVertical} 
+                  alt="Cura Gallery on laptop" 
+                  className="w-full h-auto shadow-lg rounded-sm"
                 />
-                <p className="text-xs font-light text-foreground/40 mt-4 text-center font-lora tracking-wide">
-                  Where inspiration meets discovery
+                <p className="text-xs font-light text-foreground/40 mt-3 text-center font-lora tracking-wide">
+                  Your moodboard, digitized
                 </p>
+              </div>
+
+              <div className="space-y-12">
+                <div className="space-y-6">
+                  <h2 className="text-xs font-bold text-primary uppercase tracking-[0.25em] text-center md:text-left">
+                    Step Two
+                  </h2>
+                  <h3 className="text-2xl md:text-3xl font-light font-lora text-primary text-center md:text-left">
+                    Discover
+                  </h3>
+                  <p className="text-sm font-light font-lora text-foreground/60 text-center md:text-left">
+                    Let Intelligence Work for You
+                  </p>
+                </div>
+                
+                <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
+                  With your moodboard complete, you have two paths to discovery — each designed to transform your 
+                  visual inspiration into a curated wardrobe. Choose the approach that feels right for your journey.
+                </p>
+
+                <div className="space-y-8 pt-4">
+                  <div className="bg-burgundy/5 p-8 border-l-2 border-burgundy">
+                    <h4 className="text-sm font-bold text-primary uppercase tracking-wider mb-4">
+                      AI-Powered Search
+                    </h4>
+                    <p className="text-sm font-light font-lora text-foreground/70 leading-loose mb-4">
+                      Click the search button and let our AI work thoughtfully across multiple resale platforms. 
+                      The algorithm considers your visual preferences, the emotional context from your notes, and 
+                      your selected brands simultaneously — understanding not just what you see, but why it resonates.
+                    </p>
+                    <p className="text-sm font-light font-lora text-foreground/70 leading-loose">
+                      Within moments, you'll receive a curated selection of pieces that align with your aesthetic DNA. 
+                      The search learns from the relationships between your inspiration images, suggesting items that 
+                      would naturally complement what you've shown interest in.
+                    </p>
+                  </div>
+
+                  <div className="text-center py-4">
+                    <p className="text-xs font-light font-lora text-foreground/40 uppercase tracking-widest">
+                      Or
+                    </p>
+                  </div>
+
+                  <div className="bg-burgundy/5 p-8 border-l-2 border-burgundy">
+                    <h4 className="text-sm font-bold text-primary uppercase tracking-wider mb-4">
+                      Connect with Professional Thrifters
+                    </h4>
+                    <p className="text-sm font-light font-lora text-foreground/70 leading-loose mb-4">
+                      Sometimes, the human touch makes all the difference. Visit the Connect page to discover 
+                      professional thrifters and stylists who share your aesthetic sensibility. Our matching system 
+                      uses both your "My Style" selections and theirs to suggest collaborators whose taste naturally 
+                      aligns with yours.
+                    </p>
+                    <p className="text-sm font-light font-lora text-foreground/70 leading-loose mb-4">
+                      Browse their curated portfolios — visual proof of their eye for quality and their understanding 
+                      of different aesthetics. Each thrifter brings their own expertise: perhaps someone specializes 
+                      in vintage Chanel, another in emerging designers, or maybe they have an uncanny ability to find 
+                      that perfect pair of vintage Levi's.
+                    </p>
+                    <p className="text-sm font-light font-lora text-foreground/70 leading-loose">
+                      When you find someone whose work resonates, open a message chat. Share your moodboard, discuss 
+                      your vision, and let their expertise guide you to pieces you might never have discovered on your own. 
+                      This is personal shopping, reimagined for the secondhand era.
+                    </p>
+                  </div>
+                </div>
+
+                <aside className="py-12">
+                  <blockquote className="text-center">
+                    <p className="text-lg md:text-xl font-light font-lora text-primary italic leading-relaxed max-w-xl mx-auto">
+                      Whether through algorithms or artisans, the goal remains the same: transforming inspiration 
+                      into reality.
+                    </p>
+                  </blockquote>
+                </aside>
               </div>
             </div>
           </section>
