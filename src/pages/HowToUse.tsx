@@ -36,8 +36,11 @@ export const HowToUse = () => {
                 Step One
               </h2>
               <h3 className="text-2xl md:text-3xl font-light font-lora text-primary text-center">
-                Share — Be a Good Sharer ✨
+                Share
               </h3>
+              <p className="text-sm font-light font-lora text-foreground/60 text-center">
+                Be a Good Sharer
+              </p>
             </div>
             
             <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
@@ -83,8 +86,11 @@ export const HowToUse = () => {
                 Step Two
               </h2>
               <h3 className="text-2xl md:text-3xl font-light font-lora text-primary text-center">
-                Discover — Build Your Dream Moodboard 🌿
+                Discover
               </h3>
+              <p className="text-sm font-light font-lora text-foreground/60 text-center">
+                Build Your Dream Moodboard
+              </p>
             </div>
             
             <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
@@ -122,8 +128,11 @@ export const HowToUse = () => {
                 Step Three
               </h2>
               <h3 className="text-2xl md:text-3xl font-light font-lora text-primary text-center">
-                Curate — Find Your Perfect Pieces 👗
+                Curate
               </h3>
+              <p className="text-sm font-light font-lora text-foreground/60 text-center">
+                Find Your Perfect Pieces
+              </p>
             </div>
             
             <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
@@ -145,10 +154,10 @@ export const HowToUse = () => {
             <aside className="py-12">
               <div className="text-center space-y-4">
                 <p className="text-base md:text-lg font-medium font-lora text-primary">
-                  ✨ Your style edit awaits ✨
+                  Your style edit awaits
                 </p>
                 <p className="text-xs font-light font-lora text-foreground/50">
-                  That "aha!" moment when you discover pieces that truly fit who you are
+                  Discover pieces that truly fit who you are
                 </p>
               </div>
             </aside>
