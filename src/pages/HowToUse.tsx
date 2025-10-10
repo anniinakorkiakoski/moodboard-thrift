@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import magazineTightOak from '@/assets/magazine-tight-oak.jpg';
-import laptopTightOak from '@/assets/laptop-tight-oak.jpg';
+import galleryScreenshot from '@/assets/cura-gallery-screenshot.png';
 
 export const HowToUse = () => {
   const navigate = useNavigate();
@@ -100,7 +100,7 @@ export const HowToUse = () => {
                 </div>
               </div>
 
-              <div className="md:sticky md:top-8">
+              <div>
                 <img 
                   src={magazineTightOak} 
                   alt="Fashion magazine runway collage" 
@@ -119,15 +119,12 @@ export const HowToUse = () => {
           {/* Step 2: Discover */}
           <section className="max-w-5xl mx-auto px-8">
             <div className="grid md:grid-cols-[1fr,2fr] gap-12 items-start">
-              <div className="md:sticky md:top-8">
+              <div>
                 <img 
-                  src={laptopTightOak} 
-                  alt="Cura Gallery on laptop" 
+                  src={galleryScreenshot} 
+                  alt="Cura Gallery screenshot" 
                   className="w-full h-auto shadow-lg"
                 />
-                <p className="text-xs font-light text-foreground/40 mt-3 text-center font-lora tracking-wide">
-                  Your moodboard, digitized
-                </p>
               </div>
 
               <div className="space-y-12">
