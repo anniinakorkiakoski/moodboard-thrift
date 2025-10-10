@@ -80,31 +80,23 @@ export const SourceChain = () => {
       >
         {duplicatedSources.map((source, index) => (
           <div key={`${source}-${index}`} className="flex items-center flex-shrink-0">
-            {/* Node circle */}
-            <div className="group relative flex items-center">
-              <div 
-                className="w-3 h-3 rounded-full bg-foreground border-2 border-background transition-all duration-300 group-hover:scale-150 group-hover:bg-primary z-10"
-              />
-              
-              {/* Source name tooltip */}
-              <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
-                <div className="bg-foreground text-background px-4 py-2 text-xs font-medium tracking-wider uppercase">
-                  {source}
-                </div>
-                <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-foreground absolute -top-1 left-1/2 -translate-x-1/2" />
-              </div>
+            {/* Logo text node */}
+            <div className="group relative flex items-center px-6 py-3 bg-foreground hover:bg-primary transition-all duration-300 hover:scale-110">
+              <span className="text-background text-sm font-bold tracking-wider uppercase whitespace-nowrap">
+                {source}
+              </span>
             </div>
             
             {/* Chain link line */}
-            <div className="h-px w-16 md:w-24 bg-foreground/30 flex-shrink-0" />
+            <div className="h-px w-12 md:w-16 bg-foreground/30 flex-shrink-0" />
           </div>
         ))}
       </div>
 
       {/* Pause indicator */}
       {isPaused && (
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-foreground/50 font-light tracking-widest uppercase animate-fade-in">
-          Hover to explore
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-foreground/50 font-light tracking-widest uppercase animate-fade-in">
+          Paused
         </div>
       )}
     </div>
