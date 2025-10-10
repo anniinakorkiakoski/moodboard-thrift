@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import magazineCloseUp from '@/assets/magazine-close-up.jpg';
-import laptopGalleryVertical from '@/assets/laptop-gallery-vertical.jpg';
+import magazineRunwayCollage from '@/assets/magazine-runway-collage.jpg';
+import laptopGalleryClean from '@/assets/laptop-gallery-clean.jpg';
 
 export const HowToUse = () => {
   const navigate = useNavigate();
@@ -102,9 +102,9 @@ export const HowToUse = () => {
 
               <div className="md:sticky md:top-8">
                 <img 
-                  src={magazineCloseUp} 
-                  alt="Fashion magazine on oak table" 
-                  className="w-full h-auto shadow-lg rounded-sm"
+                  src={magazineRunwayCollage} 
+                  alt="Fashion magazine runway collage" 
+                  className="w-full h-auto shadow-lg"
                 />
                 <p className="text-xs font-light text-foreground/40 mt-3 text-center font-lora tracking-wide">
                   Editorial inspiration
@@ -121,9 +121,9 @@ export const HowToUse = () => {
             <div className="grid md:grid-cols-[1fr,2fr] gap-12 items-start">
               <div className="md:sticky md:top-8">
                 <img 
-                  src={laptopGalleryVertical} 
+                  src={laptopGalleryClean} 
                   alt="Cura Gallery on laptop" 
-                  className="w-full h-auto shadow-lg rounded-sm"
+                  className="w-full h-auto shadow-lg"
                 />
                 <p className="text-xs font-light text-foreground/40 mt-3 text-center font-lora tracking-wide">
                   Your moodboard, digitized
