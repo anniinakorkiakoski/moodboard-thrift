@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import magazineTightOak from '@/assets/magazine-tight-oak.jpg';
-import galleryScreenshot from '@/assets/cura-gallery-screenshot.png';
+import macbookGallery from '@/assets/cura-gallery-macbook.jpg';
 
 export const HowToUse = () => {
   const navigate = useNavigate();
@@ -121,8 +121,8 @@ export const HowToUse = () => {
             <div className="grid md:grid-cols-[1fr,2fr] gap-12 items-start">
               <div>
                 <img 
-                  src={galleryScreenshot} 
-                  alt="Cura Gallery screenshot" 
+                  src={macbookGallery} 
+                  alt="Cura Gallery on MacBook" 
                   className="w-full h-auto shadow-lg"
                 />
               </div>
