@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import curaGalleryMacbook from '@/assets/cura-gallery-macbook.jpg';
+import vogueMagazineTable from '@/assets/vogue-magazine-table.jpg';
 
 export const HowToUse = () => {
   const navigate = useNavigate();
@@ -96,6 +98,22 @@ export const HowToUse = () => {
             </div>
           </section>
 
+          {/* Editorial Image - Gallery */}
+          <section className="py-20">
+            <div className="max-w-3xl mx-auto px-8">
+              <div className="relative">
+                <img 
+                  src={curaGalleryMacbook} 
+                  alt="Cura Gallery moodboard on MacBook" 
+                  className="w-full h-auto shadow-lg"
+                />
+                <p className="text-xs font-light text-foreground/40 mt-4 text-center font-lora tracking-wide">
+                  Your visual inspiration, curated
+                </p>
+              </div>
+            </div>
+          </section>
+
           {/* Divider */}
           <div className="w-16 h-px bg-primary/20 mx-auto"></div>
 
@@ -173,6 +191,22 @@ export const HowToUse = () => {
                 </p>
               </blockquote>
             </aside>
+          </section>
+
+          {/* Editorial Image - Magazine */}
+          <section className="py-20">
+            <div className="max-w-3xl mx-auto px-8">
+              <div className="relative">
+                <img 
+                  src={vogueMagazineTable} 
+                  alt="Fashion magazine on oak table" 
+                  className="w-full h-auto shadow-lg"
+                />
+                <p className="text-xs font-light text-foreground/40 mt-4 text-center font-lora tracking-wide">
+                  Where inspiration meets discovery
+                </p>
+              </div>
+            </div>
           </section>
 
           {/* Divider */}
