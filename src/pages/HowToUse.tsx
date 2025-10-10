@@ -24,8 +24,9 @@ export const HowToUse = () => {
               How to Use
             </h1>
             <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-            <p className="text-sm md:text-base font-light font-lora text-foreground/70 max-w-xl mx-auto leading-loose">
-              Your personal guide to discovering pieces that truly speak to your style
+            <p className="text-sm md:text-base font-light font-lora text-foreground/70 max-w-2xl mx-auto leading-loose px-8">
+              A thoughtful approach to discovering pieces that resonate with your personal aesthetic. 
+              Consider this your guide to building a wardrobe that feels authentic, intentional, and entirely yours.
             </p>
           </header>
 
@@ -44,31 +45,52 @@ export const HowToUse = () => {
             </div>
             
             <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
-              Build your Inspiration Gallery by uploading images that speak to your taste. 
-              Each piece you share helps us understand your unique style language.
+              The first step in your style journey begins with sharing what moves you. Think of your Inspiration Gallery 
+              as a visual diary — a collection of images that capture not just what you like, but why you're drawn to 
+              certain aesthetics, silhouettes, and moods. Every photograph you upload becomes part of a larger conversation 
+              between you and our platform, teaching the algorithm to understand the subtle nuances of your taste.
+            </p>
+            
+            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
+              As you build this collection, you'll begin to see patterns emerge — perhaps you're drawn to clean lines 
+              and architectural shapes, or maybe there's a recurring softness in the textures you choose. These visual 
+              threads become the foundation of your personal style language.
             </p>
             
             <aside className="bg-burgundy/5 p-8 border-l-2 border-burgundy">
               <p className="text-xs font-light text-foreground/60 mb-3 uppercase tracking-wider font-lora">
-                When you add an image:
+                The question we'll ask:
               </p>
               <p className="text-base md:text-lg font-light font-lora text-primary italic">
                 "What do you love about this?"
               </p>
               <p className="text-xs font-light font-lora text-foreground/60 mt-4 leading-relaxed">
-                These notes act as personal reflections and help our algorithm understand your core style preferences.
+                Your words matter as much as your images. Whether it's the drape of a sleeve, the confidence of a 
+                silhouette, or simply the feeling a piece evokes — these notes become the emotional compass guiding 
+                your search. They transform visual preference into something deeper: a reflection of who you are and 
+                how you want to feel in what you wear.
               </p>
             </aside>
 
             <div className="space-y-4 pt-4">
               <p className="text-xs font-light font-lora text-foreground/60 uppercase tracking-wider">
-                Get the most from your profile:
+                Refining your profile:
               </p>
-              <ul className="space-y-3 text-sm font-light font-lora text-foreground/70 leading-loose">
-                <li>Keep your profile updated in the "My Style" section</li>
-                <li>Use existing style categories or add your own custom ones</li>
-                <li>Select and save your dream brands to fine-tune recommendations</li>
-              </ul>
+              <div className="space-y-4 text-sm font-light font-lora text-foreground/70 leading-loose">
+                <p>
+                  Visit the "My Style" section regularly to keep your preferences current. As your taste evolves, 
+                  so should your profile — this is a living document of your aesthetic journey.
+                </p>
+                <p>
+                  Choose from our curated style categories or create your own. Perhaps you're drawn to "effortless 
+                  minimalism" one season and "romantic maximalism" the next. Both are valid, both are you.
+                </p>
+                <p>
+                  Select your dream brands thoughtfully. These aren't just labels — they're shorthand for quality, 
+                  craftsmanship, and design philosophies that align with your values. They help us understand not 
+                  just what you like, but what you aspire to wear.
+                </p>
+              </div>
             </div>
 
             <p className="text-xs font-light font-lora text-foreground/50 italic text-center pt-8">
@@ -94,27 +116,39 @@ export const HowToUse = () => {
             </div>
             
             <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
-              Let your creativity flow. Gather inspiration from everywhere:
+              Here's where intuition meets creativity. Your Cura Gallery is more than a collection — it's a mood, 
+              a feeling, a visual manifesto of your ideal wardrobe. Think of yourself as both editor and stylist, 
+              curating a spread that could grace the pages of your favorite magazine.
+            </p>
+            
+            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
+              Draw inspiration from everywhere and anywhere:
             </p>
             
             <ul className="space-y-3 text-sm font-light font-lora text-foreground/70 leading-loose pl-6">
-              <li>Pinterest pins that catch your eye</li>
-              <li>Fashion magazine clippings and editorial spreads</li>
-              <li>Screenshots from Instagram, TikTok, or your favorite style influencers</li>
-              <li>Photos of your own favorite outfits</li>
+              <li>That perfectly composed Pinterest board you return to again and again</li>
+              <li>Editorial spreads torn from magazines, saved for their artistic vision</li>
+              <li>Screenshots from social media — street style that stopped you mid-scroll</li>
+              <li>Photographs of your own wardrobe's greatest hits, the pieces you reach for instinctively</li>
+              <li>Runway moments that redefined your understanding of a silhouette</li>
+              <li>Vintage finds that speak to a different era's elegance</li>
             </ul>
 
             <aside className="py-12">
               <blockquote className="text-center">
-                <p className="text-lg md:text-xl font-light font-lora text-primary italic leading-relaxed">
-                  "Imagine you're your own stylist — build the wardrobe of your dreams, one image at a time."
+                <p className="text-lg md:text-xl font-light font-lora text-primary italic leading-relaxed max-w-xl mx-auto">
+                  Imagine you're styling your dream wardrobe, one carefully chosen image at a time. 
+                  This is your vision board brought to life.
                 </p>
               </blockquote>
             </aside>
 
             <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
-              Upload these into your Cura Gallery, arranging them into a moodboard — 
-              a digital collage that visualizes your dream style. This is where your aesthetic vision comes to life.
+              As you arrange these images, patterns will emerge naturally. Colors that complement each other, 
+              textures that tell a story, proportions that feel inherently right. This moodboard becomes more 
+              than inspiration — it's a blueprint for the wardrobe you're meant to have. The platform learns 
+              not just from individual images, but from how they relate to one another, understanding the 
+              aesthetic ecosystem you're creating.
             </p>
           </section>
 
@@ -136,35 +170,54 @@ export const HowToUse = () => {
             </div>
             
             <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70">
-              Once your gallery is ready, click the Search button. 
-              This is where the magic happens.
+              This is the moment your vision transforms into possibility. With your gallery complete and your 
+              preferences refined, a single click initiates an intelligent search across the resale landscape. 
+              What follows is more than matching — it's an understanding, a translation of your aesthetic 
+              language into tangible pieces waiting to be discovered.
             </p>
             
             <div className="bg-burgundy/5 p-8 space-y-4 border-l-2 border-burgundy">
               <p className="text-sm font-light font-lora text-foreground/70 leading-loose">
-                Loveable's AI searches across multiple resale platforms, finding wardrobe pieces that match:
+                Our AI works thoughtfully, searching across carefully selected resale platforms to find pieces 
+                that align with your aesthetic DNA. The algorithm considers multiple dimensions simultaneously:
               </p>
-              <ul className="space-y-2 text-sm font-light font-lora text-foreground/60 leading-loose pl-6">
-                <li>Your visual style preferences</li>
-                <li>The notes and reflections you've shared</li>
-                <li>Your selected dream brands</li>
-              </ul>
+              <div className="space-y-3 text-sm font-light font-lora text-foreground/60 leading-loose pl-6">
+                <p>
+                  The visual language of your inspiration images — colors, silhouettes, proportions, and the 
+                  intangible quality that makes something feel right
+                </p>
+                <p>
+                  The emotional context from your notes and reflections, understanding not just what you see 
+                  but why it resonates
+                </p>
+                <p>
+                  Your selected brands and style categories, ensuring recommendations align with your quality 
+                  standards and design preferences
+                </p>
+                <p>
+                  The relationships between pieces, suggesting items that would naturally complement what 
+                  you've already shown interest in
+                </p>
+              </div>
             </div>
 
             <aside className="py-12">
-              <div className="text-center space-y-4">
+              <div className="text-center space-y-4 max-w-lg mx-auto">
                 <p className="text-base md:text-lg font-medium font-lora text-primary">
                   Your style edit awaits
                 </p>
-                <p className="text-xs font-light font-lora text-foreground/50">
-                  Discover pieces that truly fit who you are
+                <p className="text-sm font-light font-lora text-foreground/50 leading-relaxed">
+                  There's a particular satisfaction in finding exactly what you've been searching for — 
+                  sometimes before you even knew you were looking for it. That's the moment we're creating here.
                 </p>
               </div>
             </aside>
 
-            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70 italic text-center">
-              This is your curated style journey — from inspiration to wardrobe, 
-              helping you find pieces that don't just look good, but feel like you.
+            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70 text-center">
+              This is your curated style journey — from abstract inspiration to concrete wardrobe. We're not just 
+              helping you find clothes; we're helping you discover pieces that don't just look good, but feel 
+              authentic. Pieces that make you stand a little taller, that integrate seamlessly into your life, 
+              that feel like they were made for the person you are and the person you're becoming.
             </p>
           </section>
 
