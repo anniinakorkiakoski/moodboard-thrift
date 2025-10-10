@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import magazineTightOak from '@/assets/magazine-tight-oak.jpg';
+import magazineCloseUp from '@/assets/magazine-close-up.jpg';
 import macbookGallery from '@/assets/cura-gallery-macbook.jpg';
 
 export const HowToUse = () => {
@@ -102,7 +102,7 @@ export const HowToUse = () => {
 
               <div>
                 <img 
-                  src={magazineTightOak} 
+                  src={magazineCloseUp} 
                   alt="Fashion magazine runway collage" 
                   className="w-full h-auto shadow-lg"
                 />
