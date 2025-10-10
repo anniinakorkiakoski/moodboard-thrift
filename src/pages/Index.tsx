@@ -6,6 +6,7 @@ import { BundleDisplay } from '@/components/BundleDisplay';
 import { LibrarySidebar } from '@/components/LibrarySidebar';
 import { LogoAnimation } from '@/components/LogoAnimation';
 import { SourceChain } from '@/components/SourceChain';
+import { AllPlatformsDialog } from '@/components/AllPlatformsDialog';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
@@ -19,6 +20,7 @@ const Index = () => {
   const [user, setUser] = useState<any>(null);
   const [showLogoAnimation, setShowLogoAnimation] = useState(true); // Show on page load
   const [hasSeenAnimation, setHasSeenAnimation] = useState(false);
+  const [showAllPlatforms, setShowAllPlatforms] = useState(false);
 
   useEffect(() => {
     // Check current user
@@ -326,8 +328,22 @@ const Index = () => {
           </div>
           
           <SourceChain />
+          
+          <div className="text-center mt-8">
+            <button
+              onClick={() => setShowAllPlatforms(true)}
+              className="text-sm font-light text-foreground/70 hover:text-foreground uppercase tracking-widest transition-colors duration-300 underline underline-offset-4"
+            >
+              Click here to see all
+            </button>
+          </div>
         </div>
       </section>
+
+      <AllPlatformsDialog 
+        open={showAllPlatforms} 
+        onOpenChange={setShowAllPlatforms}
+      />
 
     </div>
   );
