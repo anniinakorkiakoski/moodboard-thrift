@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import moodboardFloor from '@/assets/moodboard-floor.jpg';
+import vintageFashion from '@/assets/vintage-fashion-photo.jpg';
 import laptopGallery from '@/assets/laptop-with-cura-gallery.jpg';
 
 export const HowToUse = () => {
@@ -56,11 +57,16 @@ export const HowToUse = () => {
                 </p>
               </div>
 
-              <div className="md:col-span-3">
+              <div className="md:col-span-3 relative">
                 <img 
                   src={moodboardFloor} 
                   alt="Fashion moodboard inspiration photos" 
                   className="w-full h-auto"
+                />
+                <img 
+                  src={vintageFashion} 
+                  alt="Vintage fashion inspiration" 
+                  className="absolute -bottom-4 -right-4 w-32 h-32 object-cover shadow-lg"
                 />
               </div>
             </div>
