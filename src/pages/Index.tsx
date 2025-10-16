@@ -217,6 +217,30 @@ const Index = () => {
               </div>
             </div>
 
+            {/* Sourcing From Section */}
+            <div className="py-24 bg-background">
+              <div className="container mx-auto px-8">
+                <div className="text-center space-y-6 mb-12">
+                  <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">Sourcing From</h2>
+                  <div className="w-16 h-px bg-primary/40 mx-auto"></div>
+                  <p className="text-sm font-light text-foreground/60 tracking-wide">
+                    A network of trusted platforms
+                  </p>
+                </div>
+                
+                <SourceChain />
+                
+                <div className="text-center mt-8">
+                  <button
+                    onClick={() => setShowAllPlatforms(true)}
+                    className="text-sm font-light text-foreground/70 hover:text-foreground uppercase tracking-widest transition-colors duration-300 underline underline-offset-4"
+                  >
+                    Click here to see all
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {/* Cura Gallery Section */}
             <div className="relative min-h-screen py-20">
               <div className="container mx-auto px-8 pt-0 pb-8">
@@ -326,31 +350,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Sourcing From Section */}
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-8">
-          <div className="text-center space-y-6 mb-12">
-            <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">Sourcing From</h2>
-            <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-            <p className="text-sm font-light text-foreground/60 tracking-wide">
-              A network of trusted platforms
-            </p>
-          </div>
-          
-          <SourceChain />
-          
-          <div className="text-center mt-8">
-            <button
-              onClick={() => setShowAllPlatforms(true)}
-              className="text-sm font-light text-foreground/70 hover:text-foreground uppercase tracking-widest transition-colors duration-300 underline underline-offset-4"
-            >
-              Click here to see all
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <AllPlatformsDialog 
+      <AllPlatformsDialog
         open={showAllPlatforms} 
         onOpenChange={setShowAllPlatforms}
       />
