@@ -76,13 +76,13 @@ export const SourceChain = () => {
       {/* Scrolling logos container */}
       <div 
         ref={scrollRef}
-        className="flex items-center gap-12 md:gap-16 overflow-x-hidden px-8"
+        className="flex items-center gap-8 overflow-x-hidden px-8"
         style={{ scrollBehavior: 'auto' }}
       >
         {duplicatedSources.map((source, index) => (
           <div 
             key={`${source}-${index}`} 
-            className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
+            className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0 w-32 flex items-center justify-center"
           >
             <SourceLogo name={source} />
           </div>
