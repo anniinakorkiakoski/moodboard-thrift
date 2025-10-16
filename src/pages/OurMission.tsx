@@ -22,24 +22,21 @@ export const OurMission = () => {
         </Button>
         
         <article className="space-y-32 py-8">
-          {/* Hero Title */}
-          <header className="text-center space-y-8 pt-12 pb-8">
-            <h1 className="text-3xl md:text-4xl font-black text-primary uppercase tracking-[0.3em]">
-              Our Mission
-            </h1>
-            <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-          </header>
-
-          {/* Full-width Banner */}
-          <section className="-mx-6 md:-mx-8 lg:-mx-12">
-            <div className="w-screen relative left-[50%] right-[50%] -mx-[50vw]">
-              <img 
-                src={missionBanner} 
-                alt="Fashion editorial banner" 
-                className="w-full h-[50vh] md:h-[65vh] object-cover object-center"
-              />
+          {/* Hero Title with Banner Background */}
+          <header className="relative min-h-[60vh] flex items-center justify-center">
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${missionBanner})` }}
+            >
+              <div className="absolute inset-0 bg-black/30"></div>
             </div>
-          </section>
+            <div className="relative z-10 text-center space-y-8">
+              <h1 className="text-3xl md:text-4xl font-black text-white uppercase tracking-[0.3em] drop-shadow-lg">
+                Our Mission
+              </h1>
+              <div className="w-16 h-px bg-white/60 mx-auto"></div>
+            </div>
+          </header>
 
           {/* Opening Statement - Text Only */}
           <section className="max-w-7xl mx-auto px-8">
