@@ -34,8 +34,8 @@ export const HowToUse = () => {
 
           {/* Step 1: Share */}
           <section className="max-w-6xl mx-auto px-8">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="order-2 md:order-1">
+            <div className="grid md:grid-cols-5 gap-16 items-center">
+              <div className="order-2 md:order-1 md:col-span-2">
                 <img 
                   src={moodboardFloor} 
                   alt="Fashion moodboard inspiration photos" 
@@ -43,7 +43,7 @@ export const HowToUse = () => {
                 />
               </div>
 
-              <div className="order-1 md:order-2 space-y-6">
+              <div className="order-1 md:order-2 md:col-span-3 space-y-6">
                 <div className="space-y-3">
                   <p className="text-xs font-bold text-burgundy uppercase tracking-[0.25em]">
                     Step One
@@ -71,8 +71,8 @@ export const HowToUse = () => {
 
           {/* Step 2: Discover */}
           <section className="max-w-6xl mx-auto px-8">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="space-y-6">
+            <div className="grid md:grid-cols-5 gap-16 items-center">
+              <div className="md:col-span-2 space-y-6">
                 <div className="space-y-3">
                   <p className="text-xs font-bold text-burgundy uppercase tracking-[0.25em]">
                     Step Two
@@ -109,7 +109,7 @@ export const HowToUse = () => {
                 </div>
               </div>
 
-              <div>
+              <div className="md:col-span-3">
                 <img 
                   src={laptopGallery} 
                   alt="Cura Gallery on laptop" 
