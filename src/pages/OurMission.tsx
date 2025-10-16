@@ -78,24 +78,6 @@ export const OurMission = () => {
             </div>
           </section>
 
-          {/* The Solution - Text + Image Side by Side */}
-          <section className="max-w-7xl mx-auto py-12 px-8">
-            <div className="grid md:grid-cols-5 gap-12 items-center">
-              <div className="md:col-span-2">
-                <p className="text-2xl md:text-3xl font-medium font-lora text-primary leading-tight">
-                  Cura was created to change that.
-                </p>
-              </div>
-              <div className="md:col-span-3">
-                <img 
-                  src={casualGroup} 
-                  alt="Fashion style" 
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-            </div>
-          </section>
-
           {/* Values - Simple white background grid */}
           <section className="py-20 bg-background">
             <div className="max-w-6xl mx-auto px-8">
