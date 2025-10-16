@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import casualGroup from '@/assets/mission-casual.jpg';
 import threeMen from '@/assets/mission-three.jpg';
 import studioSpace from '@/assets/studio-space.jpg';
+import missionBanner from '@/assets/mission-banner.jpg';
 
 export const OurMission = () => {
   const navigate = useNavigate();
@@ -22,12 +23,23 @@ export const OurMission = () => {
         
         <article className="space-y-32 py-8">
           {/* Hero Title */}
-          <header className="text-center space-y-8 pt-12 pb-20">
+          <header className="text-center space-y-8 pt-12 pb-12">
             <h1 className="text-3xl md:text-4xl font-black text-primary uppercase tracking-[0.3em]">
               Our Mission
             </h1>
             <div className="w-16 h-px bg-primary/40 mx-auto"></div>
           </header>
+
+          {/* Full-width Banner */}
+          <section className="-mx-6 md:-mx-8 lg:-mx-12">
+            <div className="w-screen relative left-[50%] right-[50%] -mx-[50vw]">
+              <img 
+                src={missionBanner} 
+                alt="Fashion editorial banner" 
+                className="w-full h-[30vh] md:h-[40vh] object-cover object-center"
+              />
+            </div>
+          </section>
 
           {/* Opening Statement - Image + Text Editorial Layout */}
           <section className="max-w-7xl mx-auto px-8">
