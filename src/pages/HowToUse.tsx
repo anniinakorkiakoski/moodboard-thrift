@@ -63,7 +63,7 @@ export const HowToUse = () => {
                   alt="Fashion moodboard inspiration photos" 
                   className="w-full h-auto"
                 />
-                <div className="absolute -bottom-10 -left-8 w-40 h-40 overflow-hidden shadow-lg">
+                <div className="absolute -bottom-12 -left-8 w-40 h-40 overflow-hidden shadow-lg">
                   <img 
                     src={vintageFashion} 
                     alt="Vintage fashion inspiration" 
