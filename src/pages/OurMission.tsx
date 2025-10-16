@@ -88,7 +88,7 @@ export const OurMission = () => {
               </div>
               <div className="md:col-span-3">
                 <img 
-                  src={threeMen} 
+                  src={casualGroup} 
                   alt="Fashion style" 
                   className="w-full h-auto object-cover"
                 />
@@ -150,7 +150,7 @@ export const OurMission = () => {
                 </div>
                 <div className="md:col-span-5 md:col-start-8">
                   <img 
-                    src={casualGroup} 
+                    src={threeMen} 
                     alt="Fashion community" 
                     className="w-full h-auto object-cover"
                   />
