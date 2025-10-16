@@ -16,7 +16,7 @@ export const SourceLogo = ({ name }: SourceLogoProps) => {
       <img 
         src={logoImages[name]} 
         alt={name}
-        className="h-8 w-auto object-contain mix-blend-multiply"
+        className="h-12 w-auto object-contain mix-blend-multiply"
         style={{ background: 'transparent' }}
       />
     );
@@ -51,19 +51,19 @@ export const SourceLogo = ({ name }: SourceLogoProps) => {
   return (
     <svg 
       width="auto" 
-      height="32" 
-      viewBox="0 0 200 32" 
+      height="48" 
+      viewBox="0 0 200 48" 
       xmlns="http://www.w3.org/2000/svg"
       className="overflow-visible"
     >
       <text
         x="100"
-        y="20"
+        y="30"
         textAnchor="middle"
         fill="currentColor"
         style={{
           ...style,
-          fontSize: name.length > 15 ? '11px' : '15px',
+          fontSize: name.length > 15 ? '14px' : '18px',
         }}
       >
         {name}
