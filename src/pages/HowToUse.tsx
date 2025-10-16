@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import tshirtNotebook from '@/assets/tshirt-notebook.jpg';
+import moodboardFloor from '@/assets/moodboard-floor.jpg';
 import laptopGallery from '@/assets/laptop-with-cura-gallery.jpg';
 
 export const HowToUse = () => {
@@ -37,8 +37,8 @@ export const HowToUse = () => {
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div className="order-2 md:order-1">
                 <img 
-                  src={tshirtNotebook} 
-                  alt="Minimalist fashion editorial" 
+                  src={moodboardFloor} 
+                  alt="Fashion moodboard inspiration photos" 
                   className="w-full h-auto"
                 />
               </div>
