@@ -29,20 +29,28 @@ export const OurMission = () => {
             <div className="w-16 h-px bg-primary/40 mx-auto"></div>
           </header>
 
-          {/* Opening Statement */}
-          <section className="max-w-2xl mx-auto space-y-12">
-            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/80 text-center px-8">
-              Our mission is to build a platform where users can create their dream wardrobe — piece by piece — based on their exact inspiration while supporting secondhand fashion and small businesses.
-            </p>
+          {/* Opening Statement - Editorial Layout */}
+          <section className="max-w-5xl mx-auto px-8">
+            <div className="grid md:grid-cols-12 gap-8">
+              <div className="md:col-span-8 md:col-start-3">
+                <p className="text-base md:text-lg font-light leading-loose font-lora text-foreground/80">
+                  Our mission is to build a platform where users can create their dream wardrobe — piece by piece — based on their exact inspiration while supporting secondhand fashion and small businesses.
+                </p>
+              </div>
+            </div>
           </section>
 
-          {/* Editorial Pull Quote */}
-          <aside className="max-w-xl mx-auto py-16">
-            <blockquote className="text-center">
-              <p className="text-xl md:text-2xl font-light font-lora text-primary italic leading-relaxed">
-                "Choosing eco-friendly options is no longer optional — it's essential."
-              </p>
-            </blockquote>
+          {/* Editorial Pull Quote - Offset */}
+          <aside className="max-w-5xl mx-auto py-16 px-8">
+            <div className="grid md:grid-cols-12">
+              <div className="md:col-span-7 md:col-start-4">
+                <blockquote className="border-l-2 border-primary/30 pl-8">
+                  <p className="text-xl md:text-2xl font-light font-lora text-primary italic leading-relaxed">
+                    "Choosing eco-friendly options is no longer optional — it's essential."
+                  </p>
+                </blockquote>
+              </div>
+            </div>
           </aside>
 
           {/* The Problem - with image background */}
@@ -66,11 +74,15 @@ export const OurMission = () => {
             </div>
           </section>
 
-          {/* The Solution */}
-          <aside className="max-w-lg mx-auto py-12">
-            <p className="text-lg md:text-xl font-medium font-lora text-primary text-center">
-              Cura was created to change that.
-            </p>
+          {/* The Solution - Offset */}
+          <aside className="max-w-5xl mx-auto py-12 px-8">
+            <div className="grid md:grid-cols-12">
+              <div className="md:col-span-6 md:col-start-2">
+                <p className="text-2xl md:text-3xl font-medium font-lora text-primary">
+                  Cura was created to change that.
+                </p>
+              </div>
+            </div>
           </aside>
 
           {/* Values - with image background */}
@@ -141,11 +153,15 @@ export const OurMission = () => {
             </div>
           </section>
 
-          {/* Closing Statement */}
-          <footer className="text-center py-20 pb-32">
-            <p className="text-base md:text-lg font-light font-lora text-primary italic tracking-wide">
-              Fashion with purpose. Style with conscience.
-            </p>
+          {/* Closing Statement - Editorial */}
+          <footer className="max-w-5xl mx-auto py-20 pb-32 px-8">
+            <div className="grid md:grid-cols-12">
+              <div className="md:col-span-8 md:col-start-5">
+                <p className="text-lg md:text-xl font-light font-lora text-primary italic tracking-wide">
+                  Fashion with purpose. Style with conscience.
+                </p>
+              </div>
+            </div>
           </footer>
         </article>
       </div>
