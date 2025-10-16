@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import magazineCloseUp from '@/assets/magazine-close-up.jpg';
-import macbookGallery from '@/assets/cura-gallery-macbook.jpg';
+import tshirtNotebook from '@/assets/tshirt-notebook.jpg';
+import laptopGallery from '@/assets/laptop-with-cura-gallery.jpg';
 
 export const HowToUse = () => {
   const navigate = useNavigate();
@@ -38,8 +38,8 @@ export const HowToUse = () => {
               {/* Image - Left side, offset */}
               <div className="md:col-span-5 md:col-start-1 md:pt-20">
                 <img 
-                  src={magazineCloseUp} 
-                  alt="Fashion magazine runway collage" 
+                  src={tshirtNotebook} 
+                  alt="Minimalist fashion editorial" 
                   className="w-full h-auto"
                 />
                 <p className="text-xs font-light text-foreground/40 mt-3 font-lora tracking-wide">
@@ -180,8 +180,8 @@ export const HowToUse = () => {
               {/* Image - Right side, offset down */}
               <div className="md:col-span-5 md:col-start-8 md:pt-32">
                 <img 
-                  src={macbookGallery} 
-                  alt="Cura Gallery on MacBook" 
+                  src={laptopGallery} 
+                  alt="Cura Gallery on laptop" 
                   className="w-full h-auto"
                 />
                 
