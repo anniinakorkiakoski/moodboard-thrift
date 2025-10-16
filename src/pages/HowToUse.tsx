@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import moodboardFloor from '@/assets/moodboard-floor.jpg';
 import vintageFashion from '@/assets/vintage-fashion-photo.jpg';
-import laptopGallery from '@/assets/laptop-with-cura-gallery.jpg';
+import laptopGallery from '@/assets/laptop-gallery-updated.jpg';
 
 export const HowToUse = () => {
   const navigate = useNavigate();
