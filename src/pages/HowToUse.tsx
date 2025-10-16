@@ -66,7 +66,7 @@ export const HowToUse = () => {
                 <img 
                   src={vintageFashion} 
                   alt="Vintage fashion inspiration" 
-                  className="absolute -bottom-10 -left-4 w-32 h-32 object-cover shadow-lg"
+                  className="absolute -bottom-10 -left-8 w-40 h-40 object-cover shadow-lg"
                 />
               </div>
             </div>
