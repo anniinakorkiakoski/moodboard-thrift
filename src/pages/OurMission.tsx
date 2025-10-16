@@ -23,10 +23,15 @@ export const OurMission = () => {
         
         <article className="space-y-32 py-8">
           {/* Hero Title with Banner Background */}
-          <header className="relative min-h-[60vh] flex items-center justify-center">
+          <header className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
             <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${missionBanner})` }}
+              className="absolute inset-0 w-full h-full"
+              style={{ 
+                backgroundImage: `url(${missionBanner})`,
+                backgroundSize: '100% auto',
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat'
+              }}
             >
               <div className="absolute inset-0 bg-black/30"></div>
             </div>
