@@ -1,13 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import runwayModels from '@/assets/mission-runway-models.jpg';
-import editorialPortrait from '@/assets/mission-editorial-portrait.jpg';
-import silhouettes from '@/assets/mission-silhouettes.jpg';
-import groupBackstage from '@/assets/mission-group-backstage.jpg';
-import casualGroup from '@/assets/mission-casual-group.jpg';
-import vintageFashion from '@/assets/mission-vintage-fashion.jpg';
-import threeMen from '@/assets/mission-three-men.jpg';
+import runwayModels from '@/assets/mission-runway.jpg';
+import casualGroup from '@/assets/mission-casual.jpg';
+import threeMen from '@/assets/mission-three.jpg';
 
 export const OurMission = () => {
   const navigate = useNavigate();
@@ -47,9 +43,9 @@ export const OurMission = () => {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${editorialPortrait})` }}
+            style={{ backgroundImage: `url(${threeMen})` }}
           >
-            <div className="absolute inset-0 bg-black/30"></div>
+            <div className="absolute inset-0 bg-white/60"></div>
           </div>
           <div className="relative z-10 max-w-3xl mx-auto px-8 py-32">
             <p className="text-2xl md:text-3xl font-light leading-loose font-lora text-burgundy text-center">
@@ -62,9 +58,9 @@ export const OurMission = () => {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${silhouettes})` }}
+            style={{ backgroundImage: `url(${casualGroup})` }}
           >
-            <div className="absolute inset-0 bg-white/40"></div>
+            <div className="absolute inset-0 bg-white/50"></div>
           </div>
           <div className="relative z-10 max-w-2xl mx-auto px-8">
             <blockquote className="text-center">
@@ -79,9 +75,9 @@ export const OurMission = () => {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${groupBackstage})` }}
+            style={{ backgroundImage: `url(${runwayModels})` }}
           >
-            <div className="absolute inset-0 bg-black/40"></div>
+            <div className="absolute inset-0 bg-black/20"></div>
           </div>
           <div className="relative z-10 max-w-3xl mx-auto px-8 py-32 space-y-12">
             <p className="text-lg md:text-xl font-light leading-loose font-lora text-burgundy">
@@ -113,9 +109,9 @@ export const OurMission = () => {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${vintageFashion})` }}
+            style={{ backgroundImage: `url(${threeMen})` }}
           >
-            <div className="absolute inset-0 bg-black/40"></div>
+            <div className="absolute inset-0 bg-white/60"></div>
           </div>
           <div className="relative z-10 max-w-4xl mx-auto px-8 py-32">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
@@ -162,9 +158,9 @@ export const OurMission = () => {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${threeMen})` }}
+            style={{ backgroundImage: `url(${casualGroup})` }}
           >
-            <div className="absolute inset-0 bg-white/60"></div>
+            <div className="absolute inset-0 bg-white/50"></div>
           </div>
           <div className="relative z-10 max-w-3xl mx-auto px-8 py-32">
             <p className="text-lg md:text-2xl font-light leading-loose font-lora text-burgundy text-center">
