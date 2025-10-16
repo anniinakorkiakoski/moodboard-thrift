@@ -30,6 +30,17 @@ export const OurMission = () => {
             <div className="w-16 h-px bg-primary/40 mx-auto"></div>
           </header>
 
+          {/* Full-width Banner */}
+          <section className="-mx-6 md:-mx-8 lg:-mx-12">
+            <div className="w-screen relative left-[50%] right-[50%] -mx-[50vw]">
+              <img 
+                src={missionBanner} 
+                alt="Fashion editorial banner" 
+                className="w-full h-[50vh] md:h-[65vh] object-cover object-center"
+              />
+            </div>
+          </section>
+
           {/* Opening Statement - Text Only */}
           <section className="max-w-7xl mx-auto px-8">
             <div className="max-w-3xl mx-auto space-y-6">
@@ -41,17 +52,6 @@ export const OurMission = () => {
                   "Choosing eco-friendly options is no longer optional — it's essential."
                 </p>
               </blockquote>
-            </div>
-          </section>
-
-          {/* Full-width Banner */}
-          <section className="-mx-6 md:-mx-8 lg:-mx-12">
-            <div className="w-screen relative left-[50%] right-[50%] -mx-[50vw]">
-              <img 
-                src={missionBanner} 
-                alt="Fashion editorial banner" 
-                className="w-full h-[50vh] md:h-[65vh] object-cover object-center"
-              />
             </div>
           </section>
 
