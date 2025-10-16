@@ -217,7 +217,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
               {displayImages.length > 0 ? (
                 <div className="space-y-8">
                   {/* Editorial picture wall with varied sizes */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 auto-rows-[200px]">
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 auto-rows-[160px]">
                     {displayImages.map((image, index) => {
                       // Create varied sizes for editorial effect
                       const sizeVariants = [
