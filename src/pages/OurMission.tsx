@@ -29,139 +29,136 @@ export const OurMission = () => {
             <div className="w-16 h-px bg-primary/40 mx-auto"></div>
           </header>
 
-          {/* Opening Statement - Editorial Layout */}
-          <section className="max-w-5xl mx-auto px-8">
-            <div className="grid md:grid-cols-12 gap-8">
-              <div className="md:col-span-8 md:col-start-3">
+          {/* Opening Statement - Image + Text Editorial Layout */}
+          <section className="max-w-7xl mx-auto px-8">
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div className="order-2 md:order-1">
+                <img 
+                  src={casualGroup} 
+                  alt="Fashion editorial" 
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              <div className="order-1 md:order-2 space-y-6">
                 <p className="text-base md:text-lg font-light leading-loose font-lora text-foreground/80">
                   Our mission is to build a platform where users can create their dream wardrobe — piece by piece — based on their exact inspiration while supporting secondhand fashion and small businesses.
                 </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Editorial Pull Quote - Offset */}
-          <aside className="max-w-5xl mx-auto py-16 px-8">
-            <div className="grid md:grid-cols-12">
-              <div className="md:col-span-7 md:col-start-4">
-                <blockquote className="border-l-2 border-primary/30 pl-8">
-                  <p className="text-xl md:text-2xl font-light font-lora text-primary italic leading-relaxed">
+                <blockquote className="border-l-2 border-burgundy/40 pl-6 mt-8">
+                  <p className="text-lg md:text-xl font-light font-lora text-burgundy italic leading-relaxed">
                     "Choosing eco-friendly options is no longer optional — it's essential."
                   </p>
                 </blockquote>
               </div>
             </div>
-          </aside>
+          </section>
 
-          {/* The Problem - with image background */}
+          {/* The Problem - with image background and red overlay text */}
           <section className="py-20">
             <div className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
               <div 
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${runwayModels})` }}
               >
-                <div className="absolute inset-0 bg-black/20"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/40"></div>
               </div>
               <div className="relative z-10 max-w-3xl mx-auto px-8 py-32 space-y-12">
-                <p className="text-lg md:text-xl font-light leading-loose font-lora text-burgundy">
+                <p className="text-lg md:text-xl font-light leading-loose font-lora text-burgundy drop-shadow-lg">
                   In today's world, we know that people who love fashion want more than sustainability: they want trends, style evolution, luxury experiences, and creative expression.
                 </p>
                 
-                <p className="text-lg md:text-xl font-light leading-loose font-lora text-burgundy">
+                <p className="text-lg md:text-xl font-light leading-loose font-lora text-burgundy drop-shadow-lg">
                   Often, life gets busy. Finding the perfect pieces from online thrift stores or local vintage shops can feel overwhelming, time-consuming, or even impossible without help. Yet the desire to express yourself through what you wear never goes away — and not feeling confident in your clothes can deeply affect how you move through the world.
                 </p>
               </div>
             </div>
           </section>
 
-          {/* The Solution - Offset */}
-          <aside className="max-w-5xl mx-auto py-12 px-8">
-            <div className="grid md:grid-cols-12">
-              <div className="md:col-span-6 md:col-start-2">
-                <p className="text-2xl md:text-3xl font-medium font-lora text-primary">
+          {/* The Solution - Text + Image Side by Side */}
+          <section className="max-w-7xl mx-auto py-12 px-8">
+            <div className="grid md:grid-cols-5 gap-12 items-center">
+              <div className="md:col-span-2">
+                <p className="text-2xl md:text-3xl font-medium font-lora text-primary leading-tight">
                   Cura was created to change that.
                 </p>
               </div>
-            </div>
-          </aside>
-
-          {/* Values - with image background */}
-          <section className="py-20">
-            <div className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-              <div 
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${threeMen})` }}
-              >
-                <div className="absolute inset-0 bg-white/60"></div>
+              <div className="md:col-span-3">
+                <img 
+                  src={threeMen} 
+                  alt="Fashion style" 
+                  className="w-full h-auto object-cover"
+                />
               </div>
-              <div className="relative z-10 max-w-4xl mx-auto px-8 py-32">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
-                  <div className="bg-burgundy/90 backdrop-blur-sm p-8 md:p-10 space-y-4 hover-scale">
-                    <h3 className="text-sm font-bold text-burgundy-foreground uppercase tracking-[0.2em]">
-                      Time-friendly
-                    </h3>
-                    <p className="text-xs font-light leading-relaxed font-lora text-burgundy-foreground/90">
-                      No endless scrolling or searching.
-                    </p>
-                  </div>
+            </div>
+          </section>
 
-                  <div className="bg-burgundy/90 backdrop-blur-sm p-8 md:p-10 space-y-4 hover-scale">
-                    <h3 className="text-sm font-bold text-burgundy-foreground uppercase tracking-[0.2em]">
-                      Eco-friendly
-                    </h3>
-                    <p className="text-xs font-light leading-relaxed font-lora text-burgundy-foreground/90">
-                      Prioritizing secondhand and small businesses.
-                    </p>
-                  </div>
+          {/* Values - Simple white background grid */}
+          <section className="py-20 bg-background">
+            <div className="max-w-6xl mx-auto px-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+                <div className="bg-burgundy/90 backdrop-blur-sm p-8 md:p-10 space-y-4 hover-scale">
+                  <h3 className="text-sm font-bold text-burgundy-foreground uppercase tracking-[0.2em]">
+                    Time-friendly
+                  </h3>
+                  <p className="text-xs font-light leading-relaxed font-lora text-burgundy-foreground/90">
+                    No endless scrolling or searching.
+                  </p>
+                </div>
 
-                  <div className="bg-burgundy/90 backdrop-blur-sm p-8 md:p-10 space-y-4 hover-scale">
-                    <h3 className="text-sm font-bold text-burgundy-foreground uppercase tracking-[0.2em]">
-                      Financially friendly
-                    </h3>
-                    <p className="text-xs font-light leading-relaxed font-lora text-burgundy-foreground/90">
-                      Curated, thoughtful shopping that values quality.
-                    </p>
-                  </div>
+                <div className="bg-burgundy/90 backdrop-blur-sm p-8 md:p-10 space-y-4 hover-scale">
+                  <h3 className="text-sm font-bold text-burgundy-foreground uppercase tracking-[0.2em]">
+                    Eco-friendly
+                  </h3>
+                  <p className="text-xs font-light leading-relaxed font-lora text-burgundy-foreground/90">
+                    Prioritizing secondhand and small businesses.
+                  </p>
+                </div>
 
-                  <div className="bg-burgundy/90 backdrop-blur-sm p-8 md:p-10 space-y-4 hover-scale">
-                    <h3 className="text-sm font-bold text-burgundy-foreground uppercase tracking-[0.2em]">
-                      Future-forward
-                    </h3>
-                    <p className="text-xs font-light leading-relaxed font-lora text-burgundy-foreground/90">
-                      Merging AI, style, and sustainability.
-                    </p>
-                  </div>
+                <div className="bg-burgundy/90 backdrop-blur-sm p-8 md:p-10 space-y-4 hover-scale">
+                  <h3 className="text-sm font-bold text-burgundy-foreground uppercase tracking-[0.2em]">
+                    Financially friendly
+                  </h3>
+                  <p className="text-xs font-light leading-relaxed font-lora text-burgundy-foreground/90">
+                    Curated, thoughtful shopping that values quality.
+                  </p>
+                </div>
+
+                <div className="bg-burgundy/90 backdrop-blur-sm p-8 md:p-10 space-y-4 hover-scale">
+                  <h3 className="text-sm font-bold text-burgundy-foreground uppercase tracking-[0.2em]">
+                    Future-forward
+                  </h3>
+                  <p className="text-xs font-light leading-relaxed font-lora text-burgundy-foreground/90">
+                    Merging AI, style, and sustainability.
+                  </p>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Community Impact - with image background */}
-          <section className="py-20">
-            <div className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-              <div 
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${casualGroup})` }}
-              >
-                <div className="absolute inset-0 bg-white/50"></div>
-              </div>
-              <div className="relative z-10 max-w-3xl mx-auto px-8 py-32">
-                <p className="text-lg md:text-xl font-light leading-loose font-lora text-burgundy text-center">
-                  This platform also opens doors for professional thrifters, stylists, and curators. By connecting their expertise with people searching for specific pieces, Cura creates a space where everyone benefits — buyers find what they love, sellers grow their businesses, and together we move fashion toward a more conscious future.
-                </p>
+          {/* Community Impact - Editorial text with offset image */}
+          <section className="py-20 bg-background">
+            <div className="max-w-7xl mx-auto px-8">
+              <div className="grid md:grid-cols-12 gap-12 items-start">
+                <div className="md:col-span-7 md:col-start-1 flex items-center">
+                  <p className="text-base md:text-lg font-light leading-loose font-lora text-foreground/80">
+                    This platform also opens doors for professional thrifters, stylists, and curators. By connecting their expertise with people searching for specific pieces, Cura creates a space where everyone benefits — buyers find what they love, sellers grow their businesses, and together we move fashion toward a more conscious future.
+                  </p>
+                </div>
+                <div className="md:col-span-5 md:col-start-8">
+                  <img 
+                    src={casualGroup} 
+                    alt="Fashion community" 
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
               </div>
             </div>
           </section>
 
-          {/* Closing Statement - Editorial */}
-          <footer className="max-w-5xl mx-auto py-20 pb-32 px-8">
-            <div className="grid md:grid-cols-12">
-              <div className="md:col-span-8 md:col-start-5">
-                <p className="text-lg md:text-xl font-light font-lora text-primary italic tracking-wide">
-                  Fashion with purpose. Style with conscience.
-                </p>
-              </div>
-            </div>
+          {/* Closing Statement - Centered */}
+          <footer className="max-w-5xl mx-auto py-20 pb-32 px-8 text-center">
+            <p className="text-2xl md:text-3xl font-light font-lora text-primary italic tracking-wide">
+              Fashion with purpose. Style with conscience.
+            </p>
           </footer>
         </article>
       </div>
