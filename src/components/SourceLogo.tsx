@@ -3,16 +3,29 @@ interface SourceLogoProps {
 }
 
 export const SourceLogo = ({ name }: SourceLogoProps) => {
+  // Logo image mapping - using public folder logos where available
+  const logoImages: Record<string, string> = {
+    'Depop': '/logos/depop.png',
+    'Vestiaire Collective': '/logos/vestiaire.png',
+    'The RealReal': '/logos/therealreal.png',
+  };
+
+  // If we have a logo image, use it
+  if (logoImages[name]) {
+    return (
+      <img 
+        src={logoImages[name]} 
+        alt={name}
+        className="h-8 w-auto object-contain"
+      />
+    );
+  }
+
+  // Otherwise use styled text
   const getLogoStyle = (name: string) => {
     switch (name) {
       case 'Vinted':
         return { fontFamily: 'Inter, sans-serif', fontWeight: 700, letterSpacing: '-0.02em' };
-      case 'Depop':
-        return { fontFamily: 'Inter, sans-serif', fontWeight: 800, letterSpacing: '0.05em' };
-      case 'Vestiaire Collective':
-        return { fontFamily: 'serif', fontWeight: 400, letterSpacing: '0.1em', textTransform: 'uppercase' as const };
-      case 'The RealReal':
-        return { fontFamily: 'serif', fontWeight: 300, letterSpacing: '0.15em', textTransform: 'uppercase' as const };
       case 'thredUP':
         return { fontFamily: 'Inter, sans-serif', fontWeight: 600, letterSpacing: '-0.01em' };
       case 'eBay':
@@ -49,7 +62,7 @@ export const SourceLogo = ({ name }: SourceLogoProps) => {
         fill="currentColor"
         style={{
           ...style,
-          fontSize: name.length > 15 ? '10px' : '14px',
+          fontSize: name.length > 15 ? '11px' : '15px',
         }}
       >
         {name}

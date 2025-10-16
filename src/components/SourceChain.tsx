@@ -65,7 +65,7 @@ export const SourceChain = () => {
 
   return (
     <div 
-      className="relative overflow-hidden py-12"
+      className="relative overflow-hidden py-8"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -73,33 +73,21 @@ export const SourceChain = () => {
       <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
       <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
       
-      {/* Scrolling chain container */}
+      {/* Scrolling logos container */}
       <div 
         ref={scrollRef}
-        className="flex items-center gap-0 overflow-x-hidden"
+        className="flex items-center gap-12 md:gap-16 overflow-x-hidden px-8"
         style={{ scrollBehavior: 'auto' }}
       >
         {duplicatedSources.map((source, index) => (
-          <div key={`${source}-${index}`} className="flex items-center flex-shrink-0">
-            {/* Logo node */}
-            <div className="group relative flex items-center px-8 py-4 bg-background border-2 border-foreground hover:bg-foreground transition-all duration-300 hover:scale-105">
-              <div className="text-foreground group-hover:text-background transition-colors duration-300">
-                <SourceLogo name={source} />
-              </div>
-            </div>
-            
-            {/* Chain link line */}
-            <div className="h-px w-16 md:w-20 bg-foreground/20 flex-shrink-0" />
+          <div 
+            key={`${source}-${index}`} 
+            className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
+          >
+            <SourceLogo name={source} />
           </div>
         ))}
       </div>
-
-      {/* Pause indicator */}
-      {isPaused && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-foreground/50 font-light tracking-widest uppercase animate-fade-in">
-          Paused
-        </div>
-      )}
     </div>
   );
 };
