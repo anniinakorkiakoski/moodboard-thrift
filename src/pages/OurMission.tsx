@@ -36,7 +36,7 @@ export const OurMission = () => {
               <img 
                 src={missionBanner} 
                 alt="Fashion editorial banner" 
-                className="w-full h-[30vh] md:h-[40vh] object-cover object-center"
+                className="w-full h-[50vh] md:h-[65vh] object-cover object-center"
               />
             </div>
           </section>
