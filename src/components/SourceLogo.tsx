@@ -16,7 +16,8 @@ export const SourceLogo = ({ name }: SourceLogoProps) => {
       <img 
         src={logoImages[name]} 
         alt={name}
-        className="h-8 w-auto object-contain"
+        className="h-8 w-auto object-contain mix-blend-multiply"
+        style={{ background: 'transparent' }}
       />
     );
   }
