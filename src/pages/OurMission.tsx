@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import runwayModels from '@/assets/mission-runway.jpg';
 import casualGroup from '@/assets/mission-casual.jpg';
 import threeMen from '@/assets/mission-three.jpg';
+import studioSpace from '@/assets/studio-space.jpg';
 
 export const OurMission = () => {
   const navigate = useNavigate();
@@ -56,8 +56,8 @@ export const OurMission = () => {
           <section className="py-20">
             <div className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
               <div 
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${runwayModels})` }}
+                className="absolute inset-0 bg-cover bg-center grayscale"
+                style={{ backgroundImage: `url(${studioSpace})` }}
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/40"></div>
               </div>
