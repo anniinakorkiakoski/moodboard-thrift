@@ -34,16 +34,8 @@ export const HowToUse = () => {
 
           {/* Step 1: Share */}
           <section className="max-w-6xl mx-auto px-8">
-            <div className="grid md:grid-cols-5 gap-16 items-center">
-              <div className="order-2 md:order-1 md:col-span-2">
-                <img 
-                  src={moodboardFloor} 
-                  alt="Fashion moodboard inspiration photos" 
-                  className="w-full h-auto"
-                />
-              </div>
-
-              <div className="order-1 md:order-2 md:col-span-3 space-y-6">
+            <div className="grid md:grid-cols-7 gap-12 items-center">
+              <div className="md:col-span-4 space-y-6">
                 <div className="space-y-3">
                   <p className="text-xs font-bold text-burgundy uppercase tracking-[0.25em]">
                     Step One
@@ -63,6 +55,14 @@ export const HowToUse = () => {
                   Don't forget to visit "My Style" to select your style categories and dream brands.
                 </p>
               </div>
+
+              <div className="md:col-span-3">
+                <img 
+                  src={moodboardFloor} 
+                  alt="Fashion moodboard inspiration photos" 
+                  className="w-full h-auto"
+                />
+              </div>
             </div>
           </section>
 
@@ -70,9 +70,17 @@ export const HowToUse = () => {
           <div className="w-16 h-px bg-primary/20 mx-auto"></div>
 
           {/* Step 2: Discover */}
-          <section className="max-w-6xl mx-auto px-8">
-            <div className="grid md:grid-cols-5 gap-16 items-center">
-              <div className="md:col-span-2 space-y-6">
+          <section className="max-w-7xl mx-auto px-8">
+            <div className="grid md:grid-cols-2 gap-0 items-center">
+              <div className="relative">
+                <img 
+                  src={laptopGallery} 
+                  alt="Cura Gallery on laptop" 
+                  className="w-full h-auto"
+                />
+              </div>
+
+              <div className="md:-ml-20 relative z-10 bg-background/95 backdrop-blur-sm p-8 space-y-6">
                 <div className="space-y-3">
                   <p className="text-xs font-bold text-burgundy uppercase tracking-[0.25em]">
                     Step Two
@@ -86,14 +94,13 @@ export const HowToUse = () => {
                   Choose your path to discovery:
                 </p>
 
-                <div className="space-y-6">
+                <div className="space-y-5">
                   <div className="space-y-2">
                     <h4 className="text-sm font-semibold text-primary uppercase tracking-wider">
                       AI-Powered Search
                     </h4>
                     <p className="text-base font-light font-lora text-foreground/70 leading-loose">
-                      Let our AI search across multiple resale platforms, considering your visual preferences 
-                      and brand selections to deliver curated results instantly.
+                      Let our AI search across multiple resale platforms instantly.
                     </p>
                   </div>
 
@@ -102,19 +109,10 @@ export const HowToUse = () => {
                       Connect with Thrifters
                     </h4>
                     <p className="text-base font-light font-lora text-foreground/70 leading-loose">
-                      Browse professional thrifters and stylists who share your aesthetic. Message them 
-                      directly for personalized secondhand shopping.
+                      Browse professional thrifters who share your aesthetic.
                     </p>
                   </div>
                 </div>
-              </div>
-
-              <div className="md:col-span-3">
-                <img 
-                  src={laptopGallery} 
-                  alt="Cura Gallery on laptop" 
-                  className="w-full h-auto"
-                />
               </div>
             </div>
           </section>
