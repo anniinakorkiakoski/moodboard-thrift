@@ -23,7 +23,7 @@ export const OurMission = () => {
         
         <article className="space-y-32 py-8">
           {/* Hero Title */}
-          <header className="text-center space-y-8 pt-12 pb-12">
+          <header className="text-center space-y-8 pt-12 pb-8">
             <h1 className="text-3xl md:text-4xl font-black text-primary uppercase tracking-[0.3em]">
               Our Mission
             </h1>
@@ -41,26 +41,17 @@ export const OurMission = () => {
             </div>
           </section>
 
-          {/* Opening Statement - Image + Text Editorial Layout */}
+          {/* Opening Statement - Text Only */}
           <section className="max-w-7xl mx-auto px-8">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="order-2 md:order-1">
-                <img 
-                  src={casualGroup} 
-                  alt="Fashion editorial" 
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-              <div className="order-1 md:order-2 space-y-6">
-                <p className="text-base md:text-lg font-light leading-loose font-lora text-foreground/80">
-                  Our mission is to build a platform where users can create their dream wardrobe — piece by piece — based on their exact inspiration while supporting secondhand fashion and small businesses.
+            <div className="max-w-3xl mx-auto space-y-6">
+              <p className="text-base md:text-lg font-light leading-loose font-lora text-foreground/80">
+                Our mission is to build a platform where users can create their dream wardrobe — piece by piece — based on their exact inspiration while supporting secondhand fashion and small businesses.
+              </p>
+              <blockquote className="border-l-2 border-burgundy/40 pl-6 mt-8">
+                <p className="text-lg md:text-xl font-light font-lora text-burgundy italic leading-relaxed">
+                  "Choosing eco-friendly options is no longer optional — it's essential."
                 </p>
-                <blockquote className="border-l-2 border-burgundy/40 pl-6 mt-8">
-                  <p className="text-lg md:text-xl font-light font-lora text-burgundy italic leading-relaxed">
-                    "Choosing eco-friendly options is no longer optional — it's essential."
-                  </p>
-                </blockquote>
-              </div>
+              </blockquote>
             </div>
           </section>
 
