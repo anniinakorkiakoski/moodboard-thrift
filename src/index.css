@@ -123,14 +123,18 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: 300;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-weight: 400;
     color: hsl(var(--text-refined));
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', Georgia, serif;
     font-weight: 700;
+  }
+
+  p, span, small, label, li {
+    font-family: 'Courier Prime', 'Courier New', monospace;
   }
 }
 
