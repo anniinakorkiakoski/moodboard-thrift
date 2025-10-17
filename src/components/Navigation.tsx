@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Sparkles, Heart, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 
@@ -40,7 +39,6 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                <Heart className="w-4 h-4 mr-2" />
                 our mission
               </Button>
             </Link>
@@ -50,7 +48,6 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                <Sparkles className="w-4 h-4 mr-2" />
                 how to use
               </Button>
             </Link>
@@ -60,7 +57,6 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                <Sparkles className="w-4 h-4 mr-2" />
                 my style
               </Button>
             </Link>
@@ -70,7 +66,6 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                <Users className="w-4 h-4 mr-2" />
                 connect
               </Button>
             </Link>
@@ -80,7 +75,6 @@ export const Navigation = () => {
               onClick={handleSignOut}
               className="text-foreground hover:bg-muted font-mono"
             >
-              <LogOut className="w-4 h-4 mr-2" />
               sign out
             </Button>
           </div>
@@ -92,7 +86,6 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                <Heart className="w-4 h-4 mr-2" />
                 our mission
               </Button>
             </Link>
@@ -102,7 +95,6 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                <Sparkles className="w-4 h-4 mr-2" />
                 how to use
               </Button>
             </Link>
@@ -112,7 +104,6 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                <Users className="w-4 h-4 mr-2" />
                 connect
               </Button>
             </Link>
@@ -122,7 +113,6 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                <User className="w-4 h-4 mr-2" />
                 sign in
               </Button>
             </Link>

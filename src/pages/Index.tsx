@@ -106,7 +106,7 @@ const Index = () => {
                   
                   {/* Center transparent square */}
                   <div className="w-80 h-80 bg-transparent flex items-center justify-center flex-shrink-0">
-                    <h1 className="text-8xl md:text-9xl font-black text-burgundy leading-none text-center tracking-tighter">
+                    <h1 className="text-[14rem] md:text-[16rem] font-black text-burgundy leading-none text-center tracking-tighter">
                       CURA
                     </h1>
                   </div>

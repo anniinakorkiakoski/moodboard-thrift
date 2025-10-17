@@ -124,7 +124,7 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Courier Prime', 'Courier New', monospace;
-    font-weight: 400;
+    font-weight: 300;
     color: hsl(0 0% 16%);
   }
 
@@ -135,6 +135,7 @@
 
   p, span, small, label, li, button, a, input, textarea {
     font-family: 'Courier Prime', 'Courier New', monospace;
+    font-weight: 300;
   }
 }
 
