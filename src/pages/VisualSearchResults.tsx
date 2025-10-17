@@ -8,6 +8,7 @@ import { VisualSearchResultCard } from '@/components/VisualSearchResultCard';
 import { VisualSearchNoResults } from '@/components/VisualSearchNoResults';
 import { ThrifterMarketplace } from '@/components/ThrifterMarketplace';
 import { ImageCropOverlay } from '@/components/ImageCropOverlay';
+import { Navigation } from '@/components/Navigation';
 
 export const VisualSearchResults = () => {
   const location = useLocation();
@@ -44,17 +45,22 @@ export const VisualSearchResults = () => {
 
   if (!imageUrl) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <p className="text-muted-foreground">No image selected for search.</p>
-          <Button onClick={() => navigate('/')}>Go Back</Button>
+      <>
+        <Navigation />
+        <div className="min-h-screen flex items-center justify-center pt-32">
+          <div className="text-center space-y-4">
+            <p className="text-muted-foreground font-mono">no image selected for search.</p>
+            <Button onClick={() => navigate('/')} className="font-mono">go back</Button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
+      
       {/* Crop overlay */}
       {showCropOverlay && imageUrl && (
         <ImageCropOverlay
@@ -64,24 +70,8 @@ export const VisualSearchResults = () => {
         />
       )}
 
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/')}
-            className="gap-2 text-burgundy hover:bg-burgundy/10"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Gallery
-          </Button>
-          <h1 className="text-2xl font-serif font-bold text-burgundy">CURA</h1>
-          <div className="w-32" />
-        </div>
-      </header>
-
       {/* Search Image & Attributes */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pt-32">
         <div className="max-w-md mx-auto mb-8">
           <div className="aspect-square bg-muted rounded-lg overflow-hidden border-2 border-muted">
             <img 

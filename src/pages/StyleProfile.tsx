@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { StyleProfileSelector } from '@/components/StyleProfileSelector';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
 
 export const StyleProfile = () => {
   const navigate = useNavigate();
@@ -34,15 +33,9 @@ export const StyleProfile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
-      <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
-        </Button>
+      <Navigation />
+      
+      <div className="container mx-auto px-4 py-8 pt-32">
         
         <StyleProfileSelector />
       </div>

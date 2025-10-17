@@ -125,7 +125,7 @@
     @apply bg-background text-foreground;
     font-family: 'Courier Prime', 'Courier New', monospace;
     font-weight: 400;
-    color: hsl(var(--text-refined));
+    color: hsl(0 0% 16%);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -133,7 +133,7 @@
     font-weight: 700;
   }
 
-  p, span, small, label, li {
+  p, span, small, label, li, button, a, input, textarea {
     font-family: 'Courier Prime', 'Courier New', monospace;
   }
 }

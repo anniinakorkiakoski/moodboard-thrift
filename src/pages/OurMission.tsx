@@ -1,25 +1,15 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
 import casualGroup from '@/assets/mission-casual.jpg';
 import threeMen from '@/assets/mission-three.jpg';
 import studioSpace from '@/assets/studio-space.jpg';
 import runwayModels from '@/assets/mission-runway-models.jpg';
+import { Navigation } from '@/components/Navigation';
 
 export const OurMission = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="mb-8"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
+      <Navigation />
+      
+      <div className="container mx-auto px-6 py-8 max-w-7xl pt-32">
         
         <article className="space-y-24 py-12">
           {/* Hero Title with decorative underline */}

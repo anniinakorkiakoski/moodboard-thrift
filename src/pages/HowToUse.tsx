@@ -1,25 +1,17 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
 import moodboardFloor from '@/assets/moodboard-floor.jpg';
 import vintageFashion from '@/assets/vintage-fashion-photo.jpg';
 import laptopGallery from '@/assets/laptop-gallery-updated.jpg';
 import magazineCollage from '@/assets/magazine-runway-collage.jpg';
+import { Navigation } from '@/components/Navigation';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 export const HowToUse = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="mb-8"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
+      <Navigation />
+      
+      <div className="container mx-auto px-6 py-8 max-w-7xl pt-32">
         
         <article className="space-y-32 py-12">
           {/* Hero Title */}
@@ -213,14 +205,15 @@ export const HowToUse = () => {
                 </svg>
               </div>
               
-              <Button
-                variant="cta"
-                size="xl"
-                onClick={() => navigate('/')}
-                className="uppercase tracking-wider mt-12"
-              >
-                Start Your Journey
-              </Button>
+              <Link to="/">
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="uppercase tracking-wider mt-12 bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground font-mono"
+                >
+                  start your journey
+                </Button>
+              </Link>
             </div>
           </footer>
         </article>

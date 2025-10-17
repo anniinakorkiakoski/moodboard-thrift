@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
 import { ThrifterGallery } from '@/components/ThrifterGallery';
 import { useToast } from '@/hooks/use-toast';
+import { Navigation } from '@/components/Navigation';
 
 export const Connect = () => {
   const navigate = useNavigate();
@@ -49,15 +48,9 @@ export const Connect = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-8 max-w-6xl">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="mb-12"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
-        </Button>
+      <Navigation />
+      
+      <div className="container mx-auto px-6 py-8 max-w-6xl pt-32">
         
         <article className="space-y-20 py-8">
           {/* Hero Title */}

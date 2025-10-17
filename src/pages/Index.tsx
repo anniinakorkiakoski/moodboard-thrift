@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { LogOut, User, Sparkles, Heart, Users } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -90,103 +91,11 @@ const Index = () => {
       {showLogoAnimation && (
         <LogoAnimation onComplete={() => setShowLogoAnimation(false)} />
       )}
-      {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-10 p-4">
-        <div className="container mx-auto flex justify-end">
-          {user ? (
-            <div className="flex items-center gap-4">
-              <Link to="/our-mission">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-burgundy hover:bg-burgundy/10"
-                >
-                  <Heart className="w-4 h-4 mr-2" />
-                  Our Mission
-                </Button>
-              </Link>
-              <Link to="/how-to-use">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-burgundy hover:bg-burgundy/10"
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  How to Use
-                </Button>
-              </Link>
-              <span className="text-sm text-muted-foreground">
-                {user.email}
-              </span>
-              <Link to="/style-profile">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  My Style
-                </Button>
-              </Link>
-              <Link to="/connect">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Connect
-                </Button>
-              </Link>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSignOut}
-                className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-4">
-              <Link to="/our-mission">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-burgundy hover:bg-burgundy/10"
-                >
-                  <Heart className="w-4 h-4 mr-2" />
-                  Our Mission
-                </Button>
-              </Link>
-              <Link to="/connect">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-burgundy hover:bg-burgundy/10"
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Connect
-                </Button>
-              </Link>
-              <Link to="/auth">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  Sign In
-                </Button>
-              </Link>
-            </div>
-          )}
-        </div>
-      </header>
+      
+      <Navigation />
 
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center relative overflow-hidden py-20">
+      <section className="min-h-screen flex flex-col justify-center relative overflow-hidden py-20 pt-32">
         <div className="w-full px-0">
             <div className="text-center space-y-24 mb-32">
               <div className="mt-16 flex justify-center w-full">
