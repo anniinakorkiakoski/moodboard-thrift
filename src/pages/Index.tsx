@@ -98,22 +98,18 @@ const Index = () => {
       <section className="min-h-screen flex flex-col justify-center relative overflow-hidden py-20 pt-32">
         <div className="w-full px-0">
             <div className="text-center space-y-24 mb-32">
-              <div className="mt-16 flex justify-center w-full">
-                <div className="flex items-center w-full max-w-[2000px]">
-                  {/* Left burgundy extension */}
-                  <div className="flex-1 h-80 bg-burgundy relative overflow-hidden min-w-0">
-                  </div>
+              <div className="mt-16 flex justify-center w-full px-8">
+                <div className="relative inline-block">
+                  {/* Top line */}
+                  <div className="w-full h-1 bg-burgundy mb-2"></div>
                   
-                  {/* Center transparent square */}
-                  <div className="w-[600px] h-80 bg-transparent flex items-center justify-center flex-shrink-0">
-                    <h1 className="text-[10rem] md:text-[11rem] font-black text-burgundy leading-none text-center tracking-tighter">
-                      CURA
-                    </h1>
-                  </div>
+                  {/* CURA title */}
+                  <h1 className="text-[10rem] md:text-[12rem] font-black text-burgundy leading-none text-center tracking-tight">
+                    CURA
+                  </h1>
                   
-                  {/* Right burgundy extension */}
-                  <div className="flex-1 h-80 bg-burgundy relative overflow-hidden min-w-0">
-                  </div>
+                  {/* Bottom line */}
+                  <div className="w-full h-1 bg-burgundy mt-2"></div>
                 </div>
               </div>
               <div className="px-8 py-16">
