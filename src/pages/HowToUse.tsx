@@ -17,9 +17,9 @@ export const HowToUse = () => {
           {/* Hero Title */}
           <header className="pt-12 pb-8">
             <div className="relative">
-              <h1 className="text-7xl md:text-9xl font-black text-primary tracking-tight leading-none">
-                how_to_<br/>use
-              </h1>
+            <h1 className="text-7xl md:text-9xl font-black text-primary tracking-tight leading-none uppercase">
+              HOW_TO_<br/>USE
+            </h1>
               <svg className="absolute -right-12 top-1/2 -translate-y-1/2" width="100" height="100" viewBox="0 0 100 100">
                 <path 
                   d="M 20 50 L 80 50 M 80 50 L 70 40 M 80 50 L 70 60" 
@@ -30,10 +30,10 @@ export const HowToUse = () => {
                 />
               </svg>
             </div>
-            <p className="text-sm text-foreground/60 mt-8 max-w-2xl leading-loose">
-              A thoughtful approach to discovering pieces that resonate with your personal aesthetic. 
-              Building a wardrobe that feels authentic, intentional, and entirely yours.
-            </p>
+          <p className="text-sm md:text-base text-foreground/60 mt-8 max-w-2xl leading-loose font-mono">
+            A thoughtful approach to discovering pieces that resonate with your personal aesthetic. 
+            Building a wardrobe that feels authentic, intentional, and entirely yours.
+          </p>
           </header>
 
           {/* Step 1: Share */}
@@ -44,8 +44,8 @@ export const HowToUse = () => {
                   <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
                     Stage 1
                   </div>
-                  <h2 className="text-6xl font-black text-primary mb-6 relative inline-block">
-                    share
+                  <h2 className="text-6xl font-black text-primary mb-6 relative inline-block uppercase">
+                    SHARE
                     <svg className="absolute -bottom-4 left-0 w-full" height="15" viewBox="0 0 200 15">
                       <path 
                         d="M 5 10 L 195 10" 
@@ -57,7 +57,7 @@ export const HowToUse = () => {
                   </h2>
                 </div>
                 
-                <div className="space-y-4 text-base leading-loose text-foreground/70">
+                <div className="space-y-4 text-sm md:text-base leading-loose text-foreground/70 font-mono">
                   <p>
                     Create a moodboard that speaks to who you are. Upload images from Pinterest, magazines, 
                     social media, or your own wardrobe.
@@ -92,12 +92,12 @@ export const HowToUse = () => {
                   <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
                     Stage 2
                   </div>
-                  <h2 className="text-6xl font-black text-primary">
-                    discover
+                  <h2 className="text-6xl font-black text-primary uppercase">
+                    DISCOVER
                   </h2>
                 </div>
                 <div className="md:col-span-6">
-                  <p className="text-sm leading-loose text-foreground/60">
+                  <p className="text-sm md:text-base leading-loose text-foreground/60 font-mono">
                     Let our AI search across multiple resale platforms, considering your visual preferences 
                     and brand selections to deliver curated results instantly.
                   </p>
@@ -117,10 +117,10 @@ export const HowToUse = () => {
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-px bg-burgundy"></div>
                     <h3 className="text-lg font-bold text-primary uppercase tracking-wider">
-                      AI-Powered
+                      AI-POWERED
                     </h3>
                   </div>
-                  <p className="text-sm leading-relaxed text-foreground/60 pl-11">
+                  <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
                     Intelligent search that understands your aesthetic and finds pieces that match your vision.
                   </p>
                 </div>
@@ -129,10 +129,10 @@ export const HowToUse = () => {
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-px bg-burgundy"></div>
                     <h3 className="text-lg font-bold text-primary uppercase tracking-wider">
-                      Human Touch
+                      HUMAN TOUCH
                     </h3>
                   </div>
-                  <p className="text-sm leading-relaxed text-foreground/60 pl-11">
+                  <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
                     Connect with professional thrifters and stylists who share your aesthetic for personalized service.
                   </p>
                 </div>
@@ -157,8 +157,8 @@ export const HowToUse = () => {
                     Stage 3
                   </div>
                   <div className="relative inline-block">
-                    <h2 className="text-6xl font-black text-primary">
-                      curate
+                    <h2 className="text-6xl font-black text-primary uppercase">
+                      CURATE
                     </h2>
                     <svg className="absolute -top-6 -right-12" width="60" height="60" viewBox="0 0 60 60">
                       <path 
@@ -172,7 +172,7 @@ export const HowToUse = () => {
                   </div>
                 </div>
 
-                <div className="space-y-6 text-base leading-loose text-foreground/70">
+                <div className="space-y-6 text-sm md:text-base leading-loose text-foreground/70 font-mono">
                   <p>
                     Your results arrive as a carefully curated edit — pieces that don't just match your 
                     inspiration, but understand the intention behind it.
@@ -198,7 +198,7 @@ export const HowToUse = () => {
             <div className="space-y-8">
               <div className="relative inline-block">
                 <p className="text-sm uppercase tracking-[0.3em] text-burgundy font-bold">
-                  Ready to begin?
+                  READY TO BEGIN?
                 </p>
                 <svg className="absolute -bottom-4 left-1/2 -translate-x-1/2" width="120" height="20" viewBox="0 0 120 20">
                   <ellipse cx="60" cy="10" rx="55" ry="8" stroke="hsl(var(--burgundy))" strokeWidth="1.5" fill="none" strokeDasharray="3,3" />

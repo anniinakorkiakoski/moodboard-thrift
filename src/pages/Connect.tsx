@@ -55,11 +55,9 @@ export const Connect = () => {
         <article className="space-y-20 py-8">
           {/* Hero Title */}
           <header className="text-center space-y-8 pt-12 pb-12">
-            <h1 className="text-3xl md:text-4xl font-black text-primary uppercase tracking-[0.3em]">
-              Connect
-            </h1>
+            <h2 className="text-3xl md:text-4xl font-black text-primary uppercase tracking-[0.3em]">CONNECT</h2>
             <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-            <p className="text-sm md:text-base font-light leading-loose font-lora text-foreground/70 max-w-2xl mx-auto px-8">
+            <p className="text-sm md:text-base font-light leading-loose font-mono text-foreground/70 max-w-2xl mx-auto px-8">
               Discover expert thrifters and stylists who match your aesthetic. Connect with curators who understand your style and can help bring your wardrobe vision to life.
             </p>
           </header>
@@ -71,9 +69,9 @@ export const Connect = () => {
 
           {/* Info Section */}
           <aside className="max-w-2xl mx-auto py-12 px-8">
-            <p className="text-sm font-light leading-relaxed font-lora text-foreground/60 text-center italic">
-              Each connection is an opportunity to curate something meaningful. Whether you're seeking or offering expertise, this is where style meets intention.
-            </p>
+          <p className="text-sm md:text-base font-light leading-relaxed font-mono text-foreground/60 text-center italic">
+            Each connection is an opportunity to curate something meaningful. Whether you're seeking or offering expertise, this is where style meets intention.
+          </p>
           </aside>
         </article>
       </div>

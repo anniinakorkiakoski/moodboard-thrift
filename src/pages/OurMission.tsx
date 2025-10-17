@@ -15,9 +15,9 @@ export const OurMission = () => {
           {/* Hero Title with decorative underline */}
           <header className="pt-12 pb-8">
             <div className="relative inline-block">
-              <h1 className="text-6xl md:text-8xl font-black text-primary tracking-tight">
-                about us
-              </h1>
+            <h1 className="text-6xl md:text-8xl font-black text-primary tracking-tight uppercase">
+              ABOUT US
+            </h1>
               <svg className="absolute -bottom-4 left-0 w-full" height="20" viewBox="0 0 400 20">
                 <path 
                   d="M 10 15 Q 100 5, 200 15 T 390 15" 
@@ -33,9 +33,9 @@ export const OurMission = () => {
           {/* Opening Statement with arrow */}
           <section className="grid md:grid-cols-12 gap-12 items-start py-12">
             <div className="md:col-span-7 space-y-8">
-              <p className="text-xl md:text-2xl font-light leading-relaxed text-foreground/80">
-                Our mission is to build a platform where users can create their dream wardrobe — piece by piece — based on their exact inspiration while supporting secondhand fashion and small businesses.
-              </p>
+            <p className="text-sm md:text-base font-light leading-relaxed text-foreground/80 font-mono">
+              Our mission is to build a platform where users can create their dream wardrobe — piece by piece — based on their exact inspiration while supporting secondhand fashion and small businesses.
+            </p>
               <div className="flex items-center gap-4">
                 <div className="w-24 h-0.5 bg-burgundy"></div>
                 <svg width="40" height="20" viewBox="0 0 40 20">
@@ -57,10 +57,10 @@ export const OurMission = () => {
             <div className="grid md:grid-cols-12 gap-16">
               <div className="md:col-span-6 md:col-start-2">
                 <div className="relative">
-                  <h2 className="text-5xl md:text-6xl font-black text-primary mb-8 leading-tight">
-                    the_<br/>problem
-                  </h2>
-                  <div className="space-y-6 text-base leading-loose text-foreground/70">
+                <h2 className="text-5xl md:text-6xl font-black text-primary mb-8 leading-tight uppercase">
+                  THE_<br/>PROBLEM
+                </h2>
+                <div className="space-y-6 text-sm md:text-base leading-loose text-foreground/70 font-mono">
                     <p>
                       In today's world, we know that people who love fashion want more than sustainability: they want trends, style evolution, luxury experiences, and creative expression.
                     </p>
@@ -85,8 +85,8 @@ export const OurMission = () => {
 
           {/* Values Grid */}
           <section className="py-16">
-            <h2 className="text-4xl md:text-5xl font-black text-primary mb-16 relative inline-block">
-              our values
+            <h2 className="text-4xl md:text-5xl font-black text-primary mb-16 relative inline-block uppercase">
+              OUR VALUES
               <svg className="absolute -right-16 -top-8" width="80" height="80" viewBox="0 0 80 80">
                 <circle cx="40" cy="40" r="35" stroke="hsl(var(--burgundy))" strokeWidth="2" fill="none" strokeDasharray="5,5" />
               </svg>
@@ -97,10 +97,10 @@ export const OurMission = () => {
                 <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-2">
                   01
                 </div>
-                <h3 className="text-2xl font-bold text-primary">
-                  Time-friendly
+                <h3 className="text-2xl font-bold text-primary uppercase">
+                  TIME-FRIENDLY
                 </h3>
-                <p className="text-sm leading-relaxed text-foreground/70">
+                <p className="text-sm md:text-base leading-relaxed text-foreground/70 font-mono">
                   No endless scrolling or searching. We bring the perfect pieces directly to you.
                 </p>
               </div>
@@ -109,10 +109,10 @@ export const OurMission = () => {
                 <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-2">
                   02
                 </div>
-                <h3 className="text-2xl font-bold text-primary">
-                  Eco-friendly
+                <h3 className="text-2xl font-bold text-primary uppercase">
+                  ECO-FRIENDLY
                 </h3>
-                <p className="text-sm leading-relaxed text-foreground/70">
+                <p className="text-sm md:text-base leading-relaxed text-foreground/70 font-mono">
                   Prioritizing secondhand and small businesses for a more sustainable future.
                 </p>
               </div>
@@ -121,10 +121,10 @@ export const OurMission = () => {
                 <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-2">
                   03
                 </div>
-                <h3 className="text-2xl font-bold text-primary">
-                  Financially friendly
+                <h3 className="text-2xl font-bold text-primary uppercase">
+                  FINANCIALLY FRIENDLY
                 </h3>
-                <p className="text-sm leading-relaxed text-foreground/70">
+                <p className="text-sm md:text-base leading-relaxed text-foreground/70 font-mono">
                   Curated, thoughtful shopping that values quality over quantity.
                 </p>
               </div>
@@ -133,10 +133,10 @@ export const OurMission = () => {
                 <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-2">
                   04
                 </div>
-                <h3 className="text-2xl font-bold text-primary">
-                  Future-forward
+                <h3 className="text-2xl font-bold text-primary uppercase">
+                  FUTURE-FORWARD
                 </h3>
-                <p className="text-sm leading-relaxed text-foreground/70">
+                <p className="text-sm md:text-base leading-relaxed text-foreground/70 font-mono">
                   Merging AI, style, and sustainability in innovative ways.
                 </p>
               </div>
@@ -154,15 +154,15 @@ export const OurMission = () => {
                 />
               </div>
               <div className="md:col-span-6 md:col-start-7 order-1 md:order-2 space-y-6">
-                <h2 className="text-4xl md:text-5xl font-black text-primary leading-tight">
-                  community<br/>impact
+                <h2 className="text-4xl md:text-5xl font-black text-primary leading-tight uppercase">
+                  COMMUNITY<br/>IMPACT
                 </h2>
-                <p className="text-base leading-loose text-foreground/70">
+                <p className="text-sm md:text-base leading-loose text-foreground/70 font-mono">
                   This platform also opens doors for professional thrifters, stylists, and curators. By connecting their expertise with people searching for specific pieces, Cura creates a space where everyone benefits.
                 </p>
                 <div className="flex items-start gap-4 pt-4">
                   <div className="w-1 h-20 bg-burgundy"></div>
-                  <p className="text-sm leading-relaxed text-foreground/60 italic">
+                  <p className="text-sm md:text-base leading-relaxed text-foreground/60 italic font-mono">
                     Buyers find what they love, sellers grow their businesses, and together we move fashion toward a more conscious future.
                   </p>
                 </div>
@@ -182,8 +182,8 @@ export const OurMission = () => {
           {/* Closing Statement */}
           <footer className="text-center py-20 pb-32">
             <div className="relative inline-block">
-              <h3 className="text-4xl md:text-5xl font-light italic text-primary leading-relaxed">
-                Fashion with purpose.<br/>Style with conscience.
+              <h3 className="text-4xl md:text-5xl font-light italic text-primary leading-relaxed uppercase">
+                FASHION WITH PURPOSE.<br/>STYLE WITH CONSCIENCE.
               </h3>
               <svg className="absolute -bottom-8 left-1/2 -translate-x-1/2" width="200" height="40" viewBox="0 0 200 40">
                 <ellipse cx="100" cy="20" rx="95" ry="15" stroke="hsl(var(--burgundy))" strokeWidth="2" fill="none" />

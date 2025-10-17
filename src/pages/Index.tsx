@@ -113,10 +113,10 @@ const Index = () => {
                 </div>
               </div>
               <div className="px-8 py-16">
-                <p className="text-sm md:text-base font-light text-foreground/70 max-w-lg mx-auto leading-loose font-lora text-center">
+                <p className="text-sm md:text-base font-light text-foreground/70 max-w-lg mx-auto leading-loose font-mono text-center">
                   Upload your style inspiration, and let AI and professional thrifters and stylists find the perfect secondhand pieces from across multiple platforms.
                 </p>
-                <p className="text-xs md:text-sm font-light text-foreground/60 max-w-md mx-auto mt-6 font-lora text-center italic">
+                <p className="text-xs md:text-sm font-light text-foreground/60 max-w-md mx-auto mt-6 font-mono text-center italic">
                   Sustainable fashion, curated for you.
                 </p>
               </div>
@@ -126,9 +126,9 @@ const Index = () => {
             <div className="py-24 bg-background">
               <div className="container mx-auto px-8">
                 <div className="text-center space-y-6 mb-12">
-                  <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">Sourcing From</h2>
+                  <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">SOURCING FROM</h2>
                   <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-                  <p className="text-sm font-light text-foreground/60 tracking-wide">
+                  <p className="text-sm font-light text-foreground/60 tracking-wide font-mono">
                     A network of trusted platforms
                   </p>
                 </div>
@@ -150,9 +150,9 @@ const Index = () => {
             <div className="relative min-h-screen py-20">
               <div className="container mx-auto px-8 pt-0 pb-8">
               <div className="text-center mb-24 space-y-6">
-                <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">Cura Gallery</h2>
+                <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">CURA GALLERY</h2>
                 <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-                <p className="text-sm md:text-base font-light text-foreground/70 leading-loose max-w-xl mx-auto font-lora">
+                <p className="text-sm md:text-base font-light text-foreground/70 leading-loose max-w-xl mx-auto font-mono">
                   Share your style inspiration and discover premium secondhand pieces curated specifically for your aesthetic
                 </p>
               </div>
@@ -190,9 +190,9 @@ const Index = () => {
             
             {/* Section title */}
             <div className="text-center mb-24 space-y-6">
-              <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">The Process</h2>
+              <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">THE PROCESS</h2>
               <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-              <p className="text-sm md:text-base font-light text-foreground/70 leading-loose font-lora">
+              <p className="text-sm md:text-base font-light text-foreground/70 leading-loose font-mono">
                 Three simple steps to curate your perfect wardrobe
               </p>
             </div>
@@ -208,8 +208,8 @@ const Index = () => {
                       <span className="text-base font-medium text-burgundy-foreground">01</span>
                     </div>
                     <div className="space-y-4">
-                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">Share</h3>
-                      <p className="text-xs font-light text-foreground/70 leading-loose font-lora">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
                         Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
                       </p>
                     </div>
@@ -225,8 +225,8 @@ const Index = () => {
                       <span className="text-base font-medium text-burgundy-foreground">02</span>
                     </div>
                     <div className="space-y-4">
-                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">Discover</h3>
-                      <p className="text-xs font-light text-foreground/70 leading-loose font-lora">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
                         Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
                       </p>
                     </div>
@@ -242,8 +242,8 @@ const Index = () => {
                       <span className="text-base font-medium text-burgundy-foreground">03</span>
                     </div>
                     <div className="space-y-4">
-                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">Curate</h3>
-                      <p className="text-xs font-light text-foreground/70 leading-loose font-lora">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
                         Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
                       </p>
                     </div>
