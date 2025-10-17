@@ -101,7 +101,7 @@ const Index = () => {
               <div className="mt-16 flex justify-center w-full px-8">
                 <div className="relative inline-block">
                   {/* Top line */}
-                  <div className="w-full h-1 bg-burgundy mb-0.5"></div>
+                  <div className="w-full h-1 bg-burgundy -mb-1"></div>
                   
                   {/* CURA title */}
                   <h1 className="text-[10rem] md:text-[12rem] font-black text-burgundy leading-none text-center tracking-tight">
