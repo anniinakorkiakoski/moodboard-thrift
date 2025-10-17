@@ -17,6 +17,7 @@ export default {
         'sans': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
         'serif': ['Crimson Text', 'Georgia', 'Times New Roman', 'serif'],
         'lora': ['Lora', 'Georgia', 'serif'],
+        'display': ['Playfair Display', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

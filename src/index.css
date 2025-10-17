@@ -127,6 +127,11 @@
     font-weight: 300;
     color: hsl(var(--text-refined));
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+  }
 }
 
 @layer components {
