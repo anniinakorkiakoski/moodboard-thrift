@@ -98,20 +98,9 @@ const Index = () => {
                   {/* Top line */}
                   <div className="w-full h-1 bg-burgundy -mb-3"></div>
                   
-                  {/* CURA title with typewriter animation */}
-                  <h1 className="text-[10rem] md:text-[12rem] text-burgundy leading-none text-center tracking-tight overflow-hidden">
-                    {'CURA'.split('').map((letter, index) => (
-                      <span
-                        key={index}
-                        className="inline-block"
-                        style={{
-                          opacity: index < visibleLetters ? 1 : 0,
-                          transition: 'opacity 0.3s ease-in-out',
-                        }}
-                      >
-                        {letter}
-                      </span>
-                    ))}
+                  {/* CURA title with kerning-preserving typewriter animation */}
+                  <h1 className="text-[10rem] md:text-[12rem] font-display font-black text-burgundy leading-none text-center tracking-tight overflow-hidden">
+                    {"CURA".slice(0, visibleLetters)}
                   </h1>
                   
                   {/* Bottom line */}
