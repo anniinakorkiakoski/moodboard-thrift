@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { LogOut, User, Sparkles, Heart, Users } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
-import notecardStack from '@/assets/notecard-stack.jpg';
+import notecardStack from '@/assets/notecard-stack.png';
 
 const Index = () => {
   const navigate = useNavigate();
