@@ -2,6 +2,7 @@ import moodboardFloor from '@/assets/moodboard-floor.jpg';
 import vintageFashion from '@/assets/vintage-fashion-photo.jpg';
 import laptopGallery from '@/assets/laptop-gallery-updated.jpg';
 import magazineCollage from '@/assets/magazine-runway-collage.jpg';
+import notecardStack from '@/assets/notecard-stack.png';
 import { Navigation } from '@/components/Navigation';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -35,6 +36,89 @@ export const HowToUse = () => {
             Building a wardrobe that feels authentic, intentional, and entirely yours.
           </p>
           </header>
+
+          {/* The Process - Note Cards */}
+          <section className="py-16">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-16 space-y-6">
+                <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">THE PROCESS</h2>
+                <div className="w-16 h-px bg-primary/40 mx-auto"></div>
+                <p className="text-sm md:text-base font-light text-foreground/70 leading-loose font-mono">
+                  Three simple steps to curate your perfect wardrobe
+                </p>
+              </div>
+
+              {/* Process Steps - Real Note Card with overlay */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
+                
+                {/* Step 1 */}
+                <div className="group relative h-[500px]">
+                  <img 
+                    src={notecardStack} 
+                    alt="Note card" 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center p-12">
+                    <div className="flex flex-col items-center text-center space-y-6 pt-8">
+                      <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-base font-medium text-burgundy-foreground">01</span>
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
+                        <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                          Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="group relative h-[500px]">
+                  <img 
+                    src={notecardStack} 
+                    alt="Note card" 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center p-12">
+                    <div className="flex flex-col items-center text-center space-y-6 pt-8">
+                      <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-base font-medium text-burgundy-foreground">02</span>
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
+                        <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                          Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="group relative h-[500px]">
+                  <img 
+                    src={notecardStack} 
+                    alt="Note card" 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center p-12">
+                    <div className="flex flex-col items-center text-center space-y-6 pt-8">
+                      <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-base font-medium text-burgundy-foreground">03</span>
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
+                        <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                          Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* Step 1: Share */}
           <section className="py-12">
