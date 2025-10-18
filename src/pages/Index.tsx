@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { LogOut, User, Sparkles, Heart, Users } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
+import notecardStack from '@/assets/notecard-stack.jpg';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -197,106 +198,70 @@ const Index = () => {
               </p>
             </div>
 
-            {/* Process Steps - Realistic Note Card layout */}
+            {/* Process Steps - Real Note Card with overlay */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
               
               {/* Step 1 */}
-              <div className="group space-y-8">
-                <div className="relative" style={{ paddingTop: '2rem' }}>
-                  {/* Stacked paper layers - more realistic */}
-                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)] translate-y-3 translate-x-1 rotate-[0.5deg]"></div>
-                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] translate-y-1.5 -translate-x-0.5 rotate-[-0.3deg]"></div>
-                  
-                  {/* Main note card */}
-                  <div className="relative bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] transition-all duration-300 p-10 h-full">
-                    {/* Realistic paper clip - gold/brass color with 3D effect */}
-                    <div className="absolute -top-8 left-6 w-12 h-16 z-10">
-                      <div className="relative w-full h-full">
-                        {/* Paper clip outer wire */}
-                        <div className="absolute top-0 left-0 w-12 h-14 border-[3px] border-[#B8860B] rounded-t-[24px] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2),1px_1px_3px_rgba(0,0,0,0.3)]"></div>
-                        {/* Paper clip inner wire */}
-                        <div className="absolute top-2 left-3 w-6 h-10 border-[3px] border-[#DAA520] rounded-t-[12px] shadow-[inset_-1px_-1px_1px_rgba(255,255,255,0.4)]"></div>
-                      </div>
+              <div className="group relative h-[500px]">
+                <img 
+                  src={notecardStack} 
+                  alt="Note card" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center p-12">
+                  <div className="flex flex-col items-center text-center space-y-6 pt-8">
+                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-base font-medium text-burgundy-foreground">01</span>
                     </div>
-                    
-                    <div className="flex flex-col items-center text-center space-y-6">
-                      <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-base font-medium text-burgundy-foreground">01</span>
-                      </div>
-                      <div className="space-y-4">
-                        <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
-                        <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
-                          Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
-                        </p>
-                      </div>
+                    <div className="space-y-4">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                        Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Step 2 */}
-              <div className="group space-y-8">
-                <div className="relative" style={{ paddingTop: '2rem' }}>
-                  {/* Stacked paper layers - more realistic */}
-                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)] translate-y-3 -translate-x-1 rotate-[-0.5deg]"></div>
-                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] translate-y-1.5 translate-x-0.5 rotate-[0.3deg]"></div>
-                  
-                  {/* Main note card */}
-                  <div className="relative bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] transition-all duration-300 p-10 h-full">
-                    {/* Realistic paper clip - gold/brass color with 3D effect */}
-                    <div className="absolute -top-8 left-6 w-12 h-16 z-10">
-                      <div className="relative w-full h-full">
-                        {/* Paper clip outer wire */}
-                        <div className="absolute top-0 left-0 w-12 h-14 border-[3px] border-[#B8860B] rounded-t-[24px] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2),1px_1px_3px_rgba(0,0,0,0.3)]"></div>
-                        {/* Paper clip inner wire */}
-                        <div className="absolute top-2 left-3 w-6 h-10 border-[3px] border-[#DAA520] rounded-t-[12px] shadow-[inset_-1px_-1px_1px_rgba(255,255,255,0.4)]"></div>
-                      </div>
+              <div className="group relative h-[500px]">
+                <img 
+                  src={notecardStack} 
+                  alt="Note card" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center p-12">
+                  <div className="flex flex-col items-center text-center space-y-6 pt-8">
+                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-base font-medium text-burgundy-foreground">02</span>
                     </div>
-                    
-                    <div className="flex flex-col items-center text-center space-y-6">
-                      <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-base font-medium text-burgundy-foreground">02</span>
-                      </div>
-                      <div className="space-y-4">
-                        <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
-                        <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
-                          Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
-                        </p>
-                      </div>
+                    <div className="space-y-4">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                        Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Step 3 */}
-              <div className="group space-y-8">
-                <div className="relative" style={{ paddingTop: '2rem' }}>
-                  {/* Stacked paper layers - more realistic */}
-                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)] translate-y-3 translate-x-1 rotate-[0.5deg]"></div>
-                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] translate-y-1.5 -translate-x-0.5 rotate-[-0.3deg]"></div>
-                  
-                  {/* Main note card */}
-                  <div className="relative bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] transition-all duration-300 p-10 h-full">
-                    {/* Realistic paper clip - gold/brass color with 3D effect */}
-                    <div className="absolute -top-8 left-6 w-12 h-16 z-10">
-                      <div className="relative w-full h-full">
-                        {/* Paper clip outer wire */}
-                        <div className="absolute top-0 left-0 w-12 h-14 border-[3px] border-[#B8860B] rounded-t-[24px] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2),1px_1px_3px_rgba(0,0,0,0.3)]"></div>
-                        {/* Paper clip inner wire */}
-                        <div className="absolute top-2 left-3 w-6 h-10 border-[3px] border-[#DAA520] rounded-t-[12px] shadow-[inset_-1px_-1px_1px_rgba(255,255,255,0.4)]"></div>
-                      </div>
+              <div className="group relative h-[500px]">
+                <img 
+                  src={notecardStack} 
+                  alt="Note card" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center p-12">
+                  <div className="flex flex-col items-center text-center space-y-6 pt-8">
+                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-base font-medium text-burgundy-foreground">03</span>
                     </div>
-                    
-                    <div className="flex flex-col items-center text-center space-y-6">
-                      <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-base font-medium text-burgundy-foreground">03</span>
-                      </div>
-                      <div className="space-y-4">
-                        <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
-                        <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
-                          Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
-                        </p>
-                      </div>
+                    <div className="space-y-4">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                        Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
+                      </p>
                     </div>
                   </div>
                 </div>
