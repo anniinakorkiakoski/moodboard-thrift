@@ -20,26 +20,14 @@ const Index = () => {
   const [showResults, setShowResults] = useState(false);
   const [searchedImage, setSearchedImage] = useState<{ url: string; caption: string } | null>(null);
   const [user, setUser] = useState<any>(null);
-  const [showLogoAnimation, setShowLogoAnimation] = useState(true); // Show on page load
-  const [hasSeenAnimation, setHasSeenAnimation] = useState(false);
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
+  const [visibleLetters, setVisibleLetters] = useState(0);
 
   useEffect(() => {
     // Check current user
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-
-      // If animation already showing on page load, mark as seen to prevent double-play
-      if (showLogoAnimation && !hasSeenAnimation) {
-        setHasSeenAnimation(true);
-      }
-      
-      // Show animation only for already logged-in users on first load
-      if (user && !hasSeenAnimation) {
-        setShowLogoAnimation(true);
-        setHasSeenAnimation(true);
-      }
     };
     getUser();
 
@@ -47,16 +35,27 @@ const Index = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       const newUser = session?.user ?? null;
       setUser(newUser);
-      
-      // Show animation on sign in event
-      if (event === 'SIGNED_IN' && newUser && !hasSeenAnimation) {
-        setShowLogoAnimation(true);
-        setHasSeenAnimation(true);
-      }
     });
 
     return () => subscription.unsubscribe();
-  }, [hasSeenAnimation, showLogoAnimation]);
+  }, []);
+
+  // Typewriter animation for CURA title
+  useEffect(() => {
+    const letters = 'CURA'.length;
+    let currentLetter = 0;
+    
+    const interval = setInterval(() => {
+      if (currentLetter <= letters) {
+        setVisibleLetters(currentLetter);
+        currentLetter++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 200); // 200ms delay between each letter
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -88,11 +87,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Logo Animation Overlay */}
-      {showLogoAnimation && (
-        <LogoAnimation onComplete={() => setShowLogoAnimation(false)} />
-      )}
-      
       <Navigation />
 
       {/* Hero Section */}
@@ -104,9 +98,19 @@ const Index = () => {
                   {/* Top line */}
                   <div className="w-full h-1 bg-burgundy -mb-3"></div>
                   
-                  {/* CURA title */}
+                  {/* CURA title with typewriter animation */}
                   <h1 className="text-[10rem] md:text-[12rem] font-black text-burgundy leading-none text-center tracking-tight">
-                    CURA
+                    {'CURA'.split('').map((letter, index) => (
+                      <span
+                        key={index}
+                        className="inline-block transition-opacity duration-300"
+                        style={{
+                          opacity: index < visibleLetters ? 1 : 0,
+                        }}
+                      >
+                        {letter}
+                      </span>
+                    ))}
                   </h1>
                   
                   {/* Bottom line */}
