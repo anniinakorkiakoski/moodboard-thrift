@@ -197,21 +197,31 @@ const Index = () => {
               </p>
             </div>
 
-            {/* Process Steps - Magazine layout */}
+            {/* Process Steps - Note Card layout */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
               
               {/* Step 1 */}
               <div className="group space-y-8">
-                <div className="bg-white border border-muted/40 shadow-sm hover:shadow-md transition-all duration-300 p-10 h-full">
-                  <div className="flex flex-col items-center text-center space-y-6">
-                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-base font-medium text-burgundy-foreground">01</span>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
-                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
-                        Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
-                      </p>
+                <div className="relative">
+                  {/* Stacked paper effect */}
+                  <div className="absolute inset-0 bg-white/60 rotate-1 rounded-sm"></div>
+                  <div className="absolute inset-0 bg-white/80 -rotate-1 rounded-sm"></div>
+                  
+                  {/* Main note card */}
+                  <div className="relative bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-all duration-300 p-10 h-full rounded-sm">
+                    {/* Paper clip decoration */}
+                    <div className="absolute -top-3 left-8 w-16 h-8 border-2 border-burgundy/40 rounded-t-full"></div>
+                    
+                    <div className="flex flex-col items-center text-center space-y-6 pt-4">
+                      <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-base font-medium text-burgundy-foreground">01</span>
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
+                        <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                          Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -219,16 +229,26 @@ const Index = () => {
 
               {/* Step 2 */}
               <div className="group space-y-8">
-                <div className="bg-white border border-muted/40 shadow-sm hover:shadow-md transition-all duration-300 p-10 h-full">
-                  <div className="flex flex-col items-center text-center space-y-6">
-                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-base font-medium text-burgundy-foreground">02</span>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
-                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
-                        Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
-                      </p>
+                <div className="relative">
+                  {/* Stacked paper effect */}
+                  <div className="absolute inset-0 bg-white/60 -rotate-1 rounded-sm"></div>
+                  <div className="absolute inset-0 bg-white/80 rotate-1 rounded-sm"></div>
+                  
+                  {/* Main note card */}
+                  <div className="relative bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-all duration-300 p-10 h-full rounded-sm">
+                    {/* Paper clip decoration */}
+                    <div className="absolute -top-3 left-8 w-16 h-8 border-2 border-burgundy/40 rounded-t-full"></div>
+                    
+                    <div className="flex flex-col items-center text-center space-y-6 pt-4">
+                      <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-base font-medium text-burgundy-foreground">02</span>
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
+                        <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                          Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -236,16 +256,26 @@ const Index = () => {
 
               {/* Step 3 */}
               <div className="group space-y-8">
-                <div className="bg-white border border-muted/40 shadow-sm hover:shadow-md transition-all duration-300 p-10 h-full">
-                  <div className="flex flex-col items-center text-center space-y-6">
-                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-base font-medium text-burgundy-foreground">03</span>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
-                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
-                        Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
-                      </p>
+                <div className="relative">
+                  {/* Stacked paper effect */}
+                  <div className="absolute inset-0 bg-white/60 rotate-1 rounded-sm"></div>
+                  <div className="absolute inset-0 bg-white/80 -rotate-1 rounded-sm"></div>
+                  
+                  {/* Main note card */}
+                  <div className="relative bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-all duration-300 p-10 h-full rounded-sm">
+                    {/* Paper clip decoration */}
+                    <div className="absolute -top-3 left-8 w-16 h-8 border-2 border-burgundy/40 rounded-t-full"></div>
+                    
+                    <div className="flex flex-col items-center text-center space-y-6 pt-4">
+                      <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-base font-medium text-burgundy-foreground">03</span>
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
+                        <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                          Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
