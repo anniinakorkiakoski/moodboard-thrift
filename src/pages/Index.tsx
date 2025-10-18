@@ -118,7 +118,7 @@ const Index = () => {
             </div>
 
             {/* Sourcing From Section */}
-            <div className="py-24 bg-background">
+            <div className="py-12 bg-background">
               <div className="container mx-auto px-8">
                 <div className="text-center space-y-6 mb-12">
                   <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">SOURCING FROM</h2>
