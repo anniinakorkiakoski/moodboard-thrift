@@ -99,7 +99,7 @@ const Index = () => {
                   <div className="w-full h-1 bg-burgundy -mb-3"></div>
                   
                   {/* CURA title with typewriter animation */}
-                  <h1 className="text-[10rem] md:text-[12rem] font-display font-black text-burgundy leading-none text-center tracking-tight overflow-hidden">
+                  <h1 className="text-[10rem] md:text-[12rem] text-burgundy leading-none text-center tracking-tight overflow-hidden">
                     {'CURA'.split('').map((letter, index) => (
                       <span
                         key={index}
