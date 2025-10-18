@@ -197,22 +197,29 @@ const Index = () => {
               </p>
             </div>
 
-            {/* Process Steps - Note Card layout */}
+            {/* Process Steps - Realistic Note Card layout */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
               
               {/* Step 1 */}
               <div className="group space-y-8">
-                <div className="relative">
-                  {/* Stacked paper effect */}
-                  <div className="absolute inset-0 bg-white/60 rotate-1 rounded-sm"></div>
-                  <div className="absolute inset-0 bg-white/80 -rotate-1 rounded-sm"></div>
+                <div className="relative" style={{ paddingTop: '2rem' }}>
+                  {/* Stacked paper layers - more realistic */}
+                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)] translate-y-3 translate-x-1 rotate-[0.5deg]"></div>
+                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] translate-y-1.5 -translate-x-0.5 rotate-[-0.3deg]"></div>
                   
                   {/* Main note card */}
-                  <div className="relative bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-all duration-300 p-10 h-full rounded-sm">
-                    {/* Paper clip decoration */}
-                    <div className="absolute -top-3 left-8 w-16 h-8 border-2 border-burgundy/40 rounded-t-full"></div>
+                  <div className="relative bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] transition-all duration-300 p-10 h-full">
+                    {/* Realistic paper clip - gold/brass color with 3D effect */}
+                    <div className="absolute -top-8 left-6 w-12 h-16 z-10">
+                      <div className="relative w-full h-full">
+                        {/* Paper clip outer wire */}
+                        <div className="absolute top-0 left-0 w-12 h-14 border-[3px] border-[#B8860B] rounded-t-[24px] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2),1px_1px_3px_rgba(0,0,0,0.3)]"></div>
+                        {/* Paper clip inner wire */}
+                        <div className="absolute top-2 left-3 w-6 h-10 border-[3px] border-[#DAA520] rounded-t-[12px] shadow-[inset_-1px_-1px_1px_rgba(255,255,255,0.4)]"></div>
+                      </div>
+                    </div>
                     
-                    <div className="flex flex-col items-center text-center space-y-6 pt-4">
+                    <div className="flex flex-col items-center text-center space-y-6">
                       <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <span className="text-base font-medium text-burgundy-foreground">01</span>
                       </div>
@@ -229,17 +236,24 @@ const Index = () => {
 
               {/* Step 2 */}
               <div className="group space-y-8">
-                <div className="relative">
-                  {/* Stacked paper effect */}
-                  <div className="absolute inset-0 bg-white/60 -rotate-1 rounded-sm"></div>
-                  <div className="absolute inset-0 bg-white/80 rotate-1 rounded-sm"></div>
+                <div className="relative" style={{ paddingTop: '2rem' }}>
+                  {/* Stacked paper layers - more realistic */}
+                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)] translate-y-3 -translate-x-1 rotate-[-0.5deg]"></div>
+                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] translate-y-1.5 translate-x-0.5 rotate-[0.3deg]"></div>
                   
                   {/* Main note card */}
-                  <div className="relative bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-all duration-300 p-10 h-full rounded-sm">
-                    {/* Paper clip decoration */}
-                    <div className="absolute -top-3 left-8 w-16 h-8 border-2 border-burgundy/40 rounded-t-full"></div>
+                  <div className="relative bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] transition-all duration-300 p-10 h-full">
+                    {/* Realistic paper clip - gold/brass color with 3D effect */}
+                    <div className="absolute -top-8 left-6 w-12 h-16 z-10">
+                      <div className="relative w-full h-full">
+                        {/* Paper clip outer wire */}
+                        <div className="absolute top-0 left-0 w-12 h-14 border-[3px] border-[#B8860B] rounded-t-[24px] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2),1px_1px_3px_rgba(0,0,0,0.3)]"></div>
+                        {/* Paper clip inner wire */}
+                        <div className="absolute top-2 left-3 w-6 h-10 border-[3px] border-[#DAA520] rounded-t-[12px] shadow-[inset_-1px_-1px_1px_rgba(255,255,255,0.4)]"></div>
+                      </div>
+                    </div>
                     
-                    <div className="flex flex-col items-center text-center space-y-6 pt-4">
+                    <div className="flex flex-col items-center text-center space-y-6">
                       <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <span className="text-base font-medium text-burgundy-foreground">02</span>
                       </div>
@@ -256,17 +270,24 @@ const Index = () => {
 
               {/* Step 3 */}
               <div className="group space-y-8">
-                <div className="relative">
-                  {/* Stacked paper effect */}
-                  <div className="absolute inset-0 bg-white/60 rotate-1 rounded-sm"></div>
-                  <div className="absolute inset-0 bg-white/80 -rotate-1 rounded-sm"></div>
+                <div className="relative" style={{ paddingTop: '2rem' }}>
+                  {/* Stacked paper layers - more realistic */}
+                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)] translate-y-3 translate-x-1 rotate-[0.5deg]"></div>
+                  <div className="absolute inset-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] translate-y-1.5 -translate-x-0.5 rotate-[-0.3deg]"></div>
                   
                   {/* Main note card */}
-                  <div className="relative bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-all duration-300 p-10 h-full rounded-sm">
-                    {/* Paper clip decoration */}
-                    <div className="absolute -top-3 left-8 w-16 h-8 border-2 border-burgundy/40 rounded-t-full"></div>
+                  <div className="relative bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] transition-all duration-300 p-10 h-full">
+                    {/* Realistic paper clip - gold/brass color with 3D effect */}
+                    <div className="absolute -top-8 left-6 w-12 h-16 z-10">
+                      <div className="relative w-full h-full">
+                        {/* Paper clip outer wire */}
+                        <div className="absolute top-0 left-0 w-12 h-14 border-[3px] border-[#B8860B] rounded-t-[24px] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2),1px_1px_3px_rgba(0,0,0,0.3)]"></div>
+                        {/* Paper clip inner wire */}
+                        <div className="absolute top-2 left-3 w-6 h-10 border-[3px] border-[#DAA520] rounded-t-[12px] shadow-[inset_-1px_-1px_1px_rgba(255,255,255,0.4)]"></div>
+                      </div>
+                    </div>
                     
-                    <div className="flex flex-col items-center text-center space-y-6 pt-4">
+                    <div className="flex flex-col items-center text-center space-y-6">
                       <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <span className="text-base font-medium text-burgundy-foreground">03</span>
                       </div>
