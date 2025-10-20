@@ -1,9 +1,8 @@
 import { useState, useEffect, KeyboardEvent } from 'react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useStyleProfile } from '@/hooks/useStyleProfile';
-import { Sparkles, Heart, Plus, X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 
 const STYLE_TAGS = [
   'Scandi',
@@ -179,135 +178,83 @@ export const StyleProfileSelector = () => {
         </p>
       </div>
 
-      {/* Selected Collections - Split Layout */}
+      {/* Selected Items Display */}
       {(selectedStyles.length > 0 || selectedBrands.length > 0) && (
-        <div className="grid md:grid-cols-2 gap-16">
-          {/* Your Style Collection - Left Side */}
-          <div className="space-y-8">
-            <div className="flex items-center gap-2 justify-center">
-              <Sparkles className="w-4 h-4 text-burgundy" />
-              <h3 className="text-xs font-medium tracking-widest uppercase text-burgundy">
-                Your Style
-              </h3>
-            </div>
+        <div className="grid md:grid-cols-2 gap-12">
+          {/* Your Style Tags */}
+          {selectedStyles.length > 0 && (
             <div className="space-y-6">
-              {selectedStyles.map(style => (
-                <div
-                  key={style}
-                  className="group flex items-center cursor-pointer"
-                  onClick={() => STYLE_TAGS.includes(style) ? toggleStyle(style) : removeStyle(style)}
-                >
-                  {/* Left burgundy bar */}
-                  <div className="flex-1 h-12 bg-burgundy relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10">
-                      <svg className="w-full h-full" viewBox="0 0 100 48" preserveAspectRatio="none">
-                        <path d="M0,24 Q20,18 40,24 Q60,30 80,24 Q90,21 100,20" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
-                      </svg>
-                    </div>
-                  </div>
-                  
-                  {/* Center transparent square with text */}
-                  <div className="w-48 h-12 bg-transparent flex items-center justify-center flex-shrink-0 border-y-2 border-burgundy relative group-hover:bg-burgundy/5 transition-colors">
-                    <p className="text-xs font-light text-burgundy tracking-wider uppercase text-center px-2">
-                      {style}
-                    </p>
-                    {!STYLE_TAGS.includes(style) && (
-                      <X className="absolute -top-2 -right-2 w-4 h-4 bg-burgundy text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    )}
-                  </div>
-                  
-                  {/* Right burgundy bar */}
-                  <div className="flex-1 h-12 bg-burgundy relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10">
-                      <svg className="w-full h-full" viewBox="0 0 100 48" preserveAspectRatio="none" style={{ transform: 'scaleX(-1)' }}>
-                        <path d="M0,24 Q20,18 40,24 Q60,30 80,24 Q90,21 100,20" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <div className="text-center">
+                <div className="w-16 h-px bg-burgundy/40 mx-auto mb-4"></div>
+                <h3 className="text-xs font-bold tracking-[0.3em] uppercase text-burgundy">
+                  Your Style
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {selectedStyles.map(style => (
+                  <button
+                    key={style}
+                    onClick={() => STYLE_TAGS.includes(style) ? toggleStyle(style) : removeStyle(style)}
+                    className="group px-4 py-2 bg-burgundy text-white text-xs font-mono uppercase tracking-wide hover:bg-burgundy/80 transition-colors relative"
+                  >
+                    {style}
+                    <X className="absolute -top-1 -right-1 w-3 h-3 bg-white text-burgundy rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Your Brand Wishlist - Right Side */}
-          <div className="space-y-8">
-            <div className="flex items-center gap-2 justify-center">
-              <Heart className="w-4 h-4 text-burgundy" />
-              <h3 className="text-xs font-medium tracking-widest uppercase text-burgundy">
-                Your Brands
-              </h3>
-            </div>
+          {/* Your Brand Tags */}
+          {selectedBrands.length > 0 && (
             <div className="space-y-6">
-              {selectedBrands.map(brand => (
-                <div
-                  key={brand}
-                  className="group flex items-center cursor-pointer"
-                  onClick={() => DREAM_BRANDS.includes(brand) ? toggleBrand(brand) : removeBrand(brand)}
-                >
-                  {/* Left burgundy bar */}
-                  <div className="flex-1 h-12 bg-burgundy relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10">
-                      <svg className="w-full h-full" viewBox="0 0 100 48" preserveAspectRatio="none">
-                        <path d="M0,30 Q25,22 50,28 Q75,34 100,28" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
-                      </svg>
-                    </div>
-                  </div>
-                  
-                  {/* Center transparent square with text */}
-                  <div className="w-48 h-12 bg-transparent flex items-center justify-center flex-shrink-0 border-y-2 border-burgundy relative group-hover:bg-burgundy/5 transition-colors">
-                    <p className="text-xs font-light text-burgundy tracking-wider uppercase text-center px-2">
-                      {brand}
-                    </p>
-                    {!DREAM_BRANDS.includes(brand) && (
-                      <X className="absolute -top-2 -right-2 w-4 h-4 bg-burgundy text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    )}
-                  </div>
-                  
-                  {/* Right burgundy bar */}
-                  <div className="flex-1 h-12 bg-burgundy relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10">
-                      <svg className="w-full h-full" viewBox="0 0 100 48" preserveAspectRatio="none" style={{ transform: 'scaleX(-1)' }}>
-                        <path d="M0,30 Q25,22 50,28 Q75,34 100,28" 
-                              stroke="hsl(330 60% 75%)" strokeWidth="0.5" fill="none" opacity="0.6"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <div className="text-center">
+                <div className="w-16 h-px bg-burgundy/40 mx-auto mb-4"></div>
+                <h3 className="text-xs font-bold tracking-[0.3em] uppercase text-burgundy">
+                  Your Brands
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {selectedBrands.map(brand => (
+                  <button
+                    key={brand}
+                    onClick={() => DREAM_BRANDS.includes(brand) ? toggleBrand(brand) : removeBrand(brand)}
+                    className="group px-4 py-2 bg-burgundy text-white text-xs font-mono uppercase tracking-wide hover:bg-burgundy/80 transition-colors relative"
+                  >
+                    {brand}
+                    <X className="absolute -top-1 -right-1 w-3 h-3 bg-white text-burgundy rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
-      {/* Selection Areas - Split Layout */}
-      <div className="grid md:grid-cols-2 gap-16">
-        {/* Style Aesthetics - Left Side */}
-        <Card className="p-10 space-y-8 bg-gradient-to-br from-background to-burgundy/5">
-          <div className="space-y-2 text-center">
-            <div className="flex items-center gap-2 justify-center">
-              <Sparkles className="w-4 h-4 text-burgundy" />
-              <h3 className="text-xs font-medium tracking-widest uppercase text-burgundy">
-                Style Aesthetics
-              </h3>
+      {/* Selection Areas */}
+      <div className="space-y-20">
+        {/* Style Aesthetics Section */}
+        <div className="space-y-8">
+          <div className="text-center space-y-4">
+            <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em]">
+              Style Aesthetics
             </div>
-            <p className="text-xs text-muted-foreground">
+            <div className="w-16 h-px bg-burgundy/40 mx-auto"></div>
+            <p className="text-sm font-light text-foreground/60 font-mono">
               Select styles that define your aesthetic
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3">
             {STYLE_TAGS.map(style => (
               <button
                 key={style}
                 onClick={() => toggleStyle(style)}
                 className={`
-                  p-3 rounded border transition-all text-xs font-light tracking-wide
+                  px-4 py-3 text-xs font-mono uppercase tracking-wide transition-all border
                   ${selectedStyles.includes(style)
-                    ? 'border-burgundy bg-burgundy/5 text-burgundy'
-                    : 'border-border hover:border-burgundy/50'
+                    ? 'bg-burgundy text-white border-burgundy'
+                    : 'bg-white text-foreground border-foreground/20 hover:border-burgundy'
                   }
                 `}
               >
@@ -317,50 +264,48 @@ export const StyleProfileSelector = () => {
           </div>
 
           {/* Add Custom Style */}
-          <div className="pt-6 border-t space-y-3">
+          <div className="max-w-md mx-auto space-y-3">
             <Input
-              placeholder="Add custom aesthetic"
+              placeholder="Add your own style tag"
               value={customStyleInput}
               onChange={(e) => setCustomStyleInput(e.target.value)}
               onKeyPress={handleStyleKeyPress}
-              className="h-10 text-xs"
+              className="h-10 text-xs font-mono border-foreground/20"
             />
             <Button
               onClick={addCustomStyle}
               variant="outline"
               type="button"
-              className="w-full h-10 text-xs border-burgundy text-burgundy hover:bg-burgundy hover:text-white"
+              className="w-full h-10 text-xs font-mono border-burgundy text-burgundy hover:bg-burgundy hover:text-white uppercase tracking-wide"
             >
               <Plus className="w-3 h-3 mr-2" />
-              Add Style
+              Add Custom Style
             </Button>
           </div>
-        </Card>
+        </div>
 
-        {/* Brand Universe - Right Side */}
-        <Card className="p-10 space-y-8 bg-gradient-to-br from-background to-burgundy/5">
-          <div className="space-y-2 text-center">
-            <div className="flex items-center gap-2 justify-center">
-              <Heart className="w-4 h-4 text-burgundy" />
-              <h3 className="text-xs font-medium tracking-widest uppercase text-burgundy">
-                Brand Universe
-              </h3>
+        {/* Brand Universe Section */}
+        <div className="space-y-8">
+          <div className="text-center space-y-4">
+            <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em]">
+              Brand Universe
             </div>
-            <p className="text-xs text-muted-foreground">
+            <div className="w-16 h-px bg-burgundy/40 mx-auto"></div>
+            <p className="text-sm font-light text-foreground/60 font-mono">
               Choose brands you love or hunt for
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3">
             {DREAM_BRANDS.map(brand => (
               <button
                 key={brand}
                 onClick={() => toggleBrand(brand)}
                 className={`
-                  p-3 rounded border transition-all text-xs font-light tracking-wide
+                  px-4 py-3 text-xs font-mono uppercase tracking-wide transition-all border
                   ${selectedBrands.includes(brand)
-                    ? 'border-burgundy bg-burgundy/5 text-burgundy'
-                    : 'border-border hover:border-burgundy/50'
+                    ? 'bg-burgundy text-white border-burgundy'
+                    : 'bg-white text-foreground border-foreground/20 hover:border-burgundy'
                   }
                 `}
               >
@@ -370,36 +315,37 @@ export const StyleProfileSelector = () => {
           </div>
 
           {/* Add Custom Brand */}
-          <div className="pt-6 border-t space-y-3">
+          <div className="max-w-md mx-auto space-y-3">
             <Input
-              placeholder="Add dream brand"
+              placeholder="Add your dream brand"
               value={customBrandInput}
               onChange={(e) => setCustomBrandInput(e.target.value)}
               onKeyPress={handleBrandKeyPress}
-              className="h-10 text-xs"
+              className="h-10 text-xs font-mono border-foreground/20"
             />
             <Button
               onClick={addCustomBrand}
               variant="outline"
               type="button"
-              className="w-full h-10 text-xs border-burgundy text-burgundy hover:bg-burgundy hover:text-white"
+              className="w-full h-10 text-xs font-mono border-burgundy text-burgundy hover:bg-burgundy hover:text-white uppercase tracking-wide"
             >
               <Plus className="w-3 h-3 mr-2" />
-              Add Brand
+              Add Custom Brand
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-center pb-16">
+      <div className="flex justify-center pb-16 pt-8">
         <Button 
           onClick={handleSave} 
+          variant="cta"
           size="xl"
-          className="min-w-[300px] bg-burgundy hover:bg-burgundy/90 text-xs tracking-widest"
+          className="uppercase tracking-wider font-mono"
           disabled={saving}
         >
-          {saving ? "SAVING..." : "SAVE MY STYLE PROFILE"}
+          {saving ? "Saving..." : "Save My Style Profile"}
         </Button>
       </div>
     </div>
