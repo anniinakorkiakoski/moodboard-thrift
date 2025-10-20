@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useMeasurements } from '@/hooks/useMeasurements';
 import { Ruler } from 'lucide-react';
 
@@ -22,6 +23,7 @@ export const MeasurementsSection = () => {
   const { measurements, loading, saving, updateMeasurements } = useMeasurements();
   const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
   const [localMeasurements, setLocalMeasurements] = useState<Record<string, number>>({});
+  const [mannequinType, setMannequinType] = useState<'male' | 'female'>('female');
 
   useEffect(() => {
     if (measurements) {
@@ -64,49 +66,179 @@ export const MeasurementsSection = () => {
 
       <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
         {/* Visual Mannequin */}
-        <div className="relative">
-          <div className="aspect-[3/4] bg-muted/20 border border-border relative overflow-hidden">
-            {/* Simple Mannequin SVG */}
-            <svg viewBox="0 0 200 300" className="w-full h-full">
-              {/* Head */}
-              <circle cx="100" cy="30" r="18" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/30" />
-              
-              {/* Neck */}
-              <line x1="100" y1="48" x2="100" y2="58" stroke="currentColor" strokeWidth="2" className="text-foreground/30" />
-              
-              {/* Shoulders */}
-              <line x1="65" y1="58" x2="135" y2="58" stroke="currentColor" strokeWidth="2" className="text-foreground/30" />
-              
-              {/* Torso */}
-              <line x1="100" y1="58" x2="100" y2="160" stroke="currentColor" strokeWidth="2" className="text-foreground/30" />
-              <ellipse cx="100" cy="85" rx="28" ry="20" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/30" />
-              <ellipse cx="100" cy="125" rx="25" ry="18" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/30" />
-              <ellipse cx="100" cy="155" rx="28" ry="15" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/30" />
-              
-              {/* Arms */}
-              <line x1="65" y1="58" x2="45" y2="135" stroke="currentColor" strokeWidth="2" className="text-foreground/30" />
-              <line x1="135" y1="58" x2="155" y2="135" stroke="currentColor" strokeWidth="2" className="text-foreground/30" />
-              
-              {/* Legs */}
-              <line x1="85" y1="160" x2="80" y2="260" stroke="currentColor" strokeWidth="2" className="text-foreground/30" />
-              <line x1="115" y1="160" x2="120" y2="260" stroke="currentColor" strokeWidth="2" className="text-foreground/30" />
-            </svg>
+        <div className="space-y-6">
+          {/* Mannequin Type Selector */}
+          <div className="flex items-center justify-center gap-6 pb-4">
+            <Label className="text-xs font-mono uppercase tracking-wide">Mannequin Type:</Label>
+            <RadioGroup
+              value={mannequinType}
+              onValueChange={(value) => setMannequinType(value as 'male' | 'female')}
+              className="flex gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="female" id="female" />
+                <Label htmlFor="female" className="text-sm font-mono cursor-pointer">Female</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="male" id="male" />
+                <Label htmlFor="male" className="text-sm font-mono cursor-pointer">Male</Label>
+              </div>
+            </RadioGroup>
+          </div>
 
-            {/* Measurement Points */}
-            {MEASUREMENT_POINTS.map((point) => (
-              <button
-                key={point.id}
-                onClick={() => setSelectedPoint(point.id)}
-                style={{ top: point.position.top, left: point.position.left }}
-                className={`absolute -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                  selectedPoint === point.id
-                    ? 'bg-burgundy border-burgundy text-white scale-125'
-                    : 'bg-white border-burgundy text-burgundy hover:scale-110'
-                }`}
-              >
-                <Ruler className="w-4 h-4" />
-              </button>
-            ))}
+          <div className="relative">
+            <div className="aspect-[3/4] bg-muted/20 border border-border relative overflow-hidden">
+              {/* Dress Form Mannequin SVG - inspired by tailor's dress form */}
+              <svg viewBox="0 0 200 300" className="w-full h-full">
+                {mannequinType === 'female' ? (
+                  // Female dress form - curved silhouette
+                  <>
+                    {/* Neck/collar area */}
+                    <path
+                      d="M 85 45 Q 85 35, 100 35 Q 115 35, 115 45"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Shoulders */}
+                    <path
+                      d="M 75 50 Q 75 48, 80 48 L 120 48 Q 125 48, 125 50"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Left side - curved feminine silhouette */}
+                    <path
+                      d="M 75 50 Q 70 70, 68 85 Q 65 100, 68 120 Q 72 140, 78 155 L 85 175"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Right side - curved feminine silhouette */}
+                    <path
+                      d="M 125 50 Q 130 70, 132 85 Q 135 100, 132 120 Q 128 140, 122 155 L 115 175"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Bottom edge */}
+                    <path
+                      d="M 85 175 Q 90 178, 100 178 Q 110 178, 115 175"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Stand pole */}
+                    <line
+                      x1="100"
+                      y1="178"
+                      x2="100"
+                      y2="260"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Stand base - oval */}
+                    <ellipse
+                      cx="100"
+                      cy="265"
+                      rx="30"
+                      ry="8"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                  </>
+                ) : (
+                  // Male dress form - straighter silhouette
+                  <>
+                    {/* Neck/collar area */}
+                    <path
+                      d="M 85 45 Q 85 35, 100 35 Q 115 35, 115 45"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Shoulders - broader */}
+                    <path
+                      d="M 70 50 Q 70 48, 75 48 L 125 48 Q 130 48, 130 50"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Left side - straighter masculine silhouette */}
+                    <path
+                      d="M 70 50 Q 68 70, 70 90 Q 72 110, 75 130 Q 78 150, 82 170 L 88 175"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Right side - straighter masculine silhouette */}
+                    <path
+                      d="M 130 50 Q 132 70, 130 90 Q 128 110, 125 130 Q 122 150, 118 170 L 112 175"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Bottom edge */}
+                    <path
+                      d="M 88 175 Q 92 178, 100 178 Q 108 178, 112 175"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Stand pole */}
+                    <line
+                      x1="100"
+                      y1="178"
+                      x2="100"
+                      y2="260"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                    {/* Stand base - oval */}
+                    <ellipse
+                      cx="100"
+                      cy="265"
+                      rx="30"
+                      ry="8"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-foreground/30"
+                    />
+                  </>
+                )}
+              </svg>
+
+              {/* Measurement Points */}
+              {MEASUREMENT_POINTS.map((point) => (
+                <button
+                  key={point.id}
+                  onClick={() => setSelectedPoint(point.id)}
+                  style={{ top: point.position.top, left: point.position.left }}
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
+                    selectedPoint === point.id
+                      ? 'bg-burgundy border-burgundy text-white scale-125'
+                      : 'bg-white border-burgundy text-burgundy hover:scale-110'
+                  }`}
+                >
+                  <Ruler className="w-4 h-4" />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
