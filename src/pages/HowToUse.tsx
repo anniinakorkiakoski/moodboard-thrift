@@ -142,46 +142,48 @@ export const HowToUse = () => {
                 </div>
               </div>
 
-              <div className="md:col-span-6 md:col-start-7 space-y-6">
-                {/* Browser Frame 1 */}
-                <div className="border-2 border-foreground/20 rounded-lg overflow-hidden shadow-lg">
-                  <div className="bg-foreground/90 px-4 py-2 flex items-center gap-2">
+              <div className="md:col-span-6 md:col-start-7 relative h-[600px]">
+                {/* Scattered macOS-style windows */}
+                
+                {/* Window 1 - Top Left - Couple Photo */}
+                <div className="absolute top-0 left-0 w-56 rounded-lg overflow-hidden shadow-2xl">
+                  <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                     </div>
-                    <div className="flex-1 text-center text-[10px] text-background/60 font-mono">cura_vibe.jpg</div>
+                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">Unfold_01.jpg</div>
                   </div>
-                  <img src={shareCouple} alt="Fashion inspiration" className="w-full h-48 object-cover" />
+                  <img src={shareCouple} alt="Fashion inspiration" className="w-full h-64 object-cover bg-white" />
                 </div>
 
-                {/* Browser Frame 2 - CURA Logo */}
-                <div className="border-2 border-foreground/20 rounded-lg overflow-hidden shadow-lg">
-                  <div className="bg-foreground/90 px-4 py-2 flex items-center gap-2">
+                {/* Window 2 - Center - CURA Logo */}
+                <div className="absolute top-24 left-20 w-64 rounded-lg overflow-hidden shadow-2xl z-10">
+                  <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                     </div>
-                    <div className="flex-1 text-center text-[10px] text-background/60 font-mono">cura_id.png</div>
+                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">02.jpg</div>
                   </div>
-                  <div className="bg-white flex items-center justify-center h-32">
-                    <img src={curaLogo} alt="CURA logo" className="w-3/4 h-auto object-contain" />
+                  <div className="bg-white flex items-center justify-center h-48 p-8">
+                    <img src={curaLogo} alt="CURA logo" className="w-full h-auto object-contain" />
                   </div>
                 </div>
 
-                {/* Browser Frame 3 */}
-                <div className="border-2 border-foreground/20 rounded-lg overflow-hidden shadow-lg">
-                  <div className="bg-foreground/90 px-4 py-2 flex items-center gap-2">
+                {/* Window 3 - Bottom Right - Vintage Fashion */}
+                <div className="absolute top-56 right-0 w-60 rounded-lg overflow-hidden shadow-2xl">
+                  <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                     </div>
-                    <div className="flex-1 text-center text-[10px] text-background/60 font-mono">vintage_style.jpg</div>
+                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">08.jpg</div>
                   </div>
-                  <img src={shareVintage} alt="Vintage fashion" className="w-full h-48 object-cover" />
+                  <img src={shareVintage} alt="Vintage fashion" className="w-full h-56 object-cover bg-white" />
                 </div>
               </div>
             </div>
