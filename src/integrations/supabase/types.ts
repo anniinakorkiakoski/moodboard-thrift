@@ -343,6 +343,60 @@ export type Database = {
         }
         Relationships: []
       }
+      user_measurements: {
+        Row: {
+          arm_length: number | null
+          bicep_circumference: number | null
+          chest_circumference: number | null
+          created_at: string
+          hip_circumference: number | null
+          id: string
+          inseam_length: number | null
+          neck_circumference: number | null
+          shoulder_width: number | null
+          thigh_circumference: number | null
+          torso_length: number | null
+          unit_preference: string | null
+          updated_at: string
+          user_id: string
+          waist_circumference: number | null
+        }
+        Insert: {
+          arm_length?: number | null
+          bicep_circumference?: number | null
+          chest_circumference?: number | null
+          created_at?: string
+          hip_circumference?: number | null
+          id?: string
+          inseam_length?: number | null
+          neck_circumference?: number | null
+          shoulder_width?: number | null
+          thigh_circumference?: number | null
+          torso_length?: number | null
+          unit_preference?: string | null
+          updated_at?: string
+          user_id: string
+          waist_circumference?: number | null
+        }
+        Update: {
+          arm_length?: number | null
+          bicep_circumference?: number | null
+          chest_circumference?: number | null
+          created_at?: string
+          hip_circumference?: number | null
+          id?: string
+          inseam_length?: number | null
+          neck_circumference?: number | null
+          shoulder_width?: number | null
+          thigh_circumference?: number | null
+          torso_length?: number | null
+          unit_preference?: string | null
+          updated_at?: string
+          user_id?: string
+          waist_circumference?: number | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -503,7 +557,7 @@ export type Database = {
       }
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: string
+        Returns: unknown
       }
       sparsevec_out: {
         Args: { "": unknown }

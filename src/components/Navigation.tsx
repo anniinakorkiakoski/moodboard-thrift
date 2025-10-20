@@ -42,13 +42,13 @@ export const Navigation = () => {
                 gallery
               </Button>
             </Link>
-            <Link to="/style-profile">
+            <Link to="/profile">
               <Button
                 variant="ghost"
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                style profile
+                profile
               </Button>
             </Link>
             <Link to="/connect">
