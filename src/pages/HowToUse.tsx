@@ -1,13 +1,15 @@
 import moodboardFloor from '@/assets/moodboard-floor.jpg';
 import vintageFashion from '@/assets/vintage-fashion-photo.jpg';
-import laptopGallery from '@/assets/laptop-final-cura-display.jpg';
 import magazineCollage from '@/assets/magazine-runway-collage.jpg';
 import notecardStack from '@/assets/notecard-stack.png';
 import shareCouple from '@/assets/share-couple.jpg';
 import curaLogo from '@/assets/cura-logo.png';
 import shareVintage from '@/assets/share-vintage.jpg';
+import laptopPhoto from '@/assets/laptop-floor-source.png';
+import curaScreen from '@/assets/cura-gallery-screenshot-exact.png';
 import { Navigation } from '@/components/Navigation';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { Button } from '@/components/ui/button';
 
 export const HowToUse = () => {
@@ -196,11 +198,21 @@ export const HowToUse = () => {
 
               <div className="grid md:grid-cols-2 gap-12 items-start">
                 <div>
-                  <img 
-                    src={laptopGallery} 
-                    alt="Cura Gallery interface" 
-                    className="w-full h-auto shadow-lg"
-                  />
+                  <div className="relative">
+                    <img src={laptopPhoto} alt="Laptop photo" className="w-full h-auto shadow-lg" />
+                    <img
+                      src={curaScreen}
+                      alt="CURA Gallery interface"
+                      className="absolute pointer-events-none"
+                      style={{
+                        top: '6.5%',
+                        left: '17.8%',
+                        width: '64.2%',
+                        transform: 'skewY(-6deg) rotate(-1.5deg) perspective(900px) rotateX(8deg)',
+                        clipPath: 'polygon(1.5% 3.2%, 98.5% 3.2%, 100% 96.8%, 0% 96.8%)',
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-8">
