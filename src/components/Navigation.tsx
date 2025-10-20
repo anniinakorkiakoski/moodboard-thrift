@@ -51,6 +51,15 @@ export const Navigation = () => {
                 how to use
               </Button>
             </Link>
+            <Link to="/gallery">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-foreground hover:bg-muted font-mono"
+              >
+                gallery
+              </Button>
+            </Link>
             <Link to="/style-profile">
               <Button
                 variant="ghost"
@@ -96,6 +105,15 @@ export const Navigation = () => {
                 className="text-foreground hover:bg-muted font-mono"
               >
                 how to use
+              </Button>
+            </Link>
+            <Link to="/gallery">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-foreground hover:bg-muted font-mono"
+              >
+                gallery
               </Button>
             </Link>
             <Link to="/connect">
