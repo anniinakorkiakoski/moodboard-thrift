@@ -1,6 +1,6 @@
 import moodboardFloor from '@/assets/moodboard-floor.jpg';
 import vintageFashion from '@/assets/vintage-fashion-photo.jpg';
-import laptopGallery from '@/assets/laptop-gallery-updated.jpg';
+import laptopGallery from '@/assets/laptop-concrete-cura.jpg';
 import magazineCollage from '@/assets/magazine-runway-collage.jpg';
 import notecardStack from '@/assets/notecard-stack.png';
 import shareCouple from '@/assets/share-couple.jpg';
