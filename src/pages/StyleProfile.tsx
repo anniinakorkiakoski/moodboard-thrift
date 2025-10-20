@@ -36,7 +36,7 @@ export const StyleProfile = () => {
     <div className="min-h-screen bg-white">
       <Navigation />
       
-      <div className="container mx-auto px-6 py-16 max-w-7xl pt-32">
+      <div className="container mx-auto px-6 py-16 max-w-7xl pt-32" key="profile-content">
         {/* Page Header */}
         <div className="text-center space-y-6 mb-20">
           <h1 className="text-5xl md:text-6xl font-black tracking-tight text-burgundy uppercase">
@@ -46,12 +46,12 @@ export const StyleProfile = () => {
         </div>
 
         {/* Style Section */}
-        <div className="mb-32">
+        <div className="mb-32" key="style-section">
           <StyleProfileSelector />
         </div>
 
         {/* Measurements Section */}
-        <div className="pb-16">
+        <div className="pb-16" key="measurements-section">
           <MeasurementsSection />
         </div>
       </div>
