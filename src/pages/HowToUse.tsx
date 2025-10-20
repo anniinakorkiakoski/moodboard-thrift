@@ -208,7 +208,7 @@ export const HowToUse = () => {
                         left: '17.8%',
                         width: '64.2%',
                         transform: 'skewY(-6deg) rotate(-1.5deg) perspective(900px) rotateX(8deg)',
-                        clipPath: 'polygon(1.5% 3.2%, 98.5% 3.2%, 100% 96.8%, 0% 96.8%)',
+                        
                       }}
                     />
                   </div>

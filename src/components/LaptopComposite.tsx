@@ -25,7 +25,7 @@ export const LaptopComposite: React.FC<LaptopCompositeProps> = ({ bgSrc, screenS
           // Perspective/angle to match the photographed screen
           transform: 'skewY(-6deg) rotate(-1.5deg) perspective(900px) rotateX(8deg)',
           // Subtle mask to respect inner bezel curvature
-          clipPath: 'polygon(1.5% 3.2%, 98.5% 3.2%, 100% 96.8%, 0% 96.8%)',
+          
         }}
       />
       <figcaption className="sr-only">{alt}</figcaption>
