@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useMeasurements } from '@/hooks/useMeasurements';
 import { Ruler } from 'lucide-react';
-import mannequinsImage from '@/assets/mannequins.webp';
+import neutralMannequin from '@/assets/neutral-mannequin.webp';
 
 const MEASUREMENT_POINTS = [
   { id: 'neck_circumference', label: 'Neck', position: { top: '15%', left: '50%' } },
@@ -24,7 +23,6 @@ export const MeasurementsSection = () => {
   const { measurements, loading, saving, updateMeasurements } = useMeasurements();
   const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
   const [localMeasurements, setLocalMeasurements] = useState<Record<string, number>>({});
-  const [mannequinType, setMannequinType] = useState<'male' | 'female'>('female');
 
   useEffect(() => {
     if (measurements) {
@@ -68,37 +66,14 @@ export const MeasurementsSection = () => {
       <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
         {/* Visual Mannequin */}
         <div className="space-y-6">
-          {/* Mannequin Type Selector */}
-          <div className="flex items-center justify-center gap-6 pb-4">
-            <Label className="text-xs font-mono uppercase tracking-wide">Mannequin Type:</Label>
-            <RadioGroup
-              value={mannequinType}
-              onValueChange={(value) => setMannequinType(value as 'male' | 'female')}
-              className="flex gap-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="female" id="female" />
-                <Label htmlFor="female" className="text-sm font-mono cursor-pointer">Female</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="male" id="male" />
-                <Label htmlFor="male" className="text-sm font-mono cursor-pointer">Male</Label>
-              </div>
-            </RadioGroup>
-          </div>
-
           <div className="relative">
-            <div className="aspect-[2/3] bg-muted/20 border border-border relative overflow-hidden flex items-center justify-center">
-              {/* Mannequin Image with crop based on selection */}
-              <div className="relative w-full h-full flex items-center justify-center">
+            <div className="aspect-[1/2] bg-muted/20 border border-border relative overflow-hidden flex items-center justify-center">
+              {/* Neutral Mannequin */}
+              <div className="relative w-full h-full flex items-center justify-center p-8">
                 <img
-                  src={mannequinsImage}
-                  alt={`${mannequinType} mannequin`}
-                  className="h-full object-contain"
-                  style={{
-                    objectPosition: mannequinType === 'male' ? '35% center' : '65% center',
-                    transform: mannequinType === 'male' ? 'scale(2.5) translateX(10%)' : 'scale(2.5) translateX(-10%)'
-                  }}
+                  src={neutralMannequin}
+                  alt="Body measurement mannequin"
+                  className="h-full w-auto object-contain"
                 />
               </div>
 
