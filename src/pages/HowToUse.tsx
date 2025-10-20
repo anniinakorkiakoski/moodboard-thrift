@@ -138,19 +138,6 @@ export const HowToUse = () => {
                   </p>
                 </div>
               </div>
-
-              <div className="md:col-span-6 md:col-start-7 grid grid-cols-2 gap-4">
-                <img 
-                  src={moodboardFloor} 
-                  alt="Fashion moodboard" 
-                  className="w-full h-full object-cover"
-                />
-                <img 
-                  src={vintageFashion} 
-                  alt="Vintage fashion" 
-                  className="w-full h-full object-cover mt-12"
-                />
-              </div>
             </div>
           </section>
 
