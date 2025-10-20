@@ -10,7 +10,6 @@ import curaScreen from '@/assets/cura-gallery-screenshot-exact.png';
 import { Navigation } from '@/components/Navigation';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Button } from '@/components/ui/button';
 
 export const HowToUse = () => {
   return (
