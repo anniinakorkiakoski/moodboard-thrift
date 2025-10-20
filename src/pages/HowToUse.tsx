@@ -1,6 +1,6 @@
 import moodboardFloor from '@/assets/moodboard-floor.jpg';
 import vintageFashion from '@/assets/vintage-fashion-photo.jpg';
-import magazineCollage from '@/assets/magazine-runway-collage.jpg';
+
 import notecardStack from '@/assets/notecard-stack.png';
 import shareCouple from '@/assets/share-couple.jpg';
 import curaLogo from '@/assets/cura-logo.png';
@@ -204,11 +204,11 @@ export const HowToUse = () => {
                       alt="CURA Gallery interface"
                       className="absolute pointer-events-none"
                       style={{
-                        top: '6.5%',
-                        left: '17.8%',
-                        width: '64.2%',
-                        transform: 'skewY(-6deg) rotate(-1.5deg) perspective(900px) rotateX(8deg)',
-                        
+                        top: '6.2%',
+                        left: '17.4%',
+                        width: '65.0%',
+                        transform: 'skewY(-5.4deg) rotate(-1.2deg) perspective(1200px) rotateX(9deg)',
+                        transformOrigin: 'top left',
                       }}
                     />
                   </div>
@@ -254,16 +254,8 @@ export const HowToUse = () => {
 
           {/* Step 3: Curate */}
           <section className="py-20">
-            <div className="grid md:grid-cols-12 gap-12">
-              <div className="md:col-span-5 order-2 md:order-1">
-                <img 
-                  src={magazineCollage} 
-                  alt="Fashion curation" 
-                  className="w-full h-auto"
-                />
-              </div>
-              
-              <div className="md:col-span-6 md:col-start-7 order-1 md:order-2 space-y-8">
+            <div className="max-w-6xl mx-auto">
+              <div className="space-y-8">
                 <div>
                   <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
                     Stage 3
@@ -289,7 +281,7 @@ export const HowToUse = () => {
                     Your results arrive as a carefully curated edit — pieces that don't just match your 
                     inspiration, but understand the intention behind it.
                   </p>
-                  
+
                   <div className="border-l-2 border-burgundy pl-6">
                     <p className="text-foreground/60">
                       Browse through your selection. Save pieces that resonate. Message thrifters for more 
