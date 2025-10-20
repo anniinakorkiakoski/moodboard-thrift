@@ -1,5 +1,5 @@
-import casualGroup from '@/assets/mission-casual.jpg';
-import threeMen from '@/assets/mission-studio-work.jpg';
+import casualGroup from '@/assets/mission-studio-work.jpg';
+import threeMen from '@/assets/mission-three.jpg';
 import studioSpace from '@/assets/studio-space.jpg';
 import runwayModels from '@/assets/mission-runway-models.jpg';
 import { Navigation } from '@/components/Navigation';
@@ -142,7 +142,7 @@ export const OurMission = () => {
                 <img 
                   src={threeMen} 
                   alt="Fashion community impact" 
-                  className="w-full h-auto grayscale"
+                  className="w-full h-auto"
                 />
               </div>
               <div className="md:col-span-6 md:col-start-7 order-1 md:order-2 space-y-6">
