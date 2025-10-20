@@ -3,6 +3,9 @@ import vintageFashion from '@/assets/vintage-fashion-photo.jpg';
 import laptopGallery from '@/assets/laptop-gallery-updated.jpg';
 import magazineCollage from '@/assets/magazine-runway-collage.jpg';
 import notecardStack from '@/assets/notecard-stack.png';
+import shareCouple from '@/assets/share-couple.jpg';
+import curaLogo from '@/assets/cura-logo.png';
+import shareVintage from '@/assets/share-vintage.jpg';
 import { Navigation } from '@/components/Navigation';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -136,6 +139,49 @@ export const HowToUse = () => {
                     Add notes about what you love — the drape, the silhouette, the feeling it evokes. 
                     Visit "My Style" to select your style categories and dream brands.
                   </p>
+                </div>
+              </div>
+
+              <div className="md:col-span-6 md:col-start-7 space-y-6">
+                {/* Browser Frame 1 */}
+                <div className="border-2 border-foreground/20 rounded-lg overflow-hidden shadow-lg">
+                  <div className="bg-foreground/90 px-4 py-2 flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                    </div>
+                    <div className="flex-1 text-center text-[10px] text-background/60 font-mono">cura_vibe.jpg</div>
+                  </div>
+                  <img src={shareCouple} alt="Fashion inspiration" className="w-full h-48 object-cover" />
+                </div>
+
+                {/* Browser Frame 2 - CURA Logo */}
+                <div className="border-2 border-foreground/20 rounded-lg overflow-hidden shadow-lg">
+                  <div className="bg-foreground/90 px-4 py-2 flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                    </div>
+                    <div className="flex-1 text-center text-[10px] text-background/60 font-mono">cura_id.png</div>
+                  </div>
+                  <div className="bg-white flex items-center justify-center h-32">
+                    <img src={curaLogo} alt="CURA logo" className="w-3/4 h-auto object-contain" />
+                  </div>
+                </div>
+
+                {/* Browser Frame 3 */}
+                <div className="border-2 border-foreground/20 rounded-lg overflow-hidden shadow-lg">
+                  <div className="bg-foreground/90 px-4 py-2 flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                    </div>
+                    <div className="flex-1 text-center text-[10px] text-background/60 font-mono">vintage_style.jpg</div>
+                  </div>
+                  <img src={shareVintage} alt="Vintage fashion" className="w-full h-48 object-cover" />
                 </div>
               </div>
             </div>
