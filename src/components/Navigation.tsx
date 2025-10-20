@@ -33,24 +33,6 @@ export const Navigation = () => {
         
         {user ? (
           <div className="flex items-center gap-4">
-            <Link to="/our-mission">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-foreground hover:bg-muted font-mono"
-              >
-                our mission
-              </Button>
-            </Link>
-            <Link to="/how-to-use">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-foreground hover:bg-muted font-mono"
-              >
-                how to use
-              </Button>
-            </Link>
             <Link to="/gallery">
               <Button
                 variant="ghost"
@@ -66,7 +48,7 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono"
               >
-                my style
+                style profile
               </Button>
             </Link>
             <Link to="/connect">
@@ -76,6 +58,24 @@ export const Navigation = () => {
                 className="text-foreground hover:bg-muted font-mono"
               >
                 connect
+              </Button>
+            </Link>
+            <Link to="/how-to-use">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-foreground hover:bg-muted font-mono"
+              >
+                how to use
+              </Button>
+            </Link>
+            <Link to="/our-mission">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-foreground hover:bg-muted font-mono"
+              >
+                our mission
               </Button>
             </Link>
             <Button
@@ -89,24 +89,6 @@ export const Navigation = () => {
           </div>
         ) : (
           <div className="flex items-center gap-4">
-            <Link to="/our-mission">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-foreground hover:bg-muted font-mono"
-              >
-                our mission
-              </Button>
-            </Link>
-            <Link to="/how-to-use">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-foreground hover:bg-muted font-mono"
-              >
-                how to use
-              </Button>
-            </Link>
             <Link to="/gallery">
               <Button
                 variant="ghost"
@@ -123,6 +105,24 @@ export const Navigation = () => {
                 className="text-foreground hover:bg-muted font-mono"
               >
                 connect
+              </Button>
+            </Link>
+            <Link to="/how-to-use">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-foreground hover:bg-muted font-mono"
+              >
+                how to use
+              </Button>
+            </Link>
+            <Link to="/our-mission">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-foreground hover:bg-muted font-mono"
+              >
+                our mission
               </Button>
             </Link>
             <Link to="/auth">
