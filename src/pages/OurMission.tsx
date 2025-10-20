@@ -162,24 +162,21 @@ export const OurMission = () => {
             </div>
           </section>
 
-          {/* Large Image Section */}
-          <section className="py-12">
+          {/* Large Image Section with Overlaid Text */}
+          <section className="relative py-12 pb-32">
             <img 
               src={runwayModels} 
               alt="Fashion runway" 
-              className="w-full h-auto"
+              className="w-full h-auto grayscale"
             />
-          </section>
-
-          {/* Closing Statement */}
-          <footer className="text-center py-20 pb-32">
-            <div className="relative inline-block">
-              <h3 className="text-4xl md:text-5xl font-light italic text-primary leading-relaxed uppercase">
-                FASHION WITH PURPOSE.<br/>STYLE WITH CONSCIENCE.
-              </h3>
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-48 h-0.5 bg-burgundy"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center">
+                <h3 className="text-4xl md:text-6xl font-light italic text-burgundy leading-relaxed uppercase drop-shadow-lg">
+                  FASHION WITH PURPOSE.<br/>STYLE WITH CONSCIENCE.
+                </h3>
+              </div>
             </div>
-          </footer>
+          </section>
         </article>
       </div>
     </div>
