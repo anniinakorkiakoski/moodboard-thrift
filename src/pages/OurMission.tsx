@@ -47,7 +47,7 @@ export const OurMission = () => {
           {/* The Problem Section */}
           <section className="py-20 px-4">
             <div className="grid md:grid-cols-12 gap-16">
-              <div className="md:col-span-6 md:col-start-2">
+              <div className="md:col-span-8 md:col-start-3">
                 <div className="relative">
                 <h2 className="text-5xl md:text-6xl font-black text-primary mb-8 leading-tight uppercase">
                   THE_<br/>PROBLEM
@@ -64,13 +64,6 @@ export const OurMission = () => {
                     </p>
                   </div>
                 </div>
-              </div>
-              <div className="md:col-span-4">
-                <img 
-                  src={studioSpace} 
-                  alt="Studio space" 
-                  className="w-full h-auto"
-                />
               </div>
             </div>
           </section>
