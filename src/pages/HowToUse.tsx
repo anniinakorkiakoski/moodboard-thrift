@@ -1,6 +1,6 @@
 import moodboardFloor from '@/assets/moodboard-floor.jpg';
 import vintageFashion from '@/assets/vintage-fashion-photo.jpg';
-import laptopGallery from '@/assets/laptop-cura-gallery-display.jpg';
+import laptopGallery from '@/assets/laptop-with-cura-screen.jpg';
 import magazineCollage from '@/assets/magazine-runway-collage.jpg';
 import notecardStack from '@/assets/notecard-stack.png';
 import shareCouple from '@/assets/share-couple.jpg';
@@ -176,65 +176,67 @@ export const HowToUse = () => {
 
           {/* Step 2: Discover */}
           <section className="py-12">
-            <div className="grid md:grid-cols-12 gap-12">
-              <div className="md:col-span-5 md:col-start-2 space-y-8">
-                <div>
-                  <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
-                    Stage 2
-                  </div>
-                  <h2 className="text-6xl font-black text-primary mb-6 relative inline-block uppercase">
-                    DISCOVER
-                    <svg className="absolute -bottom-4 left-0 w-full" height="15" viewBox="0 0 200 15">
-                      <path 
-                        d="M 5 10 L 195 10" 
-                        stroke="hsl(var(--burgundy))" 
-                        strokeWidth="2" 
-                        fill="none"
-                      />
-                    </svg>
-                  </h2>
+            <div className="max-w-6xl mx-auto">
+              <div className="mb-8">
+                <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
+                  Stage 2
                 </div>
-                
-                <div className="space-y-4 text-sm md:text-base leading-loose text-foreground/70 font-mono">
-                  <p>
-                    Let our AI search across multiple resale platforms, considering your visual preferences 
-                    and brand selections to deliver curated results instantly.
-                  </p>
-                </div>
-
-                <div className="space-y-6 pt-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-px bg-burgundy"></div>
-                      <h3 className="text-lg font-bold text-primary uppercase tracking-wider">
-                        AI-POWERED
-                      </h3>
-                    </div>
-                    <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
-                      Intelligent search that understands your aesthetic and finds pieces that match your vision.
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-px bg-burgundy"></div>
-                      <h3 className="text-lg font-bold text-primary uppercase tracking-wider">
-                        HUMAN TOUCH
-                      </h3>
-                    </div>
-                    <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
-                      Connect with professional thrifters and stylists who share your aesthetic for personalized service.
-                    </p>
-                  </div>
-                </div>
+                <h2 className="text-6xl font-black text-primary mb-6 relative inline-block uppercase">
+                  DISCOVER
+                  <svg className="absolute -bottom-4 left-0 w-full" height="15" viewBox="0 0 200 15">
+                    <path 
+                      d="M 5 10 L 195 10" 
+                      stroke="hsl(var(--burgundy))" 
+                      strokeWidth="2" 
+                      fill="none"
+                    />
+                  </svg>
+                </h2>
               </div>
 
-              <div className="md:col-span-5">
-                <img 
-                  src={laptopGallery} 
-                  alt="Cura Gallery interface" 
-                  className="w-full h-auto rounded-lg shadow-lg"
-                />
+              <div className="grid md:grid-cols-2 gap-12 items-start">
+                <div>
+                  <img 
+                    src={laptopGallery} 
+                    alt="Cura Gallery interface" 
+                    className="w-full h-auto shadow-lg"
+                  />
+                </div>
+
+                <div className="space-y-8">
+                  <div className="space-y-4 text-sm md:text-base leading-loose text-foreground/70 font-mono">
+                    <p>
+                      Let our AI search across multiple resale platforms, considering your visual preferences 
+                      and brand selections to deliver curated results instantly.
+                    </p>
+                  </div>
+
+                  <div className="space-y-6 pt-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-px bg-burgundy"></div>
+                        <h3 className="text-lg font-bold text-primary uppercase tracking-wider">
+                          AI-POWERED
+                        </h3>
+                      </div>
+                      <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
+                        Intelligent search that understands your aesthetic and finds pieces that match your vision.
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-px bg-burgundy"></div>
+                        <h3 className="text-lg font-bold text-primary uppercase tracking-wider">
+                          HUMAN TOUCH
+                        </h3>
+                      </div>
+                      <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
+                        Connect with professional thrifters and stylists who share your aesthetic for personalized service.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
