@@ -199,168 +199,166 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
   }
 
   return (
-    <div className="w-full px-4">
-      <div className="space-y-16">
-        <div className="relative max-w-none">
-          <Card 
-            className={`relative border-2 transition-all duration-500 min-h-[400px] ${
-              dragActive 
-                ? 'border-burgundy bg-burgundy/5 shadow-lg' 
-                : 'border-muted bg-card hover:border-burgundy/50 hover:shadow-md'
+    <div className="w-full">
+      <div className="space-y-12">
+        {/* Upload Area */}
+        {displayImages.length === 0 && (
+          <div className="relative max-w-4xl mx-auto px-4">
+            <Card 
+              className={`relative border-2 transition-all duration-500 min-h-[400px] ${
+                dragActive 
+                  ? 'border-burgundy bg-burgundy/5 shadow-lg' 
+                  : 'border-muted bg-card hover:border-burgundy/50 hover:shadow-md'
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <div className="p-16 text-center space-y-8">
+                <div className="flex justify-center">
+                  <div className="w-20 h-20 border-2 border-muted-foreground/20 flex items-center justify-center">
+                    <Upload className="w-10 h-10 text-muted-foreground" />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-xl font-light font-serif text-primary">Share your inspiration</h3>
+                  <p className="text-sm font-light text-muted-foreground leading-relaxed max-w-md mx-auto">
+                    Drag images here, or select from your collection
+                  </p>
+                </div>
+                <Button variant="outline" size="lg" className="relative border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground font-medium" disabled={loading}>
+                  <ImagePlus className="w-4 h-4 mr-2" />
+                  Browse Images
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </Button>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Full Width Gallery */}
+        {displayImages.length > 0 && (
+          <div 
+            className={`relative ${
+              dragActive ? 'bg-burgundy/5' : ''
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            <div className="p-16 text-center space-y-8">
-              {displayImages.length > 0 ? (
-                <div className="space-y-8">
-                  {/* Editorial picture wall with varied sizes */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 auto-rows-[160px]">
-                    {displayImages.map((image, index) => {
-                      // Create varied sizes for editorial effect
-                      const sizeVariants = [
-                        'col-span-2 row-span-2', // Large square
-                        'col-span-1 row-span-2', // Tall portrait
-                        'col-span-2 row-span-1', // Wide landscape
-                        'col-span-1 row-span-1', // Small square
-                        'col-span-2 row-span-2', // Large square
-                        'col-span-1 row-span-1', // Small square
-                      ];
-                      
-                      const sizeClass = sizeVariants[index % sizeVariants.length];
-                      
-                      return (
-                        <div key={image.id} className={`${sizeClass} group relative`}>
-                          <div className="bg-white border border-muted shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02] overflow-hidden h-full">
-                            <div className="relative h-full">
-                              <img 
-                                src={image.url} 
-                                alt={image.caption || 'Inspiration image'}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
-                                  onClick={() => onImageSearch?.({
-                                    url: image.url,
-                                    caption: image.caption,
-                                    aspectRatio: image.aspectRatio
-                                  })}
-                                >
-                                  <Search className="w-3 h-3" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
-                                  onClick={() => setEditingCaption(editingCaption === image.id ? null : image.id)}
-                                >
-                                  <Edit2 className="w-3 h-3" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
-                                  onClick={() => handleDeleteImage(image.id, image.filePath)}
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                              </div>
-                              
-                              {/* Caption overlay on hover */}
-                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                {editingCaption === image.id ? (
-                                  <Input
-                                    value={image.caption}
-                                    onChange={(e) => {
-                                      const newValue = e.target.value;
-                                      displayImages.find(img => img.id === image.id)!.caption = newValue;
-                                    }}
-                                    onBlur={(e) => handleUpdateCaption(image.id, e.target.value)}
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        handleUpdateCaption(image.id, (e.target as HTMLInputElement).value);
-                                      }
-                                    }}
-                                    placeholder="What do you love about this?"
-                                    className="text-xs border-none p-1 h-auto focus-visible:ring-0 text-white bg-transparent font-light font-lora"
-                                    autoFocus
-                                  />
-                                ) : (
-                                  <p 
-                                    className="text-xs text-white font-light leading-relaxed cursor-pointer min-h-[16px] font-lora"
-                                    onClick={() => setEditingCaption(image.id)}
-                                  >
-                                    {image.caption || 'What do you love about this?'}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="flex items-center justify-center gap-6">
-                    <Button variant="outline" size="lg" disabled={isLoading || loading} className="relative border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground">
-                      <ImagePlus className="w-4 h-4 mr-2" />
-                      Add More
-                      <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleChange}
-                        className="absolute inset-0 opacity-0 cursor-pointer"
+            {/* Masonry Grid - Full Width */}
+            <div className="columns-2 md:columns-4 lg:columns-5 gap-3 md:gap-4 space-y-3 md:space-y-4">
+              {displayImages.map((image, index) => (
+                <div key={image.id} className="break-inside-avoid group relative">
+                  <div className="bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <div className="relative">
+                      <img 
+                        src={image.url} 
+                        alt={image.caption || 'Inspiration image'}
+                        className="w-full h-auto object-cover"
                       />
-                    </Button>
-                    <Button size="lg" disabled={isLoading || displayImages.length === 0} className="bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground font-medium px-8">
-                      {isLoading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                          Curating...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-4 h-4 mr-2" />
-                          Begin Curation
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="flex justify-center">
-                    <div className="w-20 h-20 border-2 border-muted-foreground/20 flex items-center justify-center">
-                      <Upload className="w-10 h-10 text-muted-foreground" />
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
+                          onClick={() => onImageSearch?.({
+                            url: image.url,
+                            caption: image.caption,
+                            aspectRatio: image.aspectRatio
+                          })}
+                        >
+                          <Search className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
+                          onClick={() => setEditingCaption(editingCaption === image.id ? null : image.id)}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
+                          onClick={() => handleDeleteImage(image.id, image.filePath)}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      
+                      {/* Caption overlay on hover */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {editingCaption === image.id ? (
+                          <Input
+                            value={image.caption}
+                            onChange={(e) => {
+                              const newValue = e.target.value;
+                              displayImages.find(img => img.id === image.id)!.caption = newValue;
+                            }}
+                            onBlur={(e) => handleUpdateCaption(image.id, e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleUpdateCaption(image.id, (e.target as HTMLInputElement).value);
+                              }
+                            }}
+                            placeholder="What do you love about this?"
+                            className="text-xs border-none p-1 h-auto focus-visible:ring-0 text-white bg-transparent font-light font-lora"
+                            autoFocus
+                          />
+                        ) : (
+                          <p 
+                            className="text-xs text-white font-light leading-relaxed cursor-pointer min-h-[16px] font-lora"
+                            onClick={() => setEditingCaption(image.id)}
+                          >
+                            {image.caption || 'What do you love about this?'}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-light font-serif text-primary">Share your inspiration</h3>
-                    <p className="text-sm font-light text-muted-foreground leading-relaxed max-w-md mx-auto">
-                      Drag images here, or select from your collection
-                    </p>
-                  </div>
-                  <Button variant="outline" size="lg" className="relative border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground font-medium" disabled={loading}>
-                    <ImagePlus className="w-4 h-4 mr-2" />
-                    Browse Images
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleChange}
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                    />
-                  </Button>
-                </>
-              )}
+                </div>
+              ))}
             </div>
-          </Card>
-        </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-center gap-6 mt-12 px-4">
+              <Button variant="outline" size="lg" disabled={isLoading || loading} className="relative border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground">
+                <ImagePlus className="w-4 h-4 mr-2" />
+                Add More
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+              </Button>
+              <Button size="lg" disabled={isLoading || displayImages.length === 0} className="bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground font-medium px-8">
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                    Curating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Begin Curation
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

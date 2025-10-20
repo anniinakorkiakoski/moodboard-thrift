@@ -143,8 +143,7 @@ const Index = () => {
 
             {/* Cura Gallery Section */}
             <div className="relative min-h-screen py-20">
-              <div className="container mx-auto px-8 pt-0 pb-8">
-              <div className="text-center mb-24 space-y-6">
+              <div className="text-center mb-24 space-y-6 px-8">
                 <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">CURA GALLERY</h2>
                 <div className="w-16 h-px bg-primary/40 mx-auto"></div>
                 <p className="text-sm md:text-base font-light text-foreground/70 leading-loose max-w-xl mx-auto font-mono">
@@ -152,15 +151,12 @@ const Index = () => {
                 </p>
               </div>
               
-              <div className="max-w-7xl mx-auto">
-                <GalleryUpload 
-                  onUpload={handleUpload}
-                  onImageSearch={handleImageSearch}
-                  isLoading={isSearching} 
-                />
-              </div>
+              <GalleryUpload 
+                onUpload={handleUpload}
+                onImageSearch={handleImageSearch}
+                isLoading={isSearching} 
+              />
             </div>
-          </div>
         </div>
       </section>
 
