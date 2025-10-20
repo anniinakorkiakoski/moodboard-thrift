@@ -158,22 +158,7 @@ export const HowToUse = () => {
                   <img src={shareCouple} alt="Fashion inspiration" className="w-full h-64 object-cover bg-white" />
                 </div>
 
-                {/* Window 2 - Center - CURA Logo */}
-                <div className="absolute top-24 left-20 w-64 rounded-lg overflow-hidden shadow-2xl z-10">
-                  <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
-                    <div className="flex gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-                      <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                    </div>
-                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">02.jpg</div>
-                  </div>
-                  <div className="bg-white flex items-center justify-center h-48 p-8">
-                    <img src={curaLogo} alt="CURA logo" className="w-full h-auto object-contain" />
-                  </div>
-                </div>
-
-                {/* Window 3 - Bottom Right - Vintage Fashion */}
+                {/* Window 2 - Bottom Right - Vintage Fashion */}
                 <div className="absolute top-56 right-0 w-60 rounded-lg overflow-hidden shadow-2xl">
                   <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
                     <div className="flex gap-1.5">
