@@ -14,6 +14,7 @@ import { HowToUse } from "./pages/HowToUse";
 import { Connect } from "./pages/Connect";
 import { CatalogAdmin } from "./pages/CatalogAdmin";
 import CatalogScraper from "./pages/CatalogScraper";
+import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/our-mission" element={<OurMission />} />
           <Route path="/how-to-use" element={<HowToUse />} />
           <Route path="/connect" element={<Connect />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/catalog-admin" element={<CatalogAdmin />} />
           <Route path="/catalog-scraper" element={<CatalogScraper />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -1,44 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { GalleryUpload } from '@/components/GalleryUpload';
-import { StylerFinds } from '@/components/StylerFinds';
-import { BundleDisplay } from '@/components/BundleDisplay';
-import { LibrarySidebar } from '@/components/LibrarySidebar';
-import { LogoAnimation } from '@/components/LogoAnimation';
 import { SourceChain } from '@/components/SourceChain';
 import { AllPlatformsDialog } from '@/components/AllPlatformsDialog';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
-import { LogOut, User, Sparkles, Heart, Users } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import notecardStack from '@/assets/notecard-stack.png';
 
 const Index = () => {
-  const navigate = useNavigate();
-  const [isSearching, setIsSearching] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [searchedImage, setSearchedImage] = useState<{ url: string; caption: string } | null>(null);
-  const [user, setUser] = useState<any>(null);
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [visibleLetters, setVisibleLetters] = useState(0);
-
-  useEffect(() => {
-    // Check current user
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      const newUser = session?.user ?? null;
-      setUser(newUser);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   // Typewriter animation for CURA title
   useEffect(() => {
@@ -52,38 +22,10 @@ const Index = () => {
       } else {
         clearInterval(interval);
       }
-    }, 200); // 200ms delay between each letter
+    }, 200);
 
     return () => clearInterval(interval);
   }, []);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-  };
-
-  const handleUpload = (files: File[]) => {
-    console.log('Uploaded files:', files);
-    setIsSearching(true);
-    setSearchedImage(null);
-    
-    // Simulate AI processing time
-    setTimeout(() => {
-      setIsSearching(false);
-      setShowResults(true);
-    }, 3000);
-  };
-
-  const handleImageSearch = (image: { url: string; caption: string; aspectRatio: number }) => {
-    // Navigate to visual search results page
-    navigate('/search', {
-      state: { imageUrl: image.url }
-    });
-  };
-
-  const handleStartOver = () => {
-    setShowResults(false);
-    setSearchedImage(null);
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -141,40 +83,10 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Cura Gallery Section */}
-            <div className="relative min-h-screen py-20">
-              <div className="text-center mb-24 space-y-6 px-8">
-                <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">CURA GALLERY</h2>
-                <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-                <p className="text-sm md:text-base font-light text-foreground/70 leading-loose max-w-xl mx-auto font-mono">
-                  Share your style inspiration and discover premium secondhand pieces curated specifically for your aesthetic
-                </p>
-              </div>
-              
-              <GalleryUpload 
-                onUpload={handleUpload}
-                onImageSearch={handleImageSearch}
-                isLoading={isSearching} 
-              />
-            </div>
         </div>
       </section>
 
-      {/* Loading State */}
-      {isSearching && (
-        <section className="py-16">
-          <BundleDisplay isSearching={true} />
-        </section>
-      )}
-
-      {/* Results Section - Shows alongside the main picture feed */}
-      {showResults && (
-        <section className="py-16 bg-secondary/30">
-          <StylerFinds searchedImage={searchedImage} onStartOver={handleStartOver} />
-        </section>
-      )}
-
-      {/* The Process - Now at the bottom */}
+      {/* The Process */}
       <section className="pt-8 pb-32 bg-background">
         <div className="container mx-auto px-8">
           <div className="max-w-5xl mx-auto">
@@ -257,6 +169,43 @@ const Index = () => {
                 </div>
               </div>
             </div>
+
+            {/* Read More Link */}
+            <div className="text-center mt-16">
+              <Link 
+                to="/how-to-use"
+                className="text-sm font-light text-foreground/70 hover:text-foreground uppercase tracking-widest transition-colors duration-300 underline underline-offset-4 font-mono"
+              >
+                Read more about the process
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-32 bg-background">
+        <div className="container mx-auto px-8">
+          <div className="text-center space-y-12">
+            <div className="space-y-6">
+              <h2 className="text-3xl md:text-4xl font-black text-primary uppercase tracking-wider">
+                Ready to Begin Your CURA Journey?
+              </h2>
+              <div className="w-24 h-px bg-burgundy mx-auto"></div>
+              <p className="text-sm md:text-base font-light text-foreground/60 max-w-lg mx-auto leading-loose font-mono">
+                Start building your curated secondhand wardrobe today
+              </p>
+            </div>
+            
+            <Link to="/gallery">
+              <Button
+                variant="cta"
+                size="xl"
+                className="uppercase tracking-wider shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Enter CURA Gallery
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
