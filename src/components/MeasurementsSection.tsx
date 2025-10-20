@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useMeasurements } from '@/hooks/useMeasurements';
 import { Ruler } from 'lucide-react';
+import mannequinsImage from '@/assets/mannequins.webp';
 
 const MEASUREMENT_POINTS = [
   { id: 'neck_circumference', label: 'Neck', position: { top: '15%', left: '50%' } },
@@ -87,141 +88,19 @@ export const MeasurementsSection = () => {
           </div>
 
           <div className="relative">
-            <div className="aspect-[3/4] bg-muted/20 border border-border relative overflow-hidden">
-              {/* Dress Form Mannequin SVG - inspired by tailor's dress form */}
-              <svg viewBox="0 0 200 300" className="w-full h-full">
-                {mannequinType === 'female' ? (
-                  // Female dress form - curved silhouette
-                  <>
-                    {/* Neck/collar area */}
-                    <path
-                      d="M 85 45 Q 85 35, 100 35 Q 115 35, 115 45"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Shoulders */}
-                    <path
-                      d="M 75 50 Q 75 48, 80 48 L 120 48 Q 125 48, 125 50"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Left side - curved feminine silhouette */}
-                    <path
-                      d="M 75 50 Q 70 70, 68 85 Q 65 100, 68 120 Q 72 140, 78 155 L 85 175"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Right side - curved feminine silhouette */}
-                    <path
-                      d="M 125 50 Q 130 70, 132 85 Q 135 100, 132 120 Q 128 140, 122 155 L 115 175"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Bottom edge */}
-                    <path
-                      d="M 85 175 Q 90 178, 100 178 Q 110 178, 115 175"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Stand pole */}
-                    <line
-                      x1="100"
-                      y1="178"
-                      x2="100"
-                      y2="260"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Stand base - oval */}
-                    <ellipse
-                      cx="100"
-                      cy="265"
-                      rx="30"
-                      ry="8"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                  </>
-                ) : (
-                  // Male dress form - straighter silhouette
-                  <>
-                    {/* Neck/collar area */}
-                    <path
-                      d="M 85 45 Q 85 35, 100 35 Q 115 35, 115 45"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Shoulders - broader */}
-                    <path
-                      d="M 70 50 Q 70 48, 75 48 L 125 48 Q 130 48, 130 50"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Left side - straighter masculine silhouette */}
-                    <path
-                      d="M 70 50 Q 68 70, 70 90 Q 72 110, 75 130 Q 78 150, 82 170 L 88 175"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Right side - straighter masculine silhouette */}
-                    <path
-                      d="M 130 50 Q 132 70, 130 90 Q 128 110, 125 130 Q 122 150, 118 170 L 112 175"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Bottom edge */}
-                    <path
-                      d="M 88 175 Q 92 178, 100 178 Q 108 178, 112 175"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Stand pole */}
-                    <line
-                      x1="100"
-                      y1="178"
-                      x2="100"
-                      y2="260"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                    {/* Stand base - oval */}
-                    <ellipse
-                      cx="100"
-                      cy="265"
-                      rx="30"
-                      ry="8"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-foreground/30"
-                    />
-                  </>
-                )}
-              </svg>
+            <div className="aspect-[2/3] bg-muted/20 border border-border relative overflow-hidden flex items-center justify-center">
+              {/* Mannequin Image with crop based on selection */}
+              <div className="relative w-full h-full flex items-center justify-center">
+                <img
+                  src={mannequinsImage}
+                  alt={`${mannequinType} mannequin`}
+                  className="h-full object-contain"
+                  style={{
+                    objectPosition: mannequinType === 'male' ? '35% center' : '65% center',
+                    transform: mannequinType === 'male' ? 'scale(2.5) translateX(10%)' : 'scale(2.5) translateX(-10%)'
+                  }}
+                />
+              </div>
 
               {/* Measurement Points */}
               {MEASUREMENT_POINTS.map((point) => (
