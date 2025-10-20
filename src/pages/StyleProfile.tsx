@@ -32,11 +32,10 @@ export const StyleProfile = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
+    <div className="min-h-screen bg-white">
       <Navigation />
       
-      <div className="container mx-auto px-4 py-8 pt-32">
-        
+      <div className="container mx-auto px-6 py-8 max-w-7xl pt-32">
         <StyleProfileSelector />
       </div>
     </div>

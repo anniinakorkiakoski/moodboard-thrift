@@ -6,35 +6,73 @@ import { useStyleProfile } from '@/hooks/useStyleProfile';
 import { Sparkles, Heart, Plus, X } from 'lucide-react';
 
 const STYLE_TAGS = [
-  'Copenhagen Style',
-  'Stockholm Style',
-  'Bohemian',
-  'Sporty',
-  '90s',
-  'Indie',
-  'Model Off Duty',
-  'Preppy',
+  'Scandi',
   'Minimalist',
-  'Vintage',
-  'Grunge',
-  'Y2K',
+  'Classic',
   'Streetwear',
-  'Cottagecore',
-  'Dark Academia',
-  'Clean Girl',
+  'Sporty',
+  'Chic',
+  'Casual',
+  'Smart Casual',
+  'Experimental',
+  'Indie',
+  'Grunge',
+  'Basic',
+  'Girly',
+  'Elegant',
+  'Office',
+  'Maximalist',
+  'Americana',
+  'Vintage',
+  'Alternative',
+  'Playful',
+  'Fun',
+  'Boho/Hippie',
+  'Old Money',
+  'Business Casual',
+  'Unique',
+  'Relaxed',
+  'Everyday',
+  'Classy',
+  'Simple',
+  'Dark Colors',
+  'Y2K',
+  'Engineer',
+  'Skatewear',
+  'Gorpcore',
+  'Japanese Influenced',
+  'Mixture/Combination',
 ];
 
 const DREAM_BRANDS = [
   'Acne Studios',
   'Maison Margiela',
   'Prada',
-  'Yankees',
+  'Gucci',
+  'Hermès',
+  'Chanel',
+  'Dior',
+  'Bottega Veneta',
+  'Loewe',
+  'Balenciaga',
+  'Saint Laurent',
+  'Valentino',
+  'Céline',
+  'The Row',
+  'Comme des Garçons',
+  'Yohji Yamamoto',
+  'Issey Miyake',
+  'Sacai',
+  'Junya Watanabe',
+  'Visvim',
+  'Kapital',
+  'Porter-Yoshida',
   'Nike',
   'Adidas',
+  'Yankees',
   'Oresund Iris',
   'Hand Me Over',
   'Free People',
-  'The Row',
   'COS',
   'Ganni',
   'Stussy',
@@ -43,6 +81,10 @@ const DREAM_BRANDS = [
   '& Other Stories',
   'Arket',
   'Weekday',
+  'A.P.C.',
+  'Lemaire',
+  'Uniqlo',
+  'Muji',
 ];
 
 export const StyleProfileSelector = () => {
@@ -127,11 +169,12 @@ export const StyleProfileSelector = () => {
   return (
     <div className="space-y-20 max-w-7xl mx-auto px-4">
       {/* Header */}
-      <div className="text-center space-y-3 pt-12">
-        <h2 className="text-5xl md:text-6xl font-black tracking-tighter text-accent-foreground">
-          DEFINE YOUR STYLE
+      <div className="text-center space-y-6 pt-12">
+        <h2 className="text-5xl md:text-6xl font-black tracking-tight text-burgundy uppercase">
+          Define Your Style
         </h2>
-        <p className="text-xs tracking-wide text-muted-foreground max-w-xl mx-auto uppercase">
+        <div className="w-16 h-px bg-burgundy/40 mx-auto"></div>
+        <p className="text-sm md:text-base font-light text-foreground/70 leading-loose max-w-xl mx-auto font-mono">
           Curate your fashion DNA to discover pieces that truly resonate with your aesthetic
         </p>
       </div>
