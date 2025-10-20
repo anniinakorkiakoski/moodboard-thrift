@@ -18,15 +18,7 @@ export const OurMission = () => {
             <h1 className="text-6xl md:text-8xl font-black text-primary tracking-tight uppercase">
               ABOUT US
             </h1>
-              <svg className="absolute -bottom-4 left-0 w-full" height="20" viewBox="0 0 400 20">
-                <path 
-                  d="M 10 15 Q 100 5, 200 15 T 390 15" 
-                  stroke="hsl(var(--burgundy))" 
-                  strokeWidth="3" 
-                  fill="none"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-burgundy"></div>
             </div>
           </header>
 
@@ -185,9 +177,7 @@ export const OurMission = () => {
               <h3 className="text-4xl md:text-5xl font-light italic text-primary leading-relaxed uppercase">
                 FASHION WITH PURPOSE.<br/>STYLE WITH CONSCIENCE.
               </h3>
-              <svg className="absolute -bottom-8 left-1/2 -translate-x-1/2" width="200" height="40" viewBox="0 0 200 40">
-                <ellipse cx="100" cy="20" rx="95" ry="15" stroke="hsl(var(--burgundy))" strokeWidth="2" fill="none" />
-              </svg>
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-48 h-0.5 bg-burgundy"></div>
             </div>
           </footer>
         </article>
