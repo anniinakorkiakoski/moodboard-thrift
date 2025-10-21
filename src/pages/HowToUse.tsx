@@ -21,20 +21,9 @@ export const HowToUse = () => {
         <article className="space-y-32 py-12">
           {/* Hero Title */}
           <header className="pt-12 pb-8">
-            <div className="relative">
-            <h1 className="text-7xl md:text-9xl font-black text-primary tracking-tight leading-none uppercase">
-              HOW_TO_<br/>USE
+            <h1 className="text-5xl md:text-6xl font-black text-primary tracking-tight leading-none uppercase">
+              HOW TO USE
             </h1>
-              <svg className="absolute -right-12 top-1/2 -translate-y-1/2" width="100" height="100" viewBox="0 0 100 100">
-                <path 
-                  d="M 20 50 L 80 50 M 80 50 L 70 40 M 80 50 L 70 60" 
-                  stroke="hsl(var(--burgundy))" 
-                  strokeWidth="3" 
-                  fill="none"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
           <p className="text-sm md:text-base text-foreground/60 mt-8 max-w-2xl leading-loose font-mono">
             A thoughtful approach to discovering pieces that resonate with your personal aesthetic. 
             Building a wardrobe that feels authentic, intentional, and entirely yours.
