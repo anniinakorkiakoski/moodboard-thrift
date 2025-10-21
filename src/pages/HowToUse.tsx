@@ -37,7 +37,7 @@ export const HowToUse = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                 
                 {/* Step 1 */}
-                <div className="group relative h-[240px]">
+                <div className="group relative h-[200px]">
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
@@ -54,7 +54,7 @@ export const HowToUse = () => {
                 </div>
 
                 {/* Step 2 */}
-                <div className="group relative h-[240px]">
+                <div className="group relative h-[200px]">
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
@@ -71,7 +71,7 @@ export const HowToUse = () => {
                 </div>
 
                 {/* Step 3 */}
-                <div className="group relative h-[240px]">
+                <div className="group relative h-[200px]">
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
