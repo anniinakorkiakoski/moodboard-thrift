@@ -31,22 +31,13 @@ export const HowToUse = () => {
           </p>
           </header>
 
-          {/* The Process - Note Cards */}
-          <section className="py-16">
+          {/* Process Steps - Note Cards */}
+          <section className="py-8">
             <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-16 space-y-6">
-                <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">THE PROCESS</h2>
-                <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-                <p className="text-sm md:text-base font-light text-foreground/70 leading-loose font-mono">
-                  Three simple steps to curate your perfect wardrobe
-                </p>
-              </div>
-
-              {/* Process Steps - Real Note Card with overlay */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                 
                 {/* Step 1 */}
-                <div className="group relative h-[280px]">
+                <div className="group relative h-[240px]">
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
@@ -63,7 +54,7 @@ export const HowToUse = () => {
                 </div>
 
                 {/* Step 2 */}
-                <div className="group relative h-[280px]">
+                <div className="group relative h-[240px]">
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
@@ -80,7 +71,7 @@ export const HowToUse = () => {
                 </div>
 
                 {/* Step 3 */}
-                <div className="group relative h-[280px]">
+                <div className="group relative h-[240px]">
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
