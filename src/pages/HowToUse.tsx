@@ -96,7 +96,7 @@ export const HowToUse = () => {
               <div className="md:col-span-5 space-y-8">
                 <div>
                   <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
-                    Stage 1
+                    01
                   </div>
                   <h2 className="text-6xl font-black text-primary mb-6 relative inline-block uppercase">
                     SHARE
@@ -160,7 +160,7 @@ export const HowToUse = () => {
             <div className="max-w-6xl mx-auto">
               <div className="mb-8">
                 <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
-                  Stage 2
+                  02
                 </div>
                 <h2 className="text-6xl font-black text-primary mb-6 relative inline-block uppercase">
                   DISCOVER
@@ -238,7 +238,7 @@ export const HowToUse = () => {
               <div className="space-y-8">
                 <div>
                   <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
-                    Stage 3
+                    03
                   </div>
                   <div className="relative inline-block">
                     <h2 className="text-6xl font-black text-primary uppercase">
