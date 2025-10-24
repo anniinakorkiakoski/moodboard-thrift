@@ -12,6 +12,7 @@ export const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userRole, setUserRole] = useState<'customer' | 'thrifter'>('customer');
   const { toast } = useToast();
@@ -33,7 +34,20 @@ export const Auth = () => {
     setLoading(true);
 
     try {
-      if (isSignUp) {
+      if (isForgotPassword) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth`
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Password Reset Email Sent",
+          description: "Check your email for a password reset link."
+        });
+        
+        setIsForgotPassword(false);
+      } else if (isSignUp) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -103,13 +117,13 @@ export const Auth = () => {
         <div className="text-center">
           <h1 className="text-4xl font-serif font-light text-primary mb-2">CURA</h1>
           <p className="text-muted-foreground">
-            {isSignUp ? 'Create your account' : 'Welcome back'}
+            {isForgotPassword ? 'Reset your password' : isSignUp ? 'Create your account' : 'Welcome back'}
           </p>
         </div>
 
         <Card className="p-6">
           <form onSubmit={handleAuth} className="space-y-4">
-            {isSignUp && (
+            {isSignUp && !isForgotPassword && (
               <div className="space-y-3">
                 <Label className="text-base font-medium">I want to join as a:</Label>
                 <RadioGroup value={userRole} onValueChange={(value) => setUserRole(value as 'customer' | 'thrifter')}>
@@ -140,17 +154,19 @@ export const Auth = () => {
               />
             </div>
             
-            <div>
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full"
-                minLength={6}
-              />
-            </div>
+            {!isForgotPassword && (
+              <div>
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full"
+                  minLength={6}
+                />
+              </div>
+            )}
 
             <Button 
               type="submit" 
@@ -160,21 +176,34 @@ export const Auth = () => {
               {loading ? (
                 <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
               ) : null}
-              {isSignUp ? 'Create Account' : 'Sign In'}
+              {isForgotPassword ? 'Send Reset Email' : isSignUp ? 'Create Account' : 'Sign In'}
             </Button>
           </form>
 
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center space-y-2">
             <button
               type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm text-muted-foreground hover:text-primary"
+              onClick={() => {
+                setIsForgotPassword(!isForgotPassword);
+                setIsSignUp(false);
+              }}
+              className="text-sm text-muted-foreground hover:text-primary block w-full"
             >
-              {isSignUp 
-                ? 'Already have an account? Sign in' 
-                : "Don't have an account? Sign up"
-              }
+              {isForgotPassword ? 'Back to sign in' : 'Forgot password?'}
             </button>
+            
+            {!isForgotPassword && (
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-sm text-muted-foreground hover:text-primary block w-full"
+              >
+                {isSignUp 
+                  ? 'Already have an account? Sign in' 
+                  : "Don't have an account? Sign up"
+                }
+              </button>
+            )}
           </div>
         </Card>
       </div>
