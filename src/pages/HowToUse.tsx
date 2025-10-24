@@ -13,294 +13,186 @@ import { Button } from '@/components/ui/button';
 
 export const HowToUse = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F5F1EB]">
       <Navigation />
       
-      <div className="container mx-auto px-6 py-8 max-w-7xl pt-32">
-        
-        <article className="space-y-32 py-12">
-          {/* Hero Title */}
-          <header className="pt-12 pb-8">
-            <h1 className="text-5xl md:text-6xl font-black text-primary tracking-tight leading-none uppercase">
-              HOW TO USE
-            </h1>
-          <p className="text-sm md:text-base text-foreground/60 mt-8 max-w-2xl leading-loose font-mono">
+      <div className="container mx-auto px-8 py-12 max-w-7xl pt-32">
+        {/* Hero Section */}
+        <section className="py-16 mb-24">
+          <h1 className="text-7xl md:text-8xl font-bold text-burgundy tracking-tight mb-8 uppercase">
+            how to use
+          </h1>
+          <p className="text-base text-foreground/70 max-w-2xl leading-relaxed">
             A thoughtful approach to discovering pieces that resonate with your personal aesthetic. 
             Building a wardrobe that feels authentic, intentional, and entirely yours.
-            Below, each step of the process is introduced in more detail.
           </p>
-          </header>
+        </section>
 
-          {/* Process Steps - Note Cards */}
-          <section className="py-8">
-            <div className="max-w-5xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-                
-                {/* Step 1 */}
-                <div className="group relative h-[200px]">
-                  <img 
-                    src={notecardStack} 
-                    alt="Note card" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center p-8">
-                    <div className="flex flex-col items-center text-center space-y-4">
-                      <div className="w-10 h-10 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-sm font-medium text-burgundy-foreground">01</span>
-                      </div>
-                      <h3 className="text-sm font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
-                    </div>
-                  </div>
+        {/* Step 1: Share */}
+        <section className="py-24 border-t border-foreground/10">
+          <div className="grid md:grid-cols-12 gap-12 items-center">
+            {/* Left side - Text */}
+            <div className="md:col-span-5 space-y-8">
+              <div className="flex items-start gap-8">
+                <div className="text-[120px] md:text-[160px] font-bold text-burgundy leading-none">
+                  1.
                 </div>
-
-                {/* Step 2 */}
-                <div className="group relative h-[200px]">
-                  <img 
-                    src={notecardStack} 
-                    alt="Note card" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center p-8">
-                    <div className="flex flex-col items-center text-center space-y-4">
-                      <div className="w-10 h-10 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-sm font-medium text-burgundy-foreground">02</span>
-                      </div>
-                      <h3 className="text-sm font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Step 3 */}
-                <div className="group relative h-[200px]">
-                  <img 
-                    src={notecardStack} 
-                    alt="Note card" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center p-8">
-                    <div className="flex flex-col items-center text-center space-y-4">
-                      <div className="w-10 h-10 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-sm font-medium text-burgundy-foreground">03</span>
-                      </div>
-                      <h3 className="text-sm font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Step 1: Share */}
-          <section className="py-12">
-            <div className="grid md:grid-cols-12 gap-16">
-              <div className="md:col-span-5 space-y-8">
-                <div>
-                  <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
-                    Stage 1
-                  </div>
-                  <h2 className="text-6xl font-black text-primary mb-6 relative inline-block uppercase">
-                    SHARE
-                    <svg className="absolute -bottom-4 left-0 w-full" height="15" viewBox="0 0 200 15">
-                      <path 
-                        d="M 5 10 L 195 10" 
-                        stroke="hsl(var(--burgundy))" 
-                        strokeWidth="2" 
-                        fill="none"
-                      />
-                    </svg>
+                <div className="pt-8">
+                  <h2 className="text-5xl md:text-6xl font-bold text-burgundy mb-6 uppercase tracking-tight">
+                    share
                   </h2>
+                  <div className="w-12 h-12 rounded-full bg-burgundy mt-4"></div>
                 </div>
-                
-                <div className="space-y-4 text-sm md:text-base leading-loose text-foreground/70 font-mono">
-                  <p>
-                    Create a moodboard that speaks to who you are. Upload images from Pinterest, magazines, 
-                    social media, or your own wardrobe.
-                  </p>
-                  <p>
-                    Add notes about what you love — the drape, the silhouette, the feeling it evokes. 
-                    Visit "My Style" to select your style categories and dream brands.
-                  </p>
-                </div>
-              </div>
-
-              <div className="md:col-span-6 md:col-start-7 relative h-[600px]">
-                {/* Scattered macOS-style windows */}
-                
-                {/* Window 1 - Top Left - Couple Photo */}
-                <div className="absolute top-0 left-0 w-56 rounded-lg overflow-hidden shadow-2xl">
-                  <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 flex items-center justify-center">
-                        <span className="text-gray-600 text-xs">×</span>
-                      </div>
-                    </div>
-                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">Unfold_01.jpg</div>
-                  </div>
-                  <img src={shareCouple} alt="Fashion inspiration" className="w-full h-64 object-cover bg-white" />
-                </div>
-
-                {/* Window 2 - Bottom Right - Vintage Fashion */}
-                <div className="absolute top-56 right-0 w-60 rounded-lg overflow-hidden shadow-2xl">
-                  <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 flex items-center justify-center">
-                        <span className="text-gray-600 text-xs">×</span>
-                      </div>
-                    </div>
-                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">08.jpg</div>
-                  </div>
-                  <img src={shareVintage} alt="Vintage fashion" className="w-full h-56 object-cover bg-white" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Step 2: Discover */}
-          <section className="py-12">
-            <div className="max-w-6xl mx-auto">
-              <div className="mb-8">
-                <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
-                  Stage 2
-                </div>
-                <h2 className="text-6xl font-black text-primary mb-6 relative inline-block uppercase">
-                  DISCOVER
-                  <svg className="absolute -bottom-4 left-0 w-full" height="15" viewBox="0 0 200 15">
-                    <path 
-                      d="M 5 10 L 195 10" 
-                      stroke="hsl(var(--burgundy))" 
-                      strokeWidth="2" 
-                      fill="none"
-                    />
-                  </svg>
-                </h2>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-12 items-start">
-                <div>
-                  <div className="relative">
-                    <img src={laptopPhoto} alt="Laptop photo" className="w-full h-auto shadow-lg" />
-                    <img
-                      src={curaScreen}
-                      alt="CURA Gallery interface"
-                      className="absolute pointer-events-none"
-                      style={{
-                        top: '6.2%',
-                        left: '17.4%',
-                        width: '65.0%',
-                        transform: 'skewY(-5.4deg) rotate(-1.2deg) perspective(1200px) rotateX(9deg)',
-                        transformOrigin: 'top left',
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-8">
-                  <div className="space-y-4 text-sm md:text-base leading-loose text-foreground/70 font-mono">
-                    <p>
-                      Let our AI search across multiple resale platforms, considering your visual preferences 
-                      and brand selections to deliver curated results instantly.
-                    </p>
-                  </div>
-
-                  <div className="space-y-6 pt-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-px bg-burgundy"></div>
-                        <h3 className="text-lg font-bold text-primary uppercase tracking-wider">
-                          AI-POWERED
-                        </h3>
-                      </div>
-                      <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
-                        Intelligent search that understands your aesthetic and finds pieces that match your vision.
-                      </p>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-px bg-burgundy"></div>
-                        <h3 className="text-lg font-bold text-primary uppercase tracking-wider">
-                          HUMAN TOUCH
-                        </h3>
-                      </div>
-                      <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
-                        Connect with professional thrifters and stylists who share your aesthetic for personalized service.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Step 3: Curate */}
-          <section className="py-20">
-            <div className="max-w-6xl mx-auto">
-              <div className="space-y-8">
-                <div>
-                  <div className="text-xs font-bold text-burgundy uppercase tracking-[0.3em] mb-4">
-                    Stage 3
-                  </div>
-                  <div className="relative inline-block">
-                    <h2 className="text-6xl font-black text-primary uppercase">
-                      CURATE
-                    </h2>
-                    <svg className="absolute -top-6 -right-12" width="60" height="60" viewBox="0 0 60 60">
-                      <path 
-                        d="M 15 45 Q 30 10, 45 30 T 50 50" 
-                        stroke="hsl(var(--burgundy))" 
-                        strokeWidth="2.5" 
-                        fill="none"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                <div className="space-y-6 text-sm md:text-base leading-loose text-foreground/70 font-mono">
-                  <p>
-                    Your results arrive as a carefully curated edit — pieces that don't just match your 
-                    inspiration, but understand the intention behind it.
-                  </p>
-
-                  <div className="border-l-2 border-burgundy pl-6">
-                    <p className="text-foreground/60">
-                      Browse through your selection. Save pieces that resonate. Message thrifters for more 
-                      information. This is the beginning of a conversation, not the end of a search.
-                    </p>
-                  </div>
-
-                  <p className="text-lg italic text-primary pt-4">
-                    From abstract inspiration to concrete wardrobe — pieces that feel authentic and entirely yours.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Closing CTA */}
-          <footer className="text-center py-20 pb-32">
-            <div className="space-y-8">
-              <div className="relative inline-block">
-                <p className="text-sm uppercase tracking-[0.3em] text-burgundy font-bold">
-                  READY TO BEGIN?
-                </p>
-                <svg className="absolute -bottom-4 left-1/2 -translate-x-1/2" width="120" height="20" viewBox="0 0 120 20">
-                  <ellipse cx="60" cy="10" rx="55" ry="8" stroke="hsl(var(--burgundy))" strokeWidth="1.5" fill="none" strokeDasharray="3,3" />
-                </svg>
               </div>
               
-              <Link to="/">
-                <Button
-                  variant="default"
-                  size="lg"
-                  className="uppercase tracking-wider mt-12 bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground font-mono"
-                >
-                  start your journey
-                </Button>
-              </Link>
+              <div className="space-y-6 text-base leading-relaxed text-foreground/70 pl-4">
+                <p>
+                  Create a moodboard that speaks to who you are. Upload images from Pinterest, magazines, 
+                  social media, or your own wardrobe.
+                </p>
+                <p>
+                  Add notes about what you love — the drape, the silhouette, the feeling it evokes. 
+                  Visit "My Style" to select your style categories and dream brands.
+                </p>
+              </div>
             </div>
-          </footer>
-        </article>
+
+            {/* Right side - Images */}
+            <div className="md:col-span-6 md:col-start-7 relative h-[500px]">
+              <div className="absolute top-0 left-0 w-64 h-80 overflow-hidden shadow-xl">
+                <img src={shareCouple} alt="Fashion inspiration" className="w-full h-full object-cover" />
+              </div>
+
+              <div className="absolute bottom-0 right-0 w-56 h-72 overflow-hidden shadow-xl">
+                <img src={shareVintage} alt="Vintage fashion" className="w-full h-full object-cover" />
+              </div>
+              
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-burgundy"></div>
+            </div>
+          </div>
+        </section>
+
+        {/* Step 2: Discover */}
+        <section className="py-24 border-t border-foreground/10">
+          <div className="grid md:grid-cols-12 gap-12 items-center">
+            {/* Left side - Image */}
+            <div className="md:col-span-6 relative">
+              <img src={laptopPhoto} alt="Laptop with CURA interface" className="w-full h-auto shadow-xl" />
+              <img
+                src={curaScreen}
+                alt="CURA Gallery interface"
+                className="absolute pointer-events-none"
+                style={{
+                  top: '6.2%',
+                  left: '17.4%',
+                  width: '65.0%',
+                  transform: 'skewY(-5.4deg) rotate(-1.2deg) perspective(1200px) rotateX(9deg)',
+                  transformOrigin: 'top left',
+                }}
+              />
+              <div className="absolute -bottom-8 -left-8 w-16 h-16 rounded-full bg-burgundy"></div>
+            </div>
+
+            {/* Right side - Text */}
+            <div className="md:col-span-5 md:col-start-8 space-y-8">
+              <div className="flex items-start gap-8">
+                <div className="text-[120px] md:text-[160px] font-bold text-burgundy leading-none">
+                  2.
+                </div>
+                <div className="pt-8">
+                  <h2 className="text-5xl md:text-6xl font-bold text-burgundy mb-6 uppercase tracking-tight">
+                    discover
+                  </h2>
+                </div>
+              </div>
+
+              <div className="space-y-6 text-base leading-relaxed text-foreground/70 pl-4">
+                <p>
+                  Let our AI search across multiple resale platforms, considering your visual preferences 
+                  and brand selections to deliver curated results instantly.
+                </p>
+                
+                <div className="space-y-4 pt-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-primary uppercase tracking-wider mb-2">
+                      AI-Powered
+                    </h3>
+                    <p className="text-sm text-foreground/60">
+                      Intelligent search that understands your aesthetic.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-bold text-primary uppercase tracking-wider mb-2">
+                      Human Touch
+                    </h3>
+                    <p className="text-sm text-foreground/60">
+                      Connect with professional thrifters who share your style.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Step 3: Curate */}
+        <section className="py-24 border-t border-foreground/10">
+          <div className="grid md:grid-cols-12 gap-12">
+            {/* Left side - Text */}
+            <div className="md:col-span-6 space-y-8">
+              <div className="flex items-start gap-8">
+                <div className="text-[120px] md:text-[160px] font-bold text-burgundy leading-none">
+                  3.
+                </div>
+                <div className="pt-8">
+                  <h2 className="text-5xl md:text-6xl font-bold text-burgundy mb-6 uppercase tracking-tight">
+                    curate
+                  </h2>
+                  <div className="w-12 h-12 rounded-full bg-burgundy mt-4"></div>
+                </div>
+              </div>
+
+              <div className="space-y-6 text-base leading-relaxed text-foreground/70 pl-4">
+                <p>
+                  Your results arrive as a carefully curated edit — pieces that don't just match your 
+                  inspiration, but understand the intention behind it.
+                </p>
+
+                <p>
+                  Browse through your selection. Save pieces that resonate. Message thrifters for more 
+                  information. This is the beginning of a conversation, not the end of a search.
+                </p>
+              </div>
+            </div>
+
+            {/* Right side - Image */}
+            <div className="md:col-span-5 md:col-start-8 relative">
+              <div className="relative h-96 overflow-hidden shadow-xl">
+                <img src={vintageFashion} alt="Curated fashion piece" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Closing Section */}
+        <section className="py-32 text-center border-t border-foreground/10">
+          <div className="space-y-8">
+            <p className="text-2xl text-foreground/80 italic max-w-2xl mx-auto leading-relaxed">
+              From abstract inspiration to concrete wardrobe — pieces that feel authentic and entirely yours.
+            </p>
+            
+            <Link to="/">
+              <Button
+                variant="default"
+                size="lg"
+                className="uppercase tracking-wider mt-8 bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground px-12 py-6 text-base"
+              >
+                start your journey
+              </Button>
+            </Link>
+          </div>
+        </section>
       </div>
     </div>
   );
