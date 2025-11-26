@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Upload, ImagePlus, Sparkles, Edit2, Search, Trash2 } from 'lucide-react';
+import { Upload, ImagePlus, Sparkles, Edit2, Search, Trash2, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,8 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
   const [dragActive, setDragActive] = useState(false);
   const [editingCaption, setEditingCaption] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [pinterestUrl, setPinterestUrl] = useState('');
+  const [extractingPinterest, setExtractingPinterest] = useState(false);
   
   const { images, loading, uploadImage, updateCaption: updateImageCaption, deleteImage, getImageUrl } = useUserImages();
   const { toast } = useToast();
@@ -145,6 +147,83 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
     }
   };
 
+  const handlePinterestExtract = async () => {
+    if (!pinterestUrl.trim()) {
+      toast({
+        title: "URL Required",
+        description: "Please enter a Pinterest URL.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to save images.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setExtractingPinterest(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('pinterest-extract', {
+        body: { url: pinterestUrl }
+      });
+
+      if (error) throw error;
+
+      const images = data.images || [];
+      
+      if (images.length === 0) {
+        toast({
+          title: "No Images Found",
+          description: "Could not extract images from this Pinterest URL.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Download and upload each image
+      for (const image of images) {
+        try {
+          const response = await fetch(image.url);
+          const blob = await response.blob();
+          const file = new File([blob], `pinterest-${Date.now()}.jpg`, { type: 'image/jpeg' });
+
+          // Calculate aspect ratio
+          const img = new Image();
+          const aspectRatio = await new Promise<number>((resolve) => {
+            img.onload = () => resolve(img.width / img.height);
+            img.src = URL.createObjectURL(file);
+          });
+
+          await uploadImage(file, image.title, aspectRatio);
+        } catch (imgError) {
+          console.error('Failed to upload Pinterest image:', imgError);
+        }
+      }
+
+      toast({
+        title: "Images Added",
+        description: `Successfully added ${images.length} image(s) from Pinterest.`
+      });
+
+      setPinterestUrl('');
+    } catch (error) {
+      console.error('Pinterest extract error:', error);
+      toast({
+        title: "Extraction Failed",
+        description: "Failed to extract images from Pinterest. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setExtractingPinterest(false);
+    }
+  };
+
   const platforms = [
     { name: 'Vinted', initial: 'V', color: 'bg-orange-500' },
     { name: 'Depop', initial: 'D', color: 'bg-green-500' },
@@ -203,7 +282,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
       <div className="space-y-12">
         {/* Upload Area */}
         {displayImages.length === 0 && (
-          <div className="relative max-w-4xl mx-auto px-4">
+          <div className="relative max-w-4xl mx-auto px-4 space-y-6">
             <Card 
               className={`relative border-2 transition-all duration-500 min-h-[400px] ${
                 dragActive 
@@ -238,6 +317,43 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                     className="absolute inset-0 opacity-0 cursor-pointer"
                   />
                 </Button>
+              </div>
+            </Card>
+
+            {/* Pinterest URL Input */}
+            <Card className="border-2 border-muted bg-card">
+              <div className="p-8 space-y-6">
+                <div className="text-center space-y-2">
+                  <div className="flex justify-center">
+                    <div className="w-12 h-12 border border-muted-foreground/20 flex items-center justify-center">
+                      <Link2 className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-light font-serif text-primary">Import from Pinterest</h3>
+                  <p className="text-xs font-light text-muted-foreground">
+                    Paste a Pinterest board or pin URL
+                  </p>
+                </div>
+                <div className="flex gap-3 max-w-2xl mx-auto">
+                  <Input
+                    value={pinterestUrl}
+                    onChange={(e) => setPinterestUrl(e.target.value)}
+                    placeholder="https://pinterest.com/..."
+                    className="font-light"
+                    disabled={extractingPinterest}
+                  />
+                  <Button 
+                    onClick={handlePinterestExtract}
+                    disabled={extractingPinterest || !pinterestUrl.trim()}
+                    className="bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground"
+                  >
+                    {extractingPinterest ? (
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      'Extract'
+                    )}
+                  </Button>
+                </div>
               </div>
             </Card>
           </div>
@@ -331,31 +447,66 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-center gap-6 mt-12 px-4">
-              <Button variant="outline" size="lg" disabled={isLoading || loading} className="relative border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground">
-                <ImagePlus className="w-4 h-4 mr-2" />
-                Add More
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                />
-              </Button>
-              <Button size="lg" disabled={isLoading || displayImages.length === 0} className="bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground font-medium px-8">
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                    Curating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Begin Curation
-                  </>
-                )}
-              </Button>
+            <div className="space-y-8 mt-12">
+              {/* Pinterest URL Input - Also available when gallery has images */}
+              <Card className="border-2 border-muted bg-card max-w-4xl mx-auto">
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 border border-muted-foreground/20 flex items-center justify-center flex-shrink-0">
+                      <Link2 className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 flex gap-3">
+                      <Input
+                        value={pinterestUrl}
+                        onChange={(e) => setPinterestUrl(e.target.value)}
+                        placeholder="Paste Pinterest URL to add more images"
+                        className="font-light text-sm"
+                        disabled={extractingPinterest}
+                      />
+                      <Button 
+                        onClick={handlePinterestExtract}
+                        disabled={extractingPinterest || !pinterestUrl.trim()}
+                        variant="outline"
+                        className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
+                      >
+                        {extractingPinterest ? (
+                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          'Extract'
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Main Action Buttons */}
+              <div className="flex items-center justify-center gap-6 px-4">
+                <Button variant="outline" size="lg" disabled={isLoading || loading} className="relative border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground">
+                  <ImagePlus className="w-4 h-4 mr-2" />
+                  Add More
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </Button>
+                <Button size="lg" disabled={isLoading || displayImages.length === 0} className="bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground font-medium px-8">
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                      Curating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Begin Curation
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         )}
