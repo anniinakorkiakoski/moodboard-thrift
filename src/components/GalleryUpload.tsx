@@ -105,23 +105,6 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
     }
   }, []);
 
-  const handleFileDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFiles(e.dataTransfer.files);
-    }
-  }, []);
-
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      handleFiles(e.target.files);
-    }
-  }, []);
-
   const handleFiles = async (files: FileList) => {
     if (!isAuthenticated) {
       toast({
@@ -163,6 +146,23 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
 
     onUpload(imageFiles);
   };
+
+  const handleFileDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFiles(e.dataTransfer.files);
+    }
+  }, [handleFiles]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      handleFiles(e.target.files);
+    }
+  }, [handleFiles]);
 
   const handleUpdateCaption = async (imageId: string, caption: string) => {
     try {
