@@ -121,9 +121,15 @@ serve(async (req) => {
       })
       .eq('id', searchId);
 
-    // Step 2: Generate search query and URLs from attributes
-    const searchQuery = `${attributes.category || attributes.itemType} ${attributes.fabricType || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.pattern || ''}`.trim();
+    // Step 2: Generate search query and URLs from attributes - include shape details
+    const searchQuery = `${attributes.category || attributes.itemType} ${attributes.silhouette || ''} ${attributes.length || ''} ${attributes.necklineCollar || ''} ${attributes.fabricType || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.pattern || ''}`.trim();
     console.log('Generated search query:', searchQuery);
+    console.log('Key shape attributes:', {
+      silhouette: attributes.silhouette,
+      length: attributes.length,
+      neckline: attributes.necklineCollar,
+      notableDetails: attributes.notableDetails
+    });
 
     // Step 3: Search multiple platforms directly
     console.log('Searching multiple platforms...');
@@ -266,17 +272,50 @@ ${truncatedHtml}`
       description: item.title || ''
     }));
 
-    // Quickly calculate basic text similarity for initial sorting
+    // Calculate similarity with heavy emphasis on shape attributes
     const scoredItems = mappedItems.map(item => {
-      let score = 0.5; // Base score
-      const searchText = `${attributes.category} ${attributes.fabricType} ${attributes.primaryColors?.join(' ')} ${attributes.pattern}`.toLowerCase();
+      let score = 0.3; // Lower base score
       const itemText = (item.title || '').toLowerCase();
       
-      // Count keyword matches
-      const keywords = searchText.split(' ').filter(k => k.length > 2);
-      keywords.forEach(keyword => {
-        if (itemText.includes(keyword)) score += 0.15;
-      });
+      // CRITICAL: Shape attributes (worth 0.4 total)
+      if (attributes.silhouette && itemText.includes(attributes.silhouette.toLowerCase())) {
+        score += 0.25; // Silhouette is most important
+      }
+      if (attributes.length && itemText.includes(attributes.length.toLowerCase())) {
+        score += 0.15; // Length is very important
+      }
+      
+      // Secondary shape details (worth 0.3 total)
+      if (attributes.necklineCollar) {
+        const necklineParts = attributes.necklineCollar.toLowerCase().split(' ');
+        necklineParts.forEach((part: string) => {
+          if (part.length > 3 && itemText.includes(part)) score += 0.1;
+        });
+      }
+      if (attributes.sleeveType && itemText.includes(attributes.sleeveType.toLowerCase())) {
+        score += 0.1;
+      }
+      if (attributes.notableDetails) {
+        attributes.notableDetails.forEach((detail: string) => {
+          if (detail.length > 4 && itemText.includes(detail.toLowerCase())) {
+            score += 0.05;
+          }
+        });
+      }
+      
+      // Basic attributes (worth 0.3 total)
+      if (attributes.category && itemText.includes(attributes.category.toLowerCase())) {
+        score += 0.1;
+      }
+      if (attributes.primaryColors?.[0] && itemText.includes(attributes.primaryColors[0].toLowerCase())) {
+        score += 0.1;
+      }
+      if (attributes.fabricType && itemText.includes(attributes.fabricType.toLowerCase())) {
+        score += 0.05;
+      }
+      if (attributes.pattern && itemText.includes(attributes.pattern.toLowerCase())) {
+        score += 0.05;
+      }
       
       return { ...item, similarity_score: Math.min(score, 1.0) };
     }).sort((a, b) => b.similarity_score - a.similarity_score);
@@ -303,6 +342,10 @@ ${truncatedHtml}`
     try {
       const insertPromises = topMatches.map(result => {
         const matchedAttrs = [];
+        // Prioritize shape attributes in the match explanation
+        if (attributes.silhouette) matchedAttrs.push(`${attributes.silhouette} silhouette`);
+        if (attributes.length) matchedAttrs.push(`${attributes.length} length`);
+        if (attributes.necklineCollar) matchedAttrs.push(attributes.necklineCollar);
         if (attributes.category) matchedAttrs.push(attributes.category);
         if (attributes.primaryColors?.[0]) matchedAttrs.push(attributes.primaryColors[0]);
         
