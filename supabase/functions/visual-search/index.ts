@@ -139,94 +139,91 @@ serve(async (req) => {
     // Use AI to extract items from search result pages
     const allItems: any[] = [];
     
-    for (const url of searchUrls.slice(0, 2)) { // Only process 2 platforms for speed
-      try {
-        console.log('Fetching:', url);
-        
-        const pageResponse = await fetch(url, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          },
-        });
-        
-        if (!pageResponse.ok) {
-          console.error('Failed to fetch:', url, pageResponse.status);
-          continue;
-        }
-        
-        const html = await pageResponse.text();
-        const truncatedHtml = html.substring(0, 30000); // Reduced to 30k chars
-        
-        console.log('Extracting items with AI...');
-        
-        // Extract items using AI
-        const extractResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'google/gemini-2.5-flash',
-            messages: [{
-              role: 'user',
-              content: `Extract up to 10 fashion item listings from this search results page. Find item URLs, image URLs, titles, and prices.\n\nHTML:\n${truncatedHtml}`
-            }],
-            tools: [{
-              type: 'function',
-              function: {
-                name: 'extract_items',
-                parameters: {
-                  type: 'object',
-                  properties: {
-                    items: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          itemUrl: { type: 'string' },
-                          imageUrl: { type: 'string' },
-                          title: { type: 'string' },
-                          price: { type: 'string' },
-                          currency: { type: 'string' }
-                        },
-                        required: ['itemUrl']
-                      }
-                    }
-                  },
-                  required: ['items']
-                }
-              }
-            }],
-            tool_choice: { type: 'function', function: { name: 'extract_items' } }
-          })
-        });
-        
-        if (extractResponse.ok) {
-          const extractData = await extractResponse.json();
-          const toolCall = extractData.choices?.[0]?.message?.tool_calls?.[0];
-          if (toolCall) {
-            const result = JSON.parse(toolCall.function.arguments);
-            const platform = url.includes('vinted') ? 'vinted' : url.includes('depop') ? 'depop' : 'tise';
-            
-            // Add items to our list with platform info - limit to 10 per platform
-            result.items.slice(0, 10).forEach((item: any) => {
-              allItems.push({
-                ...item,
-                platform,
-                attributes: {},
-              });
-            });
-            
-            console.log(`Extracted ${result.items.length} items from ${platform}`);
-          }
-        }
-      } catch (err) {
-        console.error('Error processing URL:', url, err);
+    // Only process 1 platform for speed
+    const url = searchUrls[0];
+    
+    try {
+      console.log('Fetching:', url);
+      
+      const pageResponse = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        },
+      });
+      
+      if (!pageResponse.ok) {
+        throw new Error(`Failed to fetch: ${pageResponse.status}`);
       }
       
-      // Stop if we have enough items
-      if (allItems.length >= 15) break;
+      const html = await pageResponse.text();
+      const truncatedHtml = html.substring(0, 20000); // Reduced to 20k chars for speed
+      
+      console.log('Extracting items with AI...');
+      
+      // Extract items using AI
+      const extractResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [{
+            role: 'user',
+            content: `Extract exactly 8 fashion item listings from this search results page. Find item URLs, image URLs, titles, and prices.\n\nHTML:\n${truncatedHtml}`
+          }],
+          tools: [{
+            type: 'function',
+            function: {
+              name: 'extract_items',
+              parameters: {
+                type: 'object',
+                properties: {
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        itemUrl: { type: 'string' },
+                        imageUrl: { type: 'string' },
+                        title: { type: 'string' },
+                        price: { type: 'string' },
+                        currency: { type: 'string' }
+                      },
+                      required: ['itemUrl']
+                    }
+                  }
+                },
+                required: ['items']
+              }
+            }
+          }],
+          tool_choice: { type: 'function', function: { name: 'extract_items' } }
+        })
+      });
+      
+      if (extractResponse.ok) {
+        const extractData = await extractResponse.json();
+        const toolCall = extractData.choices?.[0]?.message?.tool_calls?.[0];
+        if (toolCall) {
+          const result = JSON.parse(toolCall.function.arguments);
+          const platform = url.includes('vinted') ? 'vinted' : url.includes('depop') ? 'depop' : 'tise';
+          
+          // Add items to our list - limit to 8
+          result.items.slice(0, 8).forEach((item: any) => {
+            allItems.push({
+              ...item,
+              platform,
+              attributes: {},
+            });
+          });
+          
+          console.log(`Extracted ${allItems.length} items from ${platform}`);
+        }
+      }
+    } catch (err) {
+      console.error('Error processing URL:', url, err);
     }
 
     console.log(`Total items extracted: ${allItems.length}`);
@@ -237,29 +234,28 @@ serve(async (req) => {
       item_url: item.itemUrl || item.item_url || '',
       title: item.title || 'Fashion Item',
       price: parseFloat((item.price || '0').toString().replace(/[^0-9.]/g, '')) || 0,
-      currency: item.currency || 'EUR',
+      currency: (item.currency || 'EUR').toUpperCase().trim(),
       image_url: item.imageUrl || item.image_url || null,
       description: item.title || ''
     }));
 
     // Quickly calculate basic text similarity for initial sorting
     const scoredItems = mappedItems.map(item => {
-      // Simple text-based scoring for speed
-      let score = 0;
+      let score = 0.5; // Base score
       const searchText = `${attributes.category} ${attributes.fabricType} ${attributes.primaryColors?.join(' ')} ${attributes.pattern}`.toLowerCase();
       const itemText = (item.title || '').toLowerCase();
       
       // Count keyword matches
       const keywords = searchText.split(' ').filter(k => k.length > 2);
       keywords.forEach(keyword => {
-        if (itemText.includes(keyword)) score += 0.2;
+        if (itemText.includes(keyword)) score += 0.15;
       });
       
       return { ...item, similarity_score: Math.min(score, 1.0) };
     }).sort((a, b) => b.similarity_score - a.similarity_score);
 
-    // Take top 15 items
-    const topMatches = scoredItems.slice(0, 15);
+    // Take all items
+    const topMatches = scoredItems.slice(0, 8);
 
     if (topMatches.length === 0) {
       await supabase
@@ -303,7 +299,6 @@ serve(async (req) => {
       await Promise.all(insertPromises);
     } catch (dbError) {
       console.error('Database insert error:', dbError);
-      // Continue anyway - partial success is ok
     }
 
     // Update status
