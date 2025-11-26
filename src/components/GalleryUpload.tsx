@@ -105,7 +105,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
     }
   }, []);
 
-  const handleFiles = async (files: FileList) => {
+  const handleFiles = useCallback(async (files: FileList) => {
     if (!isAuthenticated) {
       toast({
         title: "Authentication Required",
@@ -145,7 +145,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
     }
 
     onUpload(imageFiles);
-  };
+  }, [isAuthenticated, toast, uploadImage, onUpload]);
 
   const handleFileDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
