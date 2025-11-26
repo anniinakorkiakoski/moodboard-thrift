@@ -87,92 +87,91 @@ const Index = () => {
       </section>
 
       {/* The Process */}
-      <section className="pt-8 pb-32 bg-[#f5f1eb] relative overflow-hidden">
+      <section className="pt-8 pb-32 bg-background">
         <div className="container mx-auto px-8">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             
             {/* Section title */}
             <div className="text-center mb-24 space-y-6">
-              <h2 className="text-4xl md:text-6xl font-serif italic text-burgundy leading-tight">
-                From moodboard to wardrobe.
-              </h2>
+              <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">THE PROCESS</h2>
+              <div className="w-16 h-px bg-primary/40 mx-auto"></div>
+              <p className="text-sm md:text-base font-light text-foreground/70 leading-loose font-mono">
+                Three simple steps to curate your perfect wardrobe
+              </p>
             </div>
 
-            {/* Visual Flow Diagram */}
-            <div className="relative" style={{ minHeight: '500px' }}>
-              {/* Background Numbers - positioned absolutely */}
-              <div className="absolute left-[5%] top-[15%] text-[12rem] md:text-[16rem] font-black text-foreground/[0.03] leading-none pointer-events-none">01</div>
-              <div className="absolute left-1/2 -translate-x-1/2 top-[5%] text-[12rem] md:text-[16rem] font-black text-foreground/[0.03] leading-none pointer-events-none">02</div>
-              <div className="absolute right-[5%] top-[15%] text-[12rem] md:text-[16rem] font-black text-foreground/[0.03] leading-none pointer-events-none">03</div>
-
-              {/* SVG Connection Lines - Diamond Pattern */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ height: '500px' }}>
-                {/* Top left to top center */}
-                <line x1="20%" y1="40%" x2="50%" y2="20%" stroke="#9b4444" strokeWidth="3" />
-                {/* Top center to top right */}
-                <line x1="50%" y1="20%" x2="80%" y2="40%" stroke="#9b4444" strokeWidth="3" />
-                {/* Top left to bottom center */}
-                <line x1="20%" y1="40%" x2="50%" y2="60%" stroke="#9b4444" strokeWidth="3" />
-                {/* Bottom center to top right */}
-                <line x1="50%" y1="60%" x2="80%" y2="40%" stroke="#9b4444" strokeWidth="3" />
-                
-                {/* Connection dots */}
-                <circle cx="20%" cy="40%" r="8" fill="#9b4444" />
-                <circle cx="50%" cy="20%" r="8" fill="#9b4444" />
-                <circle cx="50%" cy="60%" r="8" fill="#9b4444" />
-                <circle cx="80%" cy="40%" r="8" fill="#9b4444" />
-              </svg>
-
-              {/* Step Cards - Absolute Positioning */}
-              <div className="relative" style={{ height: '500px' }}>
-                
-                {/* Step 1 - Left */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[280px]">
-                  <div className="bg-white/60 backdrop-blur-sm p-10 border border-foreground/10 shadow-sm">
-                    <p className="text-base font-mono text-foreground/90 leading-relaxed text-center">
-                      upload your<br />
-                      style<br />
-                      inspiration
-                    </p>
+            {/* Process Steps - Real Note Card with overlay */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
+              
+              {/* Step 1 */}
+              <div className="group relative h-[500px]">
+                <img 
+                  src={notecardStack} 
+                  alt="Note card" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center p-12">
+                  <div className="flex flex-col items-center text-center space-y-6 pt-8">
+                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-base font-medium text-burgundy-foreground">01</span>
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                        Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
+                      </p>
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Step 2a - Top Center */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[280px]">
-                  <div className="bg-white/60 backdrop-blur-sm p-10 border border-foreground/10 shadow-sm">
-                    <p className="text-base font-mono text-foreground/90 leading-relaxed text-center">
-                      use AI<br />
-                      search
-                    </p>
+              {/* Step 2 */}
+              <div className="group relative h-[500px]">
+                <img 
+                  src={notecardStack} 
+                  alt="Note card" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center p-12">
+                  <div className="flex flex-col items-center text-center space-y-6 pt-8">
+                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-base font-medium text-burgundy-foreground">02</span>
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                        Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
+                      </p>
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Step 2b - Bottom Center */}
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[280px]">
-                  <div className="bg-white/60 backdrop-blur-sm p-10 border border-foreground/10 shadow-sm">
-                    <p className="text-base font-mono text-foreground/90 leading-relaxed text-center">
-                      hire a human<br />
-                      stylist
-                    </p>
+              {/* Step 3 */}
+              <div className="group relative h-[500px]">
+                <img 
+                  src={notecardStack} 
+                  alt="Note card" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center p-12">
+                  <div className="flex flex-col items-center text-center space-y-6 pt-8">
+                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-base font-medium text-burgundy-foreground">03</span>
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
+                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
+                        Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
+                      </p>
+                    </div>
                   </div>
                 </div>
-
-                {/* Step 3 - Right */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[280px]">
-                  <div className="bg-white/60 backdrop-blur-sm p-10 border border-foreground/10 shadow-sm">
-                    <p className="text-base font-mono text-foreground/90 leading-relaxed text-center">
-                      make<br />
-                      thoughtful<br />
-                      purchases
-                    </p>
-                  </div>
-                </div>
-
               </div>
             </div>
 
             {/* Read More Link */}
-            <div className="text-center mt-24">
+            <div className="text-center mt-16">
               <Link 
                 to="/how-to-use"
                 className="text-sm font-light text-foreground/70 hover:text-foreground uppercase tracking-widest transition-colors duration-300 underline underline-offset-4 font-mono"
