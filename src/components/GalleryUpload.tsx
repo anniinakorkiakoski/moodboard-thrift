@@ -23,6 +23,7 @@ interface GalleryUploadProps {
 export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: GalleryUploadProps) => {
   const [dragActive, setDragActive] = useState(false);
   const [editingCaption, setEditingCaption] = useState<string | null>(null);
+  const [editingCaptionText, setEditingCaptionText] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pinterestUrl, setPinterestUrl] = useState('');
   const [extractingPinterest, setExtractingPinterest] = useState(false);
@@ -431,13 +432,10 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 z-10">
                         {editingCaption === image.id ? (
                           <textarea
-                            value={image.caption}
-                            onChange={(e) => {
-                              const newValue = e.target.value;
-                              displayImages.find(img => img.id === image.id)!.caption = newValue;
-                            }}
-                            onBlur={(e) => {
-                              handleUpdateCaption(image.id, e.target.value);
+                            value={editingCaptionText}
+                            onChange={(e) => setEditingCaptionText(e.target.value)}
+                            onBlur={() => {
+                              handleUpdateCaption(image.id, editingCaptionText);
                               setEditingCaption(null);
                             }}
                             onKeyDown={(e) => {
@@ -446,7 +444,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                               }
                               if (e.key === 'Enter') {
                                 e.preventDefault();
-                                handleUpdateCaption(image.id, (e.target as HTMLTextAreaElement).value);
+                                handleUpdateCaption(image.id, editingCaptionText);
                                 setEditingCaption(null);
                               }
                               if (e.key === 'Escape') {
@@ -461,7 +459,10 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                         ) : (
                           <div 
                             className="text-sm text-white font-light leading-relaxed cursor-pointer min-h-[20px] font-lora whitespace-pre-wrap"
-                            onClick={() => setEditingCaption(image.id)}
+                            onClick={() => {
+                              setEditingCaption(image.id);
+                              setEditingCaptionText(image.caption);
+                            }}
                           >
                             {image.caption || 'what do you love about this?'}
                           </div>
