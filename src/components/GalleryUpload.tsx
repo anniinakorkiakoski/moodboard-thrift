@@ -105,7 +105,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
     }
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleFileDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -440,7 +440,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
-              onDrop={handleDrop}
+              onDrop={handleFileDrop}
             >
               <div className="p-16 text-center space-y-8">
                 <div className="flex justify-center">
@@ -516,7 +516,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
-            onDrop={handleDrop}
+            onDrop={handleFileDrop}
           >
             {/* Masonry Grid - Full Width */}
             <div className="columns-2 md:columns-4 lg:columns-5 gap-3 md:gap-4 space-y-3 md:space-y-4">
