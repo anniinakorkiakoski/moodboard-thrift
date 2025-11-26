@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Upload, ImagePlus, Sparkles, Edit2, Search, Trash2, Link2 } from 'lucide-react';
+import { Upload, ImagePlus, Sparkles, Search, Trash2, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -403,7 +403,8 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                         alt={image.caption || 'Inspiration image'}
                         className="w-full h-auto object-cover"
                       />
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
+                      {/* Action buttons - top right */}
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-20">
                         <Button
                           variant="outline"
                           size="sm"
@@ -420,46 +421,50 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                           variant="outline"
                           size="sm"
                           className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
-                          onClick={() => setEditingCaption(editingCaption === image.id ? null : image.id)}
-                        >
-                          <Edit2 className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
                           onClick={() => handleDeleteImage(image.id, image.filePath)}
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
                       </div>
                       
-                      {/* Caption overlay on hover */}
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {/* Caption overlay - always visible */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 z-10">
                         {editingCaption === image.id ? (
-                          <Input
+                          <textarea
                             value={image.caption}
                             onChange={(e) => {
                               const newValue = e.target.value;
                               displayImages.find(img => img.id === image.id)!.caption = newValue;
                             }}
-                            onBlur={(e) => handleUpdateCaption(image.id, e.target.value)}
+                            onBlur={(e) => {
+                              handleUpdateCaption(image.id, e.target.value);
+                              setEditingCaption(null);
+                            }}
                             onKeyDown={(e) => {
+                              if (e.key === 'Enter' && e.shiftKey) {
+                                return; // Allow new line with Shift+Enter
+                              }
                               if (e.key === 'Enter') {
-                                handleUpdateCaption(image.id, (e.target as HTMLInputElement).value);
+                                e.preventDefault();
+                                handleUpdateCaption(image.id, (e.target as HTMLTextAreaElement).value);
+                                setEditingCaption(null);
+                              }
+                              if (e.key === 'Escape') {
+                                setEditingCaption(null);
                               }
                             }}
-                            placeholder="What do you love about this?"
-                            className="text-xs border-none p-1 h-auto focus-visible:ring-0 text-white bg-transparent font-light font-lora"
+                            placeholder="Add your notes here..."
+                            className="w-full text-sm border-2 border-white/50 p-2 rounded bg-black/40 focus-visible:ring-0 focus-visible:border-white text-white placeholder:text-white/60 font-light font-lora resize-none"
                             autoFocus
+                            rows={3}
                           />
                         ) : (
-                          <p 
-                            className="text-xs text-white font-light leading-relaxed cursor-pointer min-h-[16px] font-lora"
+                          <div 
+                            className="text-sm text-white font-light leading-relaxed cursor-pointer min-h-[20px] font-lora whitespace-pre-wrap"
                             onClick={() => setEditingCaption(image.id)}
                           >
-                            {image.caption || 'What do you love about this?'}
-                          </p>
+                            {image.caption || 'Click to add notes...'}
+                          </div>
                         )}
                       </div>
                     </div>
