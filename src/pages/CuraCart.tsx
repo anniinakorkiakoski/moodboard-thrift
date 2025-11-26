@@ -100,10 +100,29 @@ export default function CuraCart() {
   };
 
   const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'EUR'
-    }).format(price);
+    // Normalize currency code to valid ISO format
+    const validCurrency = (() => {
+      if (!currency) return 'EUR';
+      const curr = currency.toUpperCase().trim();
+      // Map common symbols/abbreviations to ISO codes
+      if (curr === '€' || curr === 'EUR') return 'EUR';
+      if (curr === '$' || curr === 'USD') return 'USD';
+      if (curr === '£' || curr === 'GBP') return 'GBP';
+      if (curr === 'KR' || curr === 'SEK') return 'SEK';
+      if (curr === 'DKK') return 'DKK';
+      if (curr === 'NOK') return 'NOK';
+      // Default to EUR if unrecognized
+      return 'EUR';
+    })();
+    
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: validCurrency,
+      }).format(price || 0);
+    } catch {
+      return `${price || 0} ${validCurrency}`;
+    }
   };
 
   const getPlatformColor = (platform: string) => {
