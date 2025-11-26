@@ -9,6 +9,7 @@ const corsHeaders = {
 interface PinterestImage {
   url: string;
   title: string;
+  base64?: string;
 }
 
 serve(async (req) => {
@@ -48,10 +49,21 @@ serve(async (req) => {
       
       // Extract image from oEmbed thumbnail
       if (data.thumbnail_url) {
-        images.push({
-          url: data.thumbnail_url.replace('236x', 'originals'), // Get higher quality
-          title: data.title || 'Pinterest Image'
-        });
+        const imageUrl = data.thumbnail_url.replace('236x', 'originals');
+        try {
+          const imgResponse = await fetch(imageUrl);
+          if (imgResponse.ok) {
+            const arrayBuffer = await imgResponse.arrayBuffer();
+            const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+            images.push({
+              url: imageUrl,
+              title: data.title || 'Pinterest Image',
+              base64
+            });
+          }
+        } catch (e) {
+          console.error('Failed to fetch image:', e);
+        }
       }
       
       return new Response(
@@ -87,13 +99,27 @@ serve(async (req) => {
 
     // Try to extract multiple images if it's a board
     const imageMatches = html.matchAll(/"url":"(https:\/\/i\.pinimg\.com\/[^"]+)"/g);
+    const uniqueUrls = new Set<string>();
+    
     for (const match of imageMatches) {
       const imageUrl = match[1].replace(/\\u002F/g, '/').replace('236x', 'originals');
-      if (!images.find(img => img.url === imageUrl)) {
-        images.push({
-          url: imageUrl,
-          title: 'Pinterest Image'
-        });
+      if (!uniqueUrls.has(imageUrl) && uniqueUrls.size < 20) {
+        uniqueUrls.add(imageUrl);
+        
+        try {
+          const imgResponse = await fetch(imageUrl);
+          if (imgResponse.ok) {
+            const arrayBuffer = await imgResponse.arrayBuffer();
+            const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+            images.push({
+              url: imageUrl,
+              title: 'Pinterest Image',
+              base64
+            });
+          }
+        } catch (e) {
+          console.error('Failed to fetch image:', e);
+        }
       }
     }
 
