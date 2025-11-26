@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom';
 interface VisualSearchNoResultsProps {
   attributes?: any;
   imageUrl: string;
+  suggestions?: string[];
+  searchQuery?: string;
 }
 
-export const VisualSearchNoResults = ({ attributes, imageUrl }: VisualSearchNoResultsProps) => {
+export const VisualSearchNoResults = ({ attributes, imageUrl, suggestions, searchQuery }: VisualSearchNoResultsProps) => {
   const navigate = useNavigate();
 
   const handleHireThrifter = () => {
@@ -36,9 +38,34 @@ export const VisualSearchNoResults = ({ attributes, imageUrl }: VisualSearchNoRe
           <div className="w-16 h-px bg-primary/40 mx-auto" />
 
           <p className="text-base text-foreground/70 leading-loose font-lora max-w-lg mx-auto">
-            We couldn't find any high-quality matches for this item in our indexed catalogs. 
-            But don't worry — our expert thrifters can source it for you.
+            We couldn't find validated matches from secondhand marketplaces. This could be because:
+            the items were removed, prices seemed unrealistic, or current inventory doesn't match your search.
           </p>
+
+          {searchQuery && (
+            <div className="bg-muted/20 rounded-lg p-3 max-w-md mx-auto">
+              <p className="text-xs font-medium text-primary/70 mb-1">Try searching manually:</p>
+              <code className="text-sm text-foreground/90 bg-background/50 px-3 py-1 rounded">
+                {searchQuery}
+              </code>
+            </div>
+          )}
+
+          {suggestions && suggestions.length > 0 && (
+            <div className="bg-accent/10 rounded-lg p-4 max-w-md mx-auto text-left">
+              <p className="text-xs font-medium text-primary uppercase tracking-wider mb-3">
+                Suggestions:
+              </p>
+              <ul className="space-y-2 text-sm text-foreground/70">
+                {suggestions.map((suggestion, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="text-burgundy mt-0.5">•</span>
+                    <span>{suggestion}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {attributes && (
             <div className="bg-muted/30 rounded-lg p-4 max-w-md mx-auto">

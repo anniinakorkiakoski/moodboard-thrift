@@ -306,6 +306,84 @@ ${truncatedHtml}`
 
     console.log(`Total items extracted: ${allItems.length}`);
 
+    // If no items found, try a simpler search query
+    if (allItems.length === 0) {
+      console.log('No items found with detailed query, trying simpler search...');
+      
+      const simpleQuery = `${attributes.category || attributes.itemType} ${attributes.primaryColors?.[0] || ''}`.trim();
+      const simpleUrl = `https://www.vinted.fi/catalog?search_text=${encodeURIComponent(simpleQuery)}`;
+      
+      try {
+        const retryResponse = await fetch(simpleUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+        });
+        
+        if (retryResponse.ok) {
+          const retryHtml = await retryResponse.text();
+          console.log('Retry search with simpler query:', simpleQuery);
+          // Quick extraction attempt - don't do full validation
+          const quickExtract = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [{ role: 'user', content: `Extract up to 5 product listings from this HTML. Return empty array if none found.\n\n${retryHtml.substring(0, 30000)}` }],
+              tools: [{
+                type: 'function',
+                function: {
+                  name: 'extract_items',
+                  parameters: {
+                    type: 'object',
+                    properties: {
+                      items: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            itemUrl: { type: 'string' },
+                            title: { type: 'string' },
+                            price: { type: 'string' }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }],
+              tool_choice: { type: 'function', function: { name: 'extract_items' } }
+            })
+          });
+          
+          if (quickExtract.ok) {
+            const quickData = await quickExtract.json();
+            const quickResult = JSON.parse(quickData.choices?.[0]?.message?.tool_calls?.[0]?.function.arguments || '{"items":[]}');
+            console.log('Retry extracted:', quickResult.items.length, 'items');
+            
+            quickResult.items.forEach((item: any) => {
+              const priceNum = parseFloat((item.price || '0').toString().replace(/[^0-9.]/g, ''));
+              if (priceNum > 0 && priceNum < 500 && item.itemUrl && item.title) {
+                allItems.push({
+                  itemUrl: item.itemUrl.startsWith('http') ? item.itemUrl : `https://www.vinted.fi${item.itemUrl}`,
+                  item_url: item.itemUrl.startsWith('http') ? item.itemUrl : `https://www.vinted.fi${item.itemUrl}`,
+                  title: item.title,
+                  price: item.price,
+                  platform: 'vinted',
+                  attributes: {}
+                });
+              }
+            });
+          }
+        }
+      } catch (retryErr) {
+        console.error('Retry search failed:', retryErr);
+      }
+    }
+    
+    console.log(`Final item count: ${allItems.length}`);
+
     // Map items to database schema format with safety checks
     const mappedItems = allItems.map(item => ({
       platform: item.platform || 'vinted',
@@ -376,13 +454,31 @@ ${truncatedHtml}`
     if (topMatches.length === 0) {
       await supabase
         .from('visual_searches')
-        .update({ status: 'no_matches' })
+        .update({ 
+          status: 'no_matches',
+          analysis_data: { 
+            attributes,
+            reason: 'Could not extract valid product listings from marketplace. The items may have been removed, prices were unrealistic, or the search query did not match available inventory.',
+            suggestions: [
+              'Try uploading a different angle of the item',
+              'Make sure the item is clearly visible in the photo',
+              'Consider searching for similar but more common items',
+              `Search manually on Vinted for: ${searchQuery}`
+            ]
+          }
+        })
         .eq('id', searchId);
 
       return new Response(JSON.stringify({ 
         status: 'no_matches',
         attributes,
-        message: 'No matches found.'
+        searchQuery,
+        message: 'No valid matches found. Please try a different image or search manually.',
+        suggestions: [
+          'Try uploading a clearer photo with the item as the main focus',
+          'Search manually on marketplace sites',
+          `Suggested search term: "${searchQuery}"`
+        ]
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
