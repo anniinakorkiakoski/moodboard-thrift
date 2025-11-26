@@ -181,7 +181,11 @@ CRITICAL: Read all visible text, logos, and brand names in the image carefully. 
       
       console.log('Extracting items with AI...');
       
-      // Extract items using AI
+      // Log a sample of HTML to verify we're getting product data
+      const htmlSample = html.substring(0, 2000);
+      console.log('HTML sample:', htmlSample.substring(0, 500));
+      
+      // Extract items using AI with strict validation
       const extractResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -192,15 +196,18 @@ CRITICAL: Read all visible text, logos, and brand names in the image carefully. 
           model: 'google/gemini-2.5-flash',
           messages: [{
             role: 'user',
-            content: `You are extracting real product listings from ${url}. Extract ONLY real, complete URLs that exist in the HTML.
+            content: `You are extracting real product listings from this Vinted search results page HTML.
 
-CRITICAL RULES:
-- Extract ONLY URLs that are actually present in the HTML
-- URLs must be complete (start with http:// or https:// OR be relative paths like /items/12345)
-- For Vinted: Look for /items/ or /catalog/ in href attributes
-- DO NOT make up or generate fake URLs
-- If you find relative URLs (like /items/12345), return them as-is
-- Extract exactly 8 items
+CRITICAL RULES - READ CAREFULLY:
+1. Extract ONLY data that is LITERALLY PRESENT in the HTML below
+2. DO NOT invent, estimate, or hallucinate ANY data
+3. If you cannot find real product URLs in the HTML, return an empty items array []
+4. Prices must be realistic for secondhand clothing (typically €5-100)
+5. Look for product links in <a> tags with href attributes containing "/items/"
+6. Look for prices in elements with text like "€10" or "10,00 €"
+7. Extract EXACTLY what you see - do not modify or interpret
+
+If you cannot find clear product listings with URLs and prices in the HTML, return {"items": []}
 
 HTML:
 ${truncatedHtml}`
@@ -219,14 +226,14 @@ ${truncatedHtml}`
                       properties: {
                         itemUrl: { 
                           type: 'string',
-                          description: 'Complete product URL found in HTML (can be relative path like /items/12345)'
+                          description: 'Exact product URL found in HTML href attribute'
                         },
                         imageUrl: { type: 'string' },
                         title: { type: 'string' },
-                        price: { type: 'string' },
-                        currency: { type: 'string' }
+                        price: { type: 'string', description: 'Numeric price only, e.g. "15.50"' },
+                        currency: { type: 'string', description: 'Currency code like EUR' }
                       },
-                      required: ['itemUrl']
+                      required: ['itemUrl', 'title', 'price']
                     }
                   }
                 },
@@ -243,12 +250,27 @@ ${truncatedHtml}`
         const toolCall = extractData.choices?.[0]?.message?.tool_calls?.[0];
         if (toolCall) {
           const result = JSON.parse(toolCall.function.arguments);
+          console.log('AI extracted data:', JSON.stringify(result, null, 2));
+          
           const platform = url.includes('vinted') ? 'vinted' : url.includes('depop') ? 'depop' : 'tise';
           const baseUrl = new URL(url).origin;
           
-          // Add items to our list - limit to 8 and fix URLs
+          // Validate and add items with strict filtering
           result.items.slice(0, 8).forEach((item: any) => {
             let itemUrl = item.itemUrl || item.item_url || '';
+            const priceNum = parseFloat((item.price || '0').toString().replace(/[^0-9.]/g, ''));
+            
+            // STRICT VALIDATION: Reject obviously fake data
+            if (!itemUrl || !item.title) {
+              console.log('Rejected: Missing URL or title');
+              return;
+            }
+            
+            // Reject unrealistic prices for secondhand clothing
+            if (priceNum > 500 || priceNum < 0.5) {
+              console.log('Rejected unrealistic price:', item.title, priceNum);
+              return;
+            }
             
             // Convert relative URLs to absolute
             if (itemUrl && !itemUrl.startsWith('http')) {
@@ -264,11 +286,19 @@ ${truncatedHtml}`
                 platform,
                 attributes: {},
               });
+              console.log('Added valid item:', item.title, priceNum, itemUrl);
+            } else {
+              console.log('Rejected invalid URL:', itemUrl);
             }
           });
           
-          console.log(`Extracted ${allItems.length} real items from ${platform}`);
+          console.log(`Extracted ${allItems.length} validated items from ${platform}`);
+        } else {
+          console.log('No tool call in response');
         }
+      } else {
+        const errorText = await extractResponse.text();
+        console.error('Extract API error:', errorText);
       }
     } catch (err) {
       console.error('Error processing URL:', url, err);
