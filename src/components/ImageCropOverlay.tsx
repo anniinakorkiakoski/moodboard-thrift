@@ -4,17 +4,35 @@ import { X, Search } from 'lucide-react';
 
 interface ImageCropOverlayProps {
   imageUrl: string;
-  onConfirm: (cropData: { x: number; y: number; width: number; height: number } | null) => void;
+  onConfirm: (cropData: { x: number; y: number; width: number; height: number } | null, budget?: { min: number; max: number }) => void;
   onCancel: () => void;
 }
 
 export const ImageCropOverlay = ({ imageUrl, onConfirm, onCancel }: ImageCropOverlayProps) => {
   const [isAdjusting, setIsAdjusting] = useState(false);
   const [cropRect, setCropRect] = useState({ x: 0.1, y: 0.1, width: 0.8, height: 0.8 });
+  const [minBudget, setMinBudget] = useState<string>('');
+  const [maxBudget, setMaxBudget] = useState<string>('');
   const imageRef = useRef<HTMLImageElement>(null);
 
   const handleConfirm = () => {
     if (imageRef.current) {
+      // Validate budget inputs
+      const minValue = minBudget ? parseFloat(minBudget) : undefined;
+      const maxValue = maxBudget ? parseFloat(maxBudget) : undefined;
+      
+      // Check if min is greater than max
+      if (minValue !== undefined && maxValue !== undefined && minValue > maxValue) {
+        alert('Minimum price cannot be greater than maximum price');
+        return;
+      }
+      
+      // Check for negative values
+      if ((minValue !== undefined && minValue < 0) || (maxValue !== undefined && maxValue < 0)) {
+        alert('Prices cannot be negative');
+        return;
+      }
+      
       const img = imageRef.current;
       const actualCrop = {
         x: cropRect.x * img.naturalWidth,
@@ -22,7 +40,14 @@ export const ImageCropOverlay = ({ imageUrl, onConfirm, onCancel }: ImageCropOve
         width: cropRect.width * img.naturalWidth,
         height: cropRect.height * img.naturalHeight
       };
-      onConfirm(actualCrop);
+      
+      // Parse budget values
+      const budget = (minValue !== undefined || maxValue !== undefined) ? {
+        min: minValue || 0,
+        max: maxValue || 9999
+      } : undefined;
+      
+      onConfirm(actualCrop, budget);
     }
   };
 
@@ -79,6 +104,42 @@ export const ImageCropOverlay = ({ imageUrl, onConfirm, onCancel }: ImageCropOve
                 {isAdjusting
                   ? 'Adjust the selection to focus on the item you want to find'
                   : 'We\'ll search for items matching this entire image'}
+              </p>
+            </div>
+
+            {/* Budget inputs */}
+            <div className="max-w-md mx-auto space-y-3">
+              <p className="text-xs font-medium text-primary uppercase tracking-wider text-center">
+                Set Budget (Optional)
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Min Price (€)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="0"
+                    value={minBudget}
+                    onChange={(e) => setMinBudget(e.target.value)}
+                    className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-burgundy"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Max Price (€)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="No limit"
+                    value={maxBudget}
+                    onChange={(e) => setMaxBudget(e.target.value)}
+                    className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-burgundy"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">
+                Leave empty to see all price ranges
               </p>
             </div>
 
