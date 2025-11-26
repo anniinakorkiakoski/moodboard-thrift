@@ -27,6 +27,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
   const [editingCaption, setEditingCaption] = useState<string | null>(null);
   const [editingCaptionText, setEditingCaptionText] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [pinterestUrl, setPinterestUrl] = useState('');
   const [extractingPinterest, setExtractingPinterest] = useState(false);
   const [imageMatches, setImageMatches] = useState<Map<string, number>>(new Map());
@@ -40,6 +41,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setIsAuthenticated(!!user);
+      setCheckingAuth(false);
       if (user) {
         fetchMatchCounts();
       }
@@ -322,6 +324,18 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
     aspectRatio: img.aspect_ratio,
     filePath: img.file_path
   }));
+
+  if (checkingAuth) {
+    return (
+      <div className="w-full px-4">
+        <Card className="border-2 border-muted bg-card min-h-[400px]">
+          <div className="p-16 text-center">
+            <div className="w-8 h-8 border-2 border-burgundy border-t-transparent rounded-full animate-spin mx-auto" />
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
