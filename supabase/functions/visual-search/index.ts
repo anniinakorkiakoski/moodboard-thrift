@@ -156,7 +156,7 @@ serve(async (req) => {
       }
       
       const html = await pageResponse.text();
-      const truncatedHtml = html.substring(0, 20000); // Reduced to 20k chars for speed
+      const truncatedHtml = html.substring(0, 50000); // More HTML for better extraction
       
       console.log('Extracting items with AI...');
       
@@ -171,7 +171,18 @@ serve(async (req) => {
           model: 'google/gemini-2.5-flash',
           messages: [{
             role: 'user',
-            content: `Extract exactly 8 fashion item listings from this search results page. Find item URLs, image URLs, titles, and prices.\n\nHTML:\n${truncatedHtml}`
+            content: `You are extracting real product listings from ${url}. Extract ONLY real, complete URLs that exist in the HTML.
+
+CRITICAL RULES:
+- Extract ONLY URLs that are actually present in the HTML
+- URLs must be complete (start with http:// or https:// OR be relative paths like /items/12345)
+- For Vinted: Look for /items/ or /catalog/ in href attributes
+- DO NOT make up or generate fake URLs
+- If you find relative URLs (like /items/12345), return them as-is
+- Extract exactly 8 items
+
+HTML:
+${truncatedHtml}`
           }],
           tools: [{
             type: 'function',
@@ -185,7 +196,10 @@ serve(async (req) => {
                     items: {
                       type: 'object',
                       properties: {
-                        itemUrl: { type: 'string' },
+                        itemUrl: { 
+                          type: 'string',
+                          description: 'Complete product URL found in HTML (can be relative path like /items/12345)'
+                        },
                         imageUrl: { type: 'string' },
                         title: { type: 'string' },
                         price: { type: 'string' },
@@ -209,17 +223,30 @@ serve(async (req) => {
         if (toolCall) {
           const result = JSON.parse(toolCall.function.arguments);
           const platform = url.includes('vinted') ? 'vinted' : url.includes('depop') ? 'depop' : 'tise';
+          const baseUrl = new URL(url).origin;
           
-          // Add items to our list - limit to 8
+          // Add items to our list - limit to 8 and fix URLs
           result.items.slice(0, 8).forEach((item: any) => {
-            allItems.push({
-              ...item,
-              platform,
-              attributes: {},
-            });
+            let itemUrl = item.itemUrl || item.item_url || '';
+            
+            // Convert relative URLs to absolute
+            if (itemUrl && !itemUrl.startsWith('http')) {
+              itemUrl = baseUrl + (itemUrl.startsWith('/') ? '' : '/') + itemUrl;
+            }
+            
+            // Only add if URL contains the platform domain (validate it's real)
+            if (itemUrl && (itemUrl.includes('vinted') || itemUrl.includes('depop') || itemUrl.includes('tise'))) {
+              allItems.push({
+                ...item,
+                itemUrl,
+                item_url: itemUrl,
+                platform,
+                attributes: {},
+              });
+            }
           });
           
-          console.log(`Extracted ${allItems.length} items from ${platform}`);
+          console.log(`Extracted ${allItems.length} real items from ${platform}`);
         }
       }
     } catch (err) {
