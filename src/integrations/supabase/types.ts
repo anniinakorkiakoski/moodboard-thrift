@@ -365,6 +365,7 @@ export type Database = {
           aspect_ratio: number | null
           caption: string | null
           created_at: string
+          display_order: number | null
           file_name: string
           file_path: string
           id: string
@@ -375,6 +376,7 @@ export type Database = {
           aspect_ratio?: number | null
           caption?: string | null
           created_at?: string
+          display_order?: number | null
           file_name: string
           file_path: string
           id?: string
@@ -385,6 +387,7 @@ export type Database = {
           aspect_ratio?: number | null
           caption?: string | null
           created_at?: string
+          display_order?: number | null
           file_name?: string
           file_path?: string
           id?: string

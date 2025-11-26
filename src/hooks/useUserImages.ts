@@ -8,6 +8,7 @@ export interface UserImage {
   caption: string;
   aspect_ratio: number;
   created_at: string;
+  display_order: number;
 }
 
 export const useUserImages = () => {
@@ -23,6 +24,7 @@ export const useUserImages = () => {
       const { data, error } = await supabase
         .from('user_images')
         .select('*')
+        .order('display_order', { ascending: true })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -52,7 +54,7 @@ export const useUserImages = () => {
 
       if (uploadError) throw uploadError;
 
-      // Save metadata to database
+      // Save metadata to database with display_order = 0 (show first)
       const { data, error: dbError } = await supabase
         .from('user_images')
         .insert({
@@ -60,7 +62,8 @@ export const useUserImages = () => {
           file_name: file.name,
           file_path: filePath,
           caption,
-          aspect_ratio: aspectRatio
+          aspect_ratio: aspectRatio,
+          display_order: 0
         })
         .select()
         .maybeSingle();
@@ -120,6 +123,25 @@ export const useUserImages = () => {
     }
   };
 
+  const updateImageOrder = async (imageId: string, newOrder: number) => {
+    try {
+      const { error } = await supabase
+        .from('user_images')
+        .update({ display_order: newOrder })
+        .eq('id', imageId);
+
+      if (error) throw error;
+      
+      // Update local state
+      setImages(prev => prev.map(img => 
+        img.id === imageId ? { ...img, display_order: newOrder } : img
+      ).sort((a, b) => a.display_order - b.display_order));
+    } catch (error) {
+      console.error('Error updating image order:', error);
+      throw error;
+    }
+  };
+
   const getImageUrl = (filePath: string) => {
     const { data } = supabase.storage
       .from('user-images')
@@ -137,6 +159,7 @@ export const useUserImages = () => {
     uploadImage,
     updateCaption,
     deleteImage,
+    updateImageOrder,
     getImageUrl,
     refetchImages: fetchImages
   };
