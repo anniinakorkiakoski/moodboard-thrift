@@ -32,8 +32,10 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
   const [extractingPinterest, setExtractingPinterest] = useState(false);
   const [imageMatches, setImageMatches] = useState<Map<string, number>>(new Map());
   const [selectedImageForMatches, setSelectedImageForMatches] = useState<{ id: string; url: string } | null>(null);
+  const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
+  const [dragOverImageId, setDragOverImageId] = useState<string | null>(null);
   
-  const { images, loading, uploadImage, updateCaption: updateImageCaption, deleteImage, getImageUrl } = useUserImages();
+  const { images, loading, uploadImage, updateCaption: updateImageCaption, deleteImage, updateImageOrder, getImageUrl } = useUserImages();
   const { toast } = useToast();
 
   // Check authentication status and fetch match counts
@@ -317,6 +319,70 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
     { name: 'Emmy', initial: 'Em', color: 'bg-pink-500' }
   ];
 
+  const handleImageDragStart = (e: React.DragEvent, imageId: string) => {
+    setDraggedImageId(imageId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleImageDragOver = (e: React.DragEvent, imageId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverImageId(imageId);
+  };
+
+  const handleImageDragLeave = () => {
+    setDragOverImageId(null);
+  };
+
+  const handleImageDrop = async (e: React.DragEvent, targetImageId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverImageId(null);
+    
+    if (!draggedImageId || draggedImageId === targetImageId) {
+      setDraggedImageId(null);
+      return;
+    }
+
+    try {
+      const draggedIndex = images.findIndex(img => img.id === draggedImageId);
+      const targetIndex = images.findIndex(img => img.id === targetImageId);
+
+      if (draggedIndex === -1 || targetIndex === -1) return;
+
+      // Reorder the images array
+      const reorderedImages = [...images];
+      const [draggedImage] = reorderedImages.splice(draggedIndex, 1);
+      reorderedImages.splice(targetIndex, 0, draggedImage);
+
+      // Update display_order for all affected images
+      const updatePromises = reorderedImages.map((img, index) => 
+        updateImageOrder(img.id, index)
+      );
+
+      await Promise.all(updatePromises);
+
+      toast({
+        title: "Order Updated",
+        description: "Your images have been reordered."
+      });
+    } catch (error) {
+      console.error('Error reordering images:', error);
+      toast({
+        title: "Reorder Failed",
+        description: "Failed to reorder images. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setDraggedImageId(null);
+    }
+  };
+
+  const handleImageDragEnd = () => {
+    setDraggedImageId(null);
+    setDragOverImageId(null);
+  };
+
   const displayImages = images.map(img => ({
     id: img.id,
     url: getImageUrl(img.file_path),
@@ -455,8 +521,23 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
             {/* Masonry Grid - Full Width */}
             <div className="columns-2 md:columns-4 lg:columns-5 gap-3 md:gap-4 space-y-3 md:space-y-4">
               {displayImages.map((image, index) => (
-                <div key={image.id} className="break-inside-avoid group relative">
-                  <div className="bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div 
+                  key={image.id} 
+                  className="break-inside-avoid group relative cursor-move"
+                  draggable
+                  onDragStart={(e) => handleImageDragStart(e, image.id)}
+                  onDragOver={(e) => handleImageDragOver(e, image.id)}
+                  onDragLeave={handleImageDragLeave}
+                  onDrop={(e) => handleImageDrop(e, image.id)}
+                  onDragEnd={handleImageDragEnd}
+                >
+                  <div className={`bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${
+                    draggedImageId === image.id ? 'opacity-50 scale-95' : ''
+                  } ${
+                    dragOverImageId === image.id && draggedImageId !== image.id 
+                      ? 'ring-2 ring-burgundy scale-105' 
+                      : ''
+                  }`}>
                     <div className="relative cursor-pointer" onClick={() => {
                       const matchCount = imageMatches.get(image.id);
                       if (matchCount && matchCount > 0) {
