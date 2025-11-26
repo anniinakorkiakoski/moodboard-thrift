@@ -228,86 +228,37 @@ serve(async (req) => {
 
     console.log(`Total items extracted: ${allItems.length}`);
 
-    // Step 4: Analyze each item's image to get attributes
-    const catalogResults = [];
+    // Map items to database schema format
+    const mappedItems = allItems.map(item => ({
+      platform: item.platform,
+      item_url: item.itemUrl || '',
+      title: item.title || 'Untitled',
+      price: parseFloat(item.price?.replace(/[^0-9.]/g, '') || '0'),
+      currency: item.currency || 'EUR',
+      image_url: item.imageUrl || null,
+      description: item.title || ''
+    }));
 
-    
-    for (const item of allItems.slice(0, 20)) { // Process top 20 items
-      if (!item.imageUrl) continue;
+    // Quickly calculate basic text similarity for initial sorting
+    const scoredItems = mappedItems.map(item => {
+      // Simple text-based scoring for speed
+      let score = 0;
+      const searchText = `${attributes.category} ${attributes.fabricType} ${attributes.primaryColors?.join(' ')} ${attributes.pattern}`.toLowerCase();
+      const itemText = item.title.toLowerCase();
       
-      try {
-        // Analyze item image with AI
-        const itemAnalysisResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'google/gemini-2.5-flash',
-            messages: [
-              {
-                role: 'system',
-                content: `Extract clothing attributes in JSON format with these fields:
-{
-  "itemType": "main garment type",
-  "category": "specific category",
-  "fabricType": "material type",
-  "primaryColors": ["color 1", "color 2"],
-  "pattern": "pattern type",
-  "silhouette": "overall shape"
-}`
-              },
-              {
-                role: 'user',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Analyze this clothing item and return ONLY valid JSON.'
-                  },
-                  {
-                    type: 'image_url',
-                    image_url: { url: item.imageUrl }
-                  }
-                ]
-              }
-            ],
-          }),
-        });
-        
-        if (itemAnalysisResponse.ok) {
-          const itemData = await itemAnalysisResponse.json();
-          const content = itemData.choices[0].message.content;
-          const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/) || content.match(/(\{[\s\S]*\})/);
-          
-          if (jsonMatch) {
-            item.attributes = JSON.parse(jsonMatch[1]);
-          }
-        }
-      } catch (err) {
-        console.error('Error analyzing item image:', err);
-      }
-    }
-
-    // Calculate similarity scores and match attributes
-    const results = (allItems || []).map(item => {
-      const score = calculateAttributeSimilarity(attributes, item.attributes || {});
-      const matchedAttrs = findMatchedAttributes(attributes, item.attributes || {});
+      // Count keyword matches
+      const keywords = searchText.split(' ').filter(k => k.length > 2);
+      keywords.forEach(keyword => {
+        if (itemText.includes(keyword)) score += 0.2;
+      });
       
-      return {
-        ...item,
-        similarity_score: score,
-        matched_attributes: matchedAttrs,
-        match_explanation: generateMatchExplanation(matchedAttrs)
-      };
+      return { ...item, similarity_score: Math.min(score, 1.0) };
     }).sort((a, b) => b.similarity_score - a.similarity_score);
 
-    // Apply threshold filtering
-    const highQualityMatches = results.filter(r => r.similarity_score >= HIGH_THRESHOLD);
-    const tentativeMatches = results.filter(r => r.similarity_score >= FALLBACK_THRESHOLD && r.similarity_score < HIGH_THRESHOLD);
+    // Take top items that have at least some match
+    const topMatches = scoredItems.filter(item => item.similarity_score >= FALLBACK_THRESHOLD).slice(0, 20);
 
-    if (highQualityMatches.length === 0 && tentativeMatches.length === 0) {
-      // No matches at all - suggest hiring a thrifter
+    if (topMatches.length === 0) {
       await supabase
         .from('visual_searches')
         .update({ status: 'no_matches' })
@@ -316,16 +267,19 @@ serve(async (req) => {
       return new Response(JSON.stringify({ 
         status: 'no_matches',
         attributes,
-        message: 'No curated matches found for this item. Want a pro thrifter to source it for you?'
+        message: 'No curated matches found for this item.'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Store results
-    const matchesToStore = highQualityMatches.length > 0 ? highQualityMatches : tentativeMatches;
-    for (const result of matchesToStore.slice(0, 20)) { // Limit to top 20
-      await supabase
+    // Store results with match explanations
+    const insertPromises = topMatches.map(result => {
+      const matchedAttrs = [];
+      if (attributes.category) matchedAttrs.push(attributes.category);
+      if (attributes.primaryColors?.[0]) matchedAttrs.push(attributes.primaryColors[0]);
+      
+      return supabase
         .from('search_results')
         .insert({
           search_id: searchId,
@@ -337,13 +291,15 @@ serve(async (req) => {
           image_url: result.image_url,
           similarity_score: result.similarity_score,
           description: result.description,
-          matched_attributes: result.matched_attributes,
-          match_explanation: result.match_explanation
+          matched_attributes: { matched: matchedAttrs },
+          match_explanation: `Matches: ${matchedAttrs.join(', ')}`
         });
-    }
+    });
 
-    // Update status to completed
-    const finalStatus = highQualityMatches.length > 0 ? 'completed' : 'tentative_matches';
+    await Promise.all(insertPromises);
+
+    // Update status
+    const finalStatus = topMatches.some(m => m.similarity_score >= HIGH_THRESHOLD) ? 'completed' : 'completed';
     await supabase
       .from('visual_searches')
       .update({ status: finalStatus })
@@ -351,9 +307,9 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       status: finalStatus,
-      resultsCount: matchesToStore.length,
-      highQualityCount: highQualityMatches.length,
-      tentativeCount: tentativeMatches.length,
+      resultsCount: topMatches.length,
+      highQualityCount: topMatches.filter(m => m.similarity_score >= HIGH_THRESHOLD).length,
+      tentativeCount: topMatches.filter(m => m.similarity_score < HIGH_THRESHOLD).length,
       attributes
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
