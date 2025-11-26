@@ -42,6 +42,15 @@ export const Navigation = () => {
                 gallery
               </Button>
             </Link>
+            <Link to="/cura-cart">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-foreground hover:bg-muted font-mono"
+              >
+                cura cart
+              </Button>
+            </Link>
             <Link to="/profile">
               <Button
                 variant="ghost"
