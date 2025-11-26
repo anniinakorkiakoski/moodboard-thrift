@@ -87,91 +87,90 @@ const Index = () => {
       </section>
 
       {/* The Process */}
-      <section className="pt-8 pb-32 bg-background">
+      <section className="pt-8 pb-32 bg-background relative overflow-hidden">
         <div className="container mx-auto px-8">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             
             {/* Section title */}
-            <div className="text-center mb-24 space-y-6">
-              <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">THE PROCESS</h2>
-              <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-              <p className="text-sm md:text-base font-light text-foreground/70 leading-loose font-mono">
-                Three simple steps to curate your perfect wardrobe
-              </p>
+            <div className="text-center mb-32 space-y-6">
+              <h2 className="text-5xl md:text-6xl font-serif italic text-burgundy leading-tight">
+                From moodboard to wardrobe.
+              </h2>
             </div>
 
-            {/* Process Steps - Real Note Card with overlay */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
-              
-              {/* Step 1 */}
-              <div className="group relative h-[500px]">
-                <img 
-                  src={notecardStack} 
-                  alt="Note card" 
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center p-12">
-                  <div className="flex flex-col items-center text-center space-y-6 pt-8">
-                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-base font-medium text-burgundy-foreground">01</span>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
-                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
-                        Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+            {/* Visual Flow Diagram */}
+            <div className="relative min-h-[600px]">
+              {/* Background Numbers */}
+              <div className="absolute inset-0 flex justify-between items-start pointer-events-none">
+                <span className="text-[14rem] md:text-[18rem] font-black text-foreground/5 leading-none">01</span>
+                <span className="text-[14rem] md:text-[18rem] font-black text-foreground/5 leading-none">02</span>
+                <span className="text-[14rem] md:text-[18rem] font-black text-foreground/5 leading-none">03</span>
               </div>
 
-              {/* Step 2 */}
-              <div className="group relative h-[500px]">
-                <img 
-                  src={notecardStack} 
-                  alt="Note card" 
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center p-12">
-                  <div className="flex flex-col items-center text-center space-y-6 pt-8">
-                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-base font-medium text-burgundy-foreground">02</span>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
-                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
-                        Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* SVG Connection Lines */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                {/* Line from step 1 to step 2 top */}
+                <line x1="15%" y1="45%" x2="50%" y2="25%" stroke="hsl(var(--burgundy))" strokeWidth="2" opacity="0.6" />
+                {/* Line from step 2 top to step 3 */}
+                <line x1="50%" y1="25%" x2="85%" y2="45%" stroke="hsl(var(--burgundy))" strokeWidth="2" opacity="0.6" />
+                {/* Line from step 1 to step 2 bottom */}
+                <line x1="15%" y1="45%" x2="50%" y2="65%" stroke="hsl(var(--burgundy))" strokeWidth="2" opacity="0.6" />
+                {/* Line from step 2 bottom to step 3 */}
+                <line x1="50%" y1="65%" x2="85%" y2="45%" stroke="hsl(var(--burgundy))" strokeWidth="2" opacity="0.6" />
+                
+                {/* Connection dots */}
+                <circle cx="15%" cy="45%" r="6" fill="hsl(var(--burgundy))" />
+                <circle cx="50%" cy="25%" r="6" fill="hsl(var(--burgundy))" />
+                <circle cx="50%" cy="65%" r="6" fill="hsl(var(--burgundy))" />
+                <circle cx="85%" cy="45%" r="6" fill="hsl(var(--burgundy))" />
+              </svg>
 
-              {/* Step 3 */}
-              <div className="group relative h-[500px]">
-                <img 
-                  src={notecardStack} 
-                  alt="Note card" 
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center p-12">
-                  <div className="flex flex-col items-center text-center space-y-6 pt-8">
-                    <div className="w-12 h-12 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-base font-medium text-burgundy-foreground">03</span>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="text-base font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
-                      <p className="text-xs font-light text-foreground/70 leading-loose font-mono">
-                        Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
-                      </p>
-                    </div>
+              {/* Step Cards */}
+              <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
+                
+                {/* Step 1 - Upload */}
+                <div className="flex items-center justify-center md:h-[500px]">
+                  <div className="bg-muted/30 p-8 border border-border/30 max-w-xs backdrop-blur-sm">
+                    <p className="text-sm font-mono text-foreground/80 leading-loose text-center">
+                      upload your<br />
+                      style<br />
+                      inspiration
+                    </p>
                   </div>
                 </div>
+
+                {/* Step 2 - Two paths */}
+                <div className="flex flex-col items-center justify-center gap-16 md:h-[500px]">
+                  <div className="bg-muted/30 p-8 border border-border/30 max-w-xs backdrop-blur-sm">
+                    <p className="text-sm font-mono text-foreground/80 leading-loose text-center">
+                      use AI<br />
+                      search
+                    </p>
+                  </div>
+                  <div className="bg-muted/30 p-8 border border-border/30 max-w-xs backdrop-blur-sm">
+                    <p className="text-sm font-mono text-foreground/80 leading-loose text-center">
+                      hire a human<br />
+                      stylist
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 3 - Make purchases */}
+                <div className="flex items-center justify-center md:h-[500px]">
+                  <div className="bg-muted/30 p-8 border border-border/30 max-w-xs backdrop-blur-sm">
+                    <p className="text-sm font-mono text-foreground/80 leading-loose text-center">
+                      make<br />
+                      thoughtful<br />
+                      purchases
+                    </p>
+                  </div>
+                </div>
+
               </div>
             </div>
 
             {/* Read More Link */}
-            <div className="text-center mt-16">
+            <div className="text-center mt-24">
               <Link 
                 to="/how-to-use"
                 className="text-sm font-light text-foreground/70 hover:text-foreground uppercase tracking-widest transition-colors duration-300 underline underline-offset-4 font-mono"
