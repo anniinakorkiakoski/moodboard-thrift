@@ -31,13 +31,15 @@ const Gallery = () => {
     setIsSearching(true);
     try {
       await startSearch(image.url);
-      toast({
-        title: "Search completed",
-        description: "Check your Cura Cart for AI-curated matches"
-      });
+      // startSearch already shows success toast, just navigate
       navigate('/cura-cart');
     } catch (error) {
       console.error('Search failed:', error);
+      toast({
+        title: "Search failed",
+        description: "Please try again or check your connection",
+        variant: "destructive"
+      });
     } finally {
       setIsSearching(false);
     }
