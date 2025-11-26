@@ -196,6 +196,8 @@ export const VisualSearchResults = () => {
                 <VisualSearchNoResults 
                   attributes={currentSearch?.attributes}
                   imageUrl={imageUrl}
+                  suggestions={currentSearch?.analysis_data?.suggestions}
+                  searchQuery={currentSearch?.analysis_data?.searchQuery}
                 />
               )}
             </TabsContent>
