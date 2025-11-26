@@ -453,7 +453,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                                 setEditingCaption(null);
                               }
                             }}
-                            placeholder="Add your notes here..."
+                            placeholder="what do you love about this?"
                             className="w-full text-sm border-2 border-white/50 p-2 rounded bg-black/40 focus-visible:ring-0 focus-visible:border-white text-white placeholder:text-white/60 font-light font-lora resize-none"
                             autoFocus
                             rows={3}
@@ -463,7 +463,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                             className="text-sm text-white font-light leading-relaxed cursor-pointer min-h-[20px] font-lora whitespace-pre-wrap"
                             onClick={() => setEditingCaption(image.id)}
                           >
-                            {image.caption || 'Click to add notes...'}
+                            {image.caption || 'what do you love about this?'}
                           </div>
                         )}
                       </div>
