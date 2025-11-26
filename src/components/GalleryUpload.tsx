@@ -186,32 +186,46 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
         return;
       }
 
-      // Convert base64 images and upload
+      // Download and upload each image with CORS workaround
+      let successCount = 0;
       for (const image of images) {
         try {
-          if (!image.base64) continue;
+          // Use fetch with no-cors mode to get the image
+          const response = await fetch(image.url, { mode: 'no-cors' });
           
-          // Convert base64 to blob
-          const byteCharacters = atob(image.base64);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'image/jpeg' });
-          const file = new File([blob], `pinterest-${Date.now()}.jpg`, { type: 'image/jpeg' });
-
-          // Calculate aspect ratio
+          // If no-cors fails, try loading via Image element
           const img = new Image();
-          const aspectRatio = await new Promise<number>((resolve) => {
-            img.onload = () => resolve(img.width / img.height);
-            img.src = URL.createObjectURL(file);
+          img.crossOrigin = 'anonymous';
+          
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = image.url;
           });
+          
+          // Convert image to blob via canvas
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0);
+          
+          const blob = await new Promise<Blob>((resolve) => {
+            canvas.toBlob((b) => resolve(b!), 'image/jpeg', 0.9);
+          });
+          
+          const file = new File([blob], `pinterest-${Date.now()}.jpg`, { type: 'image/jpeg' });
+          const aspectRatio = img.width / img.height;
 
           await uploadImage(file, image.title, aspectRatio);
+          successCount++;
         } catch (imgError) {
           console.error('Failed to upload Pinterest image:', imgError);
         }
+      }
+      
+      if (successCount === 0) {
+        throw new Error('Could not download any images from Pinterest');
       }
 
       toast({
