@@ -186,11 +186,19 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
         return;
       }
 
-      // Download and upload each image
+      // Convert base64 images and upload
       for (const image of images) {
         try {
-          const response = await fetch(image.url);
-          const blob = await response.blob();
+          if (!image.base64) continue;
+          
+          // Convert base64 to blob
+          const byteCharacters = atob(image.base64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'image/jpeg' });
           const file = new File([blob], `pinterest-${Date.now()}.jpg`, { type: 'image/jpeg' });
 
           // Calculate aspect ratio
