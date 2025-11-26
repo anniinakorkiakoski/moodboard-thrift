@@ -287,23 +287,14 @@ ${truncatedHtml}`
       description: item.title || ''
     }));
 
-    // Calculate similarity with emphasis on visible text/brands, item type, notable details, and shape
+    // Calculate similarity with balanced weighting across all attributes
     const scoredItems = mappedItems.map(item => {
       let score = 0.15; // Lower base score
       const itemText = (item.title || '').toLowerCase();
       
-      // HIGHEST PRIORITY: Visible text/brands/logos (worth 0.25)
-      if (attributes.visibleText && attributes.visibleText.length > 0) {
-        attributes.visibleText.forEach((text: string) => {
-          if (text.length > 2 && itemText.includes(text.toLowerCase())) {
-            score += 0.25; // Strong match for brand/logo
-          }
-        });
-      }
-      
-      // CRITICAL: Item type must match (worth 0.2)
+      // CRITICAL: Item type must match (worth 0.25)
       if (attributes.itemType && itemText.includes(attributes.itemType.toLowerCase())) {
-        score += 0.2;
+        score += 0.25;
       }
       if (attributes.category && itemText.includes(attributes.category.toLowerCase())) {
         score += 0.1;
@@ -324,6 +315,15 @@ ${truncatedHtml}`
       }
       if (attributes.length && itemText.includes(attributes.length.toLowerCase())) {
         score += 0.1;
+      }
+      
+      // Visible text/brands/logos (worth 0.15 - helpful but not dominant)
+      if (attributes.visibleText && attributes.visibleText.length > 0) {
+        attributes.visibleText.forEach((text: string) => {
+          if (text.length > 2 && itemText.includes(text.toLowerCase())) {
+            score += 0.075; // Moderate boost for brand match
+          }
+        });
       }
       
       // Secondary attributes (worth 0.15 total)
@@ -362,15 +362,15 @@ ${truncatedHtml}`
     try {
       const insertPromises = topMatches.map(result => {
         const matchedAttrs = [];
-        // Prioritize visible text/brands, then item type and notable details
-        if (attributes.visibleText && attributes.visibleText.length > 0) {
-          matchedAttrs.push(...attributes.visibleText.map((t: string) => `"${t}" brand`));
-        }
+        // Balanced match explanation
         if (attributes.itemType) matchedAttrs.push(attributes.itemType);
         if (attributes.notableDetails && attributes.notableDetails.length > 0) {
           matchedAttrs.push(...attributes.notableDetails.slice(0, 2));
         }
         if (attributes.silhouette) matchedAttrs.push(`${attributes.silhouette} fit`);
+        if (attributes.visibleText && attributes.visibleText.length > 0) {
+          matchedAttrs.push(...attributes.visibleText.map((t: string) => `"${t}"`));
+        }
         
         return supabase
           .from('search_results')
