@@ -69,6 +69,7 @@ Extract structured attributes in JSON format with these exact fields:
 {
   "itemType": "main garment type (e.g., shoes, jacket, dress, top, pants, bag, boots, sneakers)",
   "category": "specific category (e.g., studded boots, blazer, midi dress, button-up shirt, ankle boots)",
+  "visibleText": ["any visible text, logos, brand names, tags you can read in the image"],
   "fabricType": "material type (e.g., leather, satin, cotton, denim, wool, linen, suede)",
   "fabricTexture": "texture qualities (e.g., sheen, matte, textured, smooth, distressed)",
   "primaryColors": ["dominant color 1", "color 2"],
@@ -81,7 +82,9 @@ Extract structured attributes in JSON format with these exact fields:
   "notableDetails": ["detail 1", "detail 2", "e.g., studs, embroidery, distressing, platform sole"],
   "era": "style era (e.g., 90s, vintage, modern, Y2K, punk)",
   "aesthetic": "overall vibe (e.g., romantic, minimalist, bohemian, grunge, edgy, punk)"
-}`
+}
+
+CRITICAL: Read all visible text, logos, and brand names in the image carefully. Include them in the visibleText array.`
           },
           {
             role: 'user',
@@ -129,13 +132,15 @@ Extract structured attributes in JSON format with these exact fields:
       })
       .eq('id', searchId);
 
-    // Step 2: Generate search query and URLs from attributes - prioritize notable details
+    // Step 2: Generate search query and URLs from attributes - prioritize visible text and notable details
+    const visibleTextStr = attributes.visibleText?.join(' ') || '';
     const notableDetailsStr = attributes.notableDetails?.join(' ') || '';
-    const searchQuery = `${attributes.category || attributes.itemType} ${notableDetailsStr} ${attributes.silhouette || ''} ${attributes.length || ''} ${attributes.fabricType || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.pattern || ''}`.trim();
+    const searchQuery = `${visibleTextStr} ${attributes.category || attributes.itemType} ${notableDetailsStr} ${attributes.silhouette || ''} ${attributes.length || ''} ${attributes.fabricType || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.pattern || ''}`.trim();
     console.log('Generated search query:', searchQuery);
     console.log('Key item attributes:', {
       itemType: attributes.itemType,
       category: attributes.category,
+      visibleText: attributes.visibleText,
       notableDetails: attributes.notableDetails,
       silhouette: attributes.silhouette,
       length: attributes.length
@@ -282,10 +287,19 @@ ${truncatedHtml}`
       description: item.title || ''
     }));
 
-    // Calculate similarity with emphasis on item type, notable details, and shape
+    // Calculate similarity with emphasis on visible text/brands, item type, notable details, and shape
     const scoredItems = mappedItems.map(item => {
-      let score = 0.2; // Lower base score
+      let score = 0.15; // Lower base score
       const itemText = (item.title || '').toLowerCase();
+      
+      // HIGHEST PRIORITY: Visible text/brands/logos (worth 0.25)
+      if (attributes.visibleText && attributes.visibleText.length > 0) {
+        attributes.visibleText.forEach((text: string) => {
+          if (text.length > 2 && itemText.includes(text.toLowerCase())) {
+            score += 0.25; // Strong match for brand/logo
+          }
+        });
+      }
       
       // CRITICAL: Item type must match (worth 0.2)
       if (attributes.itemType && itemText.includes(attributes.itemType.toLowerCase())) {
@@ -295,32 +309,32 @@ ${truncatedHtml}`
         score += 0.1;
       }
       
-      // Notable details are crucial (worth 0.3 total)
+      // Notable details are crucial (worth 0.25 total)
       if (attributes.notableDetails && attributes.notableDetails.length > 0) {
         attributes.notableDetails.forEach((detail: string) => {
           if (detail.length > 3 && itemText.includes(detail.toLowerCase())) {
-            score += 0.15;
+            score += 0.125;
           }
         });
       }
       
-      // Shape attributes (worth 0.3 total)
+      // Shape attributes (worth 0.2 total)
       if (attributes.silhouette && itemText.includes(attributes.silhouette.toLowerCase())) {
-        score += 0.15;
-      }
-      if (attributes.length && itemText.includes(attributes.length.toLowerCase())) {
-        score += 0.15;
-      }
-      
-      // Secondary attributes (worth 0.2 total)
-      if (attributes.primaryColors?.[0] && itemText.includes(attributes.primaryColors[0].toLowerCase())) {
         score += 0.1;
       }
+      if (attributes.length && itemText.includes(attributes.length.toLowerCase())) {
+        score += 0.1;
+      }
+      
+      // Secondary attributes (worth 0.15 total)
+      if (attributes.primaryColors?.[0] && itemText.includes(attributes.primaryColors[0].toLowerCase())) {
+        score += 0.075;
+      }
       if (attributes.fabricType && itemText.includes(attributes.fabricType.toLowerCase())) {
-        score += 0.05;
+        score += 0.0375;
       }
       if (attributes.pattern && itemText.includes(attributes.pattern.toLowerCase())) {
-        score += 0.05;
+        score += 0.0375;
       }
       
       return { ...item, similarity_score: Math.min(score, 1.0) };
@@ -348,13 +362,15 @@ ${truncatedHtml}`
     try {
       const insertPromises = topMatches.map(result => {
         const matchedAttrs = [];
-        // Prioritize item type and notable details in match explanation
+        // Prioritize visible text/brands, then item type and notable details
+        if (attributes.visibleText && attributes.visibleText.length > 0) {
+          matchedAttrs.push(...attributes.visibleText.map((t: string) => `"${t}" brand`));
+        }
         if (attributes.itemType) matchedAttrs.push(attributes.itemType);
         if (attributes.notableDetails && attributes.notableDetails.length > 0) {
-          matchedAttrs.push(...attributes.notableDetails);
+          matchedAttrs.push(...attributes.notableDetails.slice(0, 2));
         }
         if (attributes.silhouette) matchedAttrs.push(`${attributes.silhouette} fit`);
-        if (attributes.category && attributes.category !== attributes.itemType) matchedAttrs.push(attributes.category);
         
         return supabase
           .from('search_results')
