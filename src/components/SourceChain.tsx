@@ -6,6 +6,7 @@ const sources = [
   'Depop',
   'Vestiaire Collective',
   'The RealReal',
+  'Bought',
   'thredUP',
   'eBay',
   'Facebook Marketplace',
