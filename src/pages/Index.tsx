@@ -87,51 +87,49 @@ const Index = () => {
       </section>
 
       {/* The Process */}
-      <section className="pt-8 pb-32 bg-background relative overflow-hidden">
+      <section className="pt-8 pb-32 bg-[#f5f1eb] relative overflow-hidden">
         <div className="container mx-auto px-8">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             
             {/* Section title */}
-            <div className="text-center mb-32 space-y-6">
-              <h2 className="text-5xl md:text-6xl font-serif italic text-burgundy leading-tight">
+            <div className="text-center mb-24 space-y-6">
+              <h2 className="text-4xl md:text-6xl font-serif italic text-burgundy leading-tight">
                 From moodboard to wardrobe.
               </h2>
             </div>
 
             {/* Visual Flow Diagram */}
-            <div className="relative min-h-[600px]">
-              {/* Background Numbers */}
-              <div className="absolute inset-0 flex justify-between items-start pointer-events-none">
-                <span className="text-[14rem] md:text-[18rem] font-black text-foreground/5 leading-none">01</span>
-                <span className="text-[14rem] md:text-[18rem] font-black text-foreground/5 leading-none">02</span>
-                <span className="text-[14rem] md:text-[18rem] font-black text-foreground/5 leading-none">03</span>
-              </div>
+            <div className="relative" style={{ minHeight: '500px' }}>
+              {/* Background Numbers - positioned absolutely */}
+              <div className="absolute left-[5%] top-[15%] text-[12rem] md:text-[16rem] font-black text-foreground/[0.03] leading-none pointer-events-none">01</div>
+              <div className="absolute left-1/2 -translate-x-1/2 top-[5%] text-[12rem] md:text-[16rem] font-black text-foreground/[0.03] leading-none pointer-events-none">02</div>
+              <div className="absolute right-[5%] top-[15%] text-[12rem] md:text-[16rem] font-black text-foreground/[0.03] leading-none pointer-events-none">03</div>
 
-              {/* SVG Connection Lines */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
-                {/* Line from step 1 to step 2 top */}
-                <line x1="15%" y1="45%" x2="50%" y2="25%" stroke="hsl(var(--burgundy))" strokeWidth="2" opacity="0.6" />
-                {/* Line from step 2 top to step 3 */}
-                <line x1="50%" y1="25%" x2="85%" y2="45%" stroke="hsl(var(--burgundy))" strokeWidth="2" opacity="0.6" />
-                {/* Line from step 1 to step 2 bottom */}
-                <line x1="15%" y1="45%" x2="50%" y2="65%" stroke="hsl(var(--burgundy))" strokeWidth="2" opacity="0.6" />
-                {/* Line from step 2 bottom to step 3 */}
-                <line x1="50%" y1="65%" x2="85%" y2="45%" stroke="hsl(var(--burgundy))" strokeWidth="2" opacity="0.6" />
+              {/* SVG Connection Lines - Diamond Pattern */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ height: '500px' }}>
+                {/* Top left to top center */}
+                <line x1="20%" y1="40%" x2="50%" y2="20%" stroke="#9b4444" strokeWidth="3" />
+                {/* Top center to top right */}
+                <line x1="50%" y1="20%" x2="80%" y2="40%" stroke="#9b4444" strokeWidth="3" />
+                {/* Top left to bottom center */}
+                <line x1="20%" y1="40%" x2="50%" y2="60%" stroke="#9b4444" strokeWidth="3" />
+                {/* Bottom center to top right */}
+                <line x1="50%" y1="60%" x2="80%" y2="40%" stroke="#9b4444" strokeWidth="3" />
                 
                 {/* Connection dots */}
-                <circle cx="15%" cy="45%" r="6" fill="hsl(var(--burgundy))" />
-                <circle cx="50%" cy="25%" r="6" fill="hsl(var(--burgundy))" />
-                <circle cx="50%" cy="65%" r="6" fill="hsl(var(--burgundy))" />
-                <circle cx="85%" cy="45%" r="6" fill="hsl(var(--burgundy))" />
+                <circle cx="20%" cy="40%" r="8" fill="#9b4444" />
+                <circle cx="50%" cy="20%" r="8" fill="#9b4444" />
+                <circle cx="50%" cy="60%" r="8" fill="#9b4444" />
+                <circle cx="80%" cy="40%" r="8" fill="#9b4444" />
               </svg>
 
-              {/* Step Cards */}
-              <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
+              {/* Step Cards - Absolute Positioning */}
+              <div className="relative" style={{ height: '500px' }}>
                 
-                {/* Step 1 - Upload */}
-                <div className="flex items-center justify-center md:h-[500px]">
-                  <div className="bg-muted/30 p-8 border border-border/30 max-w-xs backdrop-blur-sm">
-                    <p className="text-sm font-mono text-foreground/80 leading-loose text-center">
+                {/* Step 1 - Left */}
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[280px]">
+                  <div className="bg-white/60 backdrop-blur-sm p-10 border border-foreground/10 shadow-sm">
+                    <p className="text-base font-mono text-foreground/90 leading-relaxed text-center">
                       upload your<br />
                       style<br />
                       inspiration
@@ -139,26 +137,30 @@ const Index = () => {
                   </div>
                 </div>
 
-                {/* Step 2 - Two paths */}
-                <div className="flex flex-col items-center justify-center gap-16 md:h-[500px]">
-                  <div className="bg-muted/30 p-8 border border-border/30 max-w-xs backdrop-blur-sm">
-                    <p className="text-sm font-mono text-foreground/80 leading-loose text-center">
+                {/* Step 2a - Top Center */}
+                <div className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[280px]">
+                  <div className="bg-white/60 backdrop-blur-sm p-10 border border-foreground/10 shadow-sm">
+                    <p className="text-base font-mono text-foreground/90 leading-relaxed text-center">
                       use AI<br />
                       search
                     </p>
                   </div>
-                  <div className="bg-muted/30 p-8 border border-border/30 max-w-xs backdrop-blur-sm">
-                    <p className="text-sm font-mono text-foreground/80 leading-loose text-center">
+                </div>
+
+                {/* Step 2b - Bottom Center */}
+                <div className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[280px]">
+                  <div className="bg-white/60 backdrop-blur-sm p-10 border border-foreground/10 shadow-sm">
+                    <p className="text-base font-mono text-foreground/90 leading-relaxed text-center">
                       hire a human<br />
                       stylist
                     </p>
                   </div>
                 </div>
 
-                {/* Step 3 - Make purchases */}
-                <div className="flex items-center justify-center md:h-[500px]">
-                  <div className="bg-muted/30 p-8 border border-border/30 max-w-xs backdrop-blur-sm">
-                    <p className="text-sm font-mono text-foreground/80 leading-loose text-center">
+                {/* Step 3 - Right */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[280px]">
+                  <div className="bg-white/60 backdrop-blur-sm p-10 border border-foreground/10 shadow-sm">
+                    <p className="text-base font-mono text-foreground/90 leading-relaxed text-center">
                       make<br />
                       thoughtful<br />
                       purchases
