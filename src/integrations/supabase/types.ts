@@ -152,6 +152,56 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_items: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          id: string
+          image_url: string | null
+          item_url: string
+          notes: string | null
+          platform: string
+          price: number | null
+          search_result_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          image_url?: string | null
+          item_url: string
+          notes?: string | null
+          platform: string
+          price?: number | null
+          search_result_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          image_url?: string | null
+          item_url?: string
+          notes?: string | null
+          platform?: string
+          price?: number | null
+          search_result_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_items_search_result_id_fkey"
+            columns: ["search_result_id"]
+            isOneToOne: false
+            referencedRelation: "search_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       search_results: {
         Row: {
           created_at: string
@@ -460,6 +510,7 @@ export type Database = {
           status: Database["public"]["Enums"]["search_status"]
           updated_at: string
           user_id: string
+          user_image_id: string | null
         }
         Insert: {
           analysis_data?: Json | null
@@ -472,6 +523,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["search_status"]
           updated_at?: string
           user_id: string
+          user_image_id?: string | null
         }
         Update: {
           analysis_data?: Json | null
@@ -484,8 +536,17 @@ export type Database = {
           status?: Database["public"]["Enums"]["search_status"]
           updated_at?: string
           user_id?: string
+          user_image_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "visual_searches_user_image_id_fkey"
+            columns: ["user_image_id"]
+            isOneToOne: false
+            referencedRelation: "user_images"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

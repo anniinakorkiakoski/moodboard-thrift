@@ -6,12 +6,14 @@ import { Input } from '@/components/ui/input';
 import { useUserImages } from '@/hooks/useUserImages';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { ImageMatchesDialog } from './ImageMatchesDialog';
 // Force refresh - fixed updateCaption duplicate declaration issue
 
 interface UploadedImage {
   url: string;
   caption: string;
   aspectRatio: number;
+  id?: string;
 }
 
 interface GalleryUploadProps {
@@ -27,24 +29,67 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pinterestUrl, setPinterestUrl] = useState('');
   const [extractingPinterest, setExtractingPinterest] = useState(false);
+  const [imageMatches, setImageMatches] = useState<Map<string, number>>(new Map());
+  const [selectedImageForMatches, setSelectedImageForMatches] = useState<{ id: string; url: string } | null>(null);
   
   const { images, loading, uploadImage, updateCaption: updateImageCaption, deleteImage, getImageUrl } = useUserImages();
   const { toast } = useToast();
 
-  // Check authentication status
+  // Check authentication status and fetch match counts
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setIsAuthenticated(!!user);
+      if (user) {
+        fetchMatchCounts();
+      }
     };
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setIsAuthenticated(!!session?.user);
+      if (session?.user) {
+        fetchMatchCounts();
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [images]);
+
+  const fetchMatchCounts = async () => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return;
+
+      // Get all searches with completed status
+      const { data: searches } = await supabase
+        .from('visual_searches')
+        .select('user_image_id, id')
+        .eq('status', 'completed')
+        .not('user_image_id', 'is', null);
+
+      if (!searches) return;
+
+      // Get match counts for each search
+      const counts = new Map<string, number>();
+      for (const search of searches) {
+        if (search.user_image_id) {
+          const { count } = await supabase
+            .from('search_results')
+            .select('*', { count: 'exact', head: true })
+            .eq('search_id', search.id);
+
+          if (count && count > 0) {
+            counts.set(search.user_image_id, count);
+          }
+        }
+      }
+
+      setImageMatches(counts);
+    } catch (error) {
+      console.error('Error fetching match counts:', error);
+    }
+  };
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -398,23 +443,42 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
               {displayImages.map((image, index) => (
                 <div key={image.id} className="break-inside-avoid group relative">
                   <div className="bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
-                    <div className="relative">
+                    <div className="relative cursor-pointer" onClick={() => {
+                      const matchCount = imageMatches.get(image.id);
+                      if (matchCount && matchCount > 0) {
+                        setSelectedImageForMatches({ id: image.id, url: image.url });
+                      }
+                    }}>
                       <img 
                         src={image.url} 
                         alt={image.caption || 'Inspiration image'}
                         className="w-full h-auto object-cover"
                       />
+                      
+                      {/* Match indicator badge */}
+                      {imageMatches.get(image.id) && imageMatches.get(image.id)! > 0 && (
+                        <div className="absolute top-2 left-2 z-20">
+                          <div className="w-8 h-8 bg-burgundy rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                            {imageMatches.get(image.id)}
+                          </div>
+                        </div>
+                      )}
+                      
                       {/* Action buttons - top right */}
                       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-20">
                         <Button
                           variant="outline"
                           size="sm"
                           className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
-                          onClick={() => onImageSearch?.({
-                            url: image.url,
-                            caption: image.caption,
-                            aspectRatio: image.aspectRatio
-                          })}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onImageSearch?.({
+                              id: image.id,
+                              url: image.url,
+                              caption: image.caption,
+                              aspectRatio: image.aspectRatio
+                            });
+                          }}
                         >
                           <Search className="w-3 h-3" />
                         </Button>
@@ -537,6 +601,16 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
               </div>
             </div>
           </div>
+        )}
+
+        {/* Matches Dialog */}
+        {selectedImageForMatches && (
+          <ImageMatchesDialog
+            open={!!selectedImageForMatches}
+            onClose={() => setSelectedImageForMatches(null)}
+            imageId={selectedImageForMatches.id}
+            imageUrl={selectedImageForMatches.url}
+          />
         )}
       </div>
     </div>

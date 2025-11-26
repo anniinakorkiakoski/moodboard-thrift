@@ -13,7 +13,7 @@ import { Navigation } from '@/components/Navigation';
 export const VisualSearchResults = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { imageUrl } = location.state || {};
+  const { imageUrl, imageId } = location.state || {};
   const { currentSearch, results, loading, startSearch } = useVisualSearch();
   const [activeTab, setActiveTab] = useState<'results' | 'marketplace'>('results');
   const [showCropOverlay, setShowCropOverlay] = useState(false);
@@ -29,7 +29,7 @@ export const VisualSearchResults = () => {
   const handleConfirmCrop = async (cropData: any, budget?: { min: number; max: number }) => {
     setShowCropOverlay(false);
     setSearchInitiated(true);
-    await startSearch(imageUrl, cropData, budget);
+    await startSearch(imageUrl, cropData, budget, imageId);
   };
 
   const handleCancelCrop = () => {
