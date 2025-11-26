@@ -8,6 +8,7 @@ export const SourceLogo = ({ name }: SourceLogoProps) => {
     'Depop': '/logos/depop.png',
     'Vestiaire Collective': '/logos/vestiaire.png',
     'The RealReal': '/logos/therealreal.png',
+    'Bought': '/logos/bought.png',
   };
 
   // If we have a logo image, use it

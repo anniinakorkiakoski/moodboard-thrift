@@ -6,6 +6,7 @@ const allPlatforms = [
   'Depop',
   'Vestiaire Collective',
   'The RealReal',
+  'Bought',
   'thredUP',
   'eBay',
   'Facebook Marketplace',
