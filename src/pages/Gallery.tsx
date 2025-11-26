@@ -4,12 +4,16 @@ import { GalleryUpload } from '@/components/GalleryUpload';
 import { StylerFinds } from '@/components/StylerFinds';
 import { BundleDisplay } from '@/components/BundleDisplay';
 import { Navigation } from '@/components/Navigation';
+import { useVisualSearch } from '@/hooks/useVisualSearch';
+import { useToast } from '@/hooks/use-toast';
 
 const Gallery = () => {
   const navigate = useNavigate();
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [searchedImage, setSearchedImage] = useState<{ url: string; caption: string } | null>(null);
+  const { startSearch, loading } = useVisualSearch();
+  const { toast } = useToast();
 
   const handleUpload = (files: File[]) => {
     console.log('Uploaded files:', files);
@@ -23,11 +27,20 @@ const Gallery = () => {
     }, 3000);
   };
 
-  const handleImageSearch = (image: { url: string; caption: string; aspectRatio: number }) => {
-    // Navigate to visual search results page
-    navigate('/search', {
-      state: { imageUrl: image.url }
-    });
+  const handleImageSearch = async (image: { url: string; caption: string; aspectRatio: number }) => {
+    setIsSearching(true);
+    try {
+      await startSearch(image.url);
+      toast({
+        title: "Search completed",
+        description: "Check your Cura Cart for AI-curated matches"
+      });
+      navigate('/cura-cart');
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const handleStartOver = () => {
