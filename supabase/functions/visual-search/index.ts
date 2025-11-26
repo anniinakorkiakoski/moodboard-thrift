@@ -17,7 +17,7 @@ serve(async (req) => {
   }
 
   try {
-    const { imageUrl, searchId, cropData } = await req.json();
+    const { imageUrl, searchId, cropData, budget } = await req.json();
     
     if (!imageUrl || !searchId) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
@@ -25,6 +25,8 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    console.log('Search request:', { searchId, hasBudget: !!budget });
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -267,8 +269,15 @@ ${truncatedHtml}`
             }
             
             // Reject unrealistic prices for secondhand clothing
-            if (priceNum > 500 || priceNum < 0.5) {
-              console.log('Rejected unrealistic price:', item.title, priceNum);
+            const maxPrice = budget?.max || 500;
+            if (priceNum > maxPrice || priceNum < 0.5) {
+              console.log('Rejected price outside budget:', item.title, priceNum, `(budget: ${budget?.min}-${budget?.max})`);
+              return;
+            }
+            
+            // Check minimum budget
+            if (budget && budget.min && priceNum < budget.min) {
+              console.log('Rejected: Below minimum budget:', item.title, priceNum);
               return;
             }
             

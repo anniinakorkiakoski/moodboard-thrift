@@ -26,10 +26,10 @@ export const VisualSearchResults = () => {
     }
   }, [imageUrl, searchInitiated]);
 
-  const handleConfirmCrop = async (cropData: any) => {
+  const handleConfirmCrop = async (cropData: any, budget?: { min: number; max: number }) => {
     setShowCropOverlay(false);
     setSearchInitiated(true);
-    await startSearch(imageUrl, cropData);
+    await startSearch(imageUrl, cropData, budget);
   };
 
   const handleCancelCrop = () => {
