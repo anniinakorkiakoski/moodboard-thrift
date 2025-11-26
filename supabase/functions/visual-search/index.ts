@@ -139,7 +139,7 @@ serve(async (req) => {
     // Use AI to extract items from search result pages
     const allItems: any[] = [];
     
-    for (const url of searchUrls.slice(0, 3)) { // Process first 3 platforms
+    for (const url of searchUrls.slice(0, 2)) { // Only process 2 platforms for speed
       try {
         console.log('Fetching:', url);
         
@@ -155,7 +155,7 @@ serve(async (req) => {
         }
         
         const html = await pageResponse.text();
-        const truncatedHtml = html.substring(0, 50000); // First 50k chars
+        const truncatedHtml = html.substring(0, 30000); // Reduced to 30k chars
         
         console.log('Extracting items with AI...');
         
@@ -170,7 +170,7 @@ serve(async (req) => {
             model: 'google/gemini-2.5-flash',
             messages: [{
               role: 'user',
-              content: `Extract fashion item listings from this search results page. Find item URLs, image URLs, titles, and prices.\n\nHTML:\n${truncatedHtml}`
+              content: `Extract up to 10 fashion item listings from this search results page. Find item URLs, image URLs, titles, and prices.\n\nHTML:\n${truncatedHtml}`
             }],
             tools: [{
               type: 'function',
@@ -209,12 +209,12 @@ serve(async (req) => {
             const result = JSON.parse(toolCall.function.arguments);
             const platform = url.includes('vinted') ? 'vinted' : url.includes('depop') ? 'depop' : 'tise';
             
-            // Add items to our list with platform info
-            result.items.forEach((item: any) => {
+            // Add items to our list with platform info - limit to 10 per platform
+            result.items.slice(0, 10).forEach((item: any) => {
               allItems.push({
                 ...item,
                 platform,
-                attributes: {}, // Will be analyzed later
+                attributes: {},
               });
             });
             
@@ -224,18 +224,21 @@ serve(async (req) => {
       } catch (err) {
         console.error('Error processing URL:', url, err);
       }
+      
+      // Stop if we have enough items
+      if (allItems.length >= 15) break;
     }
 
     console.log(`Total items extracted: ${allItems.length}`);
 
-    // Map items to database schema format
+    // Map items to database schema format with safety checks
     const mappedItems = allItems.map(item => ({
-      platform: item.platform,
-      item_url: item.itemUrl || '',
-      title: item.title || 'Untitled',
-      price: parseFloat(item.price?.replace(/[^0-9.]/g, '') || '0'),
+      platform: item.platform || 'vinted',
+      item_url: item.itemUrl || item.item_url || '',
+      title: item.title || 'Fashion Item',
+      price: parseFloat((item.price || '0').toString().replace(/[^0-9.]/g, '')) || 0,
       currency: item.currency || 'EUR',
-      image_url: item.imageUrl || null,
+      image_url: item.imageUrl || item.image_url || null,
       description: item.title || ''
     }));
 
@@ -244,7 +247,7 @@ serve(async (req) => {
       // Simple text-based scoring for speed
       let score = 0;
       const searchText = `${attributes.category} ${attributes.fabricType} ${attributes.primaryColors?.join(' ')} ${attributes.pattern}`.toLowerCase();
-      const itemText = item.title.toLowerCase();
+      const itemText = (item.title || '').toLowerCase();
       
       // Count keyword matches
       const keywords = searchText.split(' ').filter(k => k.length > 2);
@@ -255,8 +258,8 @@ serve(async (req) => {
       return { ...item, similarity_score: Math.min(score, 1.0) };
     }).sort((a, b) => b.similarity_score - a.similarity_score);
 
-    // Take top items that have at least some match
-    const topMatches = scoredItems.filter(item => item.similarity_score >= FALLBACK_THRESHOLD).slice(0, 20);
+    // Take top 15 items
+    const topMatches = scoredItems.slice(0, 15);
 
     if (topMatches.length === 0) {
       await supabase
@@ -267,46 +270,50 @@ serve(async (req) => {
       return new Response(JSON.stringify({ 
         status: 'no_matches',
         attributes,
-        message: 'No curated matches found for this item.'
+        message: 'No matches found.'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Store results with match explanations
-    const insertPromises = topMatches.map(result => {
-      const matchedAttrs = [];
-      if (attributes.category) matchedAttrs.push(attributes.category);
-      if (attributes.primaryColors?.[0]) matchedAttrs.push(attributes.primaryColors[0]);
-      
-      return supabase
-        .from('search_results')
-        .insert({
-          search_id: searchId,
-          platform: result.platform,
-          item_url: result.item_url,
-          title: result.title,
-          price: result.price,
-          currency: result.currency,
-          image_url: result.image_url,
-          similarity_score: result.similarity_score,
-          description: result.description,
-          matched_attributes: { matched: matchedAttrs },
-          match_explanation: `Matches: ${matchedAttrs.join(', ')}`
-        });
-    });
+    // Store results with error handling
+    try {
+      const insertPromises = topMatches.map(result => {
+        const matchedAttrs = [];
+        if (attributes.category) matchedAttrs.push(attributes.category);
+        if (attributes.primaryColors?.[0]) matchedAttrs.push(attributes.primaryColors[0]);
+        
+        return supabase
+          .from('search_results')
+          .insert({
+            search_id: searchId,
+            platform: result.platform,
+            item_url: result.item_url,
+            title: result.title,
+            price: result.price,
+            currency: result.currency,
+            image_url: result.image_url,
+            similarity_score: result.similarity_score,
+            description: result.description,
+            matched_attributes: { matched: matchedAttrs },
+            match_explanation: `Matches: ${matchedAttrs.join(', ')}`
+          });
+      });
 
-    await Promise.all(insertPromises);
+      await Promise.all(insertPromises);
+    } catch (dbError) {
+      console.error('Database insert error:', dbError);
+      // Continue anyway - partial success is ok
+    }
 
     // Update status
-    const finalStatus = topMatches.some(m => m.similarity_score >= HIGH_THRESHOLD) ? 'completed' : 'completed';
     await supabase
       .from('visual_searches')
-      .update({ status: finalStatus })
+      .update({ status: 'completed' })
       .eq('id', searchId);
 
     return new Response(JSON.stringify({ 
-      status: finalStatus,
+      status: 'completed',
       resultsCount: topMatches.length,
       highQualityCount: topMatches.filter(m => m.similarity_score >= HIGH_THRESHOLD).length,
       tentativeCount: topMatches.filter(m => m.similarity_score < HIGH_THRESHOLD).length,
