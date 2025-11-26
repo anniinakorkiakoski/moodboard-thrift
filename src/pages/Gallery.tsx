@@ -45,7 +45,7 @@ const Gallery = () => {
           <div className="text-center mb-24 space-y-6">
             <h1 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">CURA GALLERY</h1>
             <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-            <p className="text-sm md:text-base font-light text-foreground/70 leading-loose max-w-xl mx-auto font-mono">
+            <p className="text-sm md:text-base font-light text-foreground/70 leading-loose max-w-xl mx-auto font-lora">
               Share your style inspiration and discover premium secondhand pieces curated specifically for your aesthetic
             </p>
           </div>
