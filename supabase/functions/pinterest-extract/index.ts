@@ -19,7 +19,7 @@ serve(async (req) => {
   try {
     const { url } = await req.json();
     
-    if (!url || !url.includes('pinterest.com')) {
+    if (!url || (!url.includes('pinterest.com') && !url.includes('pin.it'))) {
       return new Response(
         JSON.stringify({ error: 'Invalid Pinterest URL' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -28,8 +28,16 @@ serve(async (req) => {
 
     console.log('Fetching Pinterest URL:', url);
 
+    // If it's a shortened pin.it URL, follow the redirect to get the full URL
+    let fullUrl = url;
+    if (url.includes('pin.it')) {
+      const redirectResponse = await fetch(url, { redirect: 'follow' });
+      fullUrl = redirectResponse.url;
+      console.log('Resolved pin.it URL to:', fullUrl);
+    }
+
     // Try Pinterest's public oEmbed endpoint first
-    const oembedUrl = `https://www.pinterest.com/oembed.json?url=${encodeURIComponent(url)}`;
+    const oembedUrl = `https://www.pinterest.com/oembed.json?url=${encodeURIComponent(fullUrl)}`;
     const oembedResponse = await fetch(oembedUrl);
     
     if (oembedResponse.ok) {
@@ -53,7 +61,7 @@ serve(async (req) => {
     }
 
     // Fallback: try to fetch the page HTML
-    const response = await fetch(url, {
+    const response = await fetch(fullUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
       }
