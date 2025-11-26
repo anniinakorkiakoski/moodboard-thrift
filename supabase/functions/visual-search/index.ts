@@ -46,6 +46,10 @@ serve(async (req) => {
     // Step 1: Detailed attribute extraction with Gemini Vision
     console.log('Starting detailed image analysis for:', searchId);
     
+    const cropInstruction = cropData 
+      ? `The user has cropped/highlighted a specific area of this image. Focus your analysis ONLY on the main fashion item in the highlighted region. Ignore other items in the background.` 
+      : `Identify the SINGLE MOST PROMINENT fashion item in this image (the item that draws the most attention or takes up the most space). Ignore background items, other people's clothing, or secondary accessories unless they are clearly the main focus.`;
+    
     const attributeResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -57,22 +61,26 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a fashion expert AI analyzing clothing items for precise visual search. Extract structured attributes in JSON format with these exact fields:
+            content: `You are a fashion expert AI analyzing clothing items for precise visual search. 
+
+CRITICAL: ${cropInstruction}
+
+Extract structured attributes in JSON format with these exact fields:
 {
-  "itemType": "main garment type (e.g., jacket, dress, top, pants)",
-  "category": "specific category (e.g., blazer, midi dress, button-up shirt)",
-  "fabricType": "material type (e.g., satin, cotton, denim, wool, linen)",
-  "fabricTexture": "texture qualities (e.g., sheen, matte, textured, smooth)",
+  "itemType": "main garment type (e.g., shoes, jacket, dress, top, pants, bag, boots, sneakers)",
+  "category": "specific category (e.g., studded boots, blazer, midi dress, button-up shirt, ankle boots)",
+  "fabricType": "material type (e.g., leather, satin, cotton, denim, wool, linen, suede)",
+  "fabricTexture": "texture qualities (e.g., sheen, matte, textured, smooth, distressed)",
   "primaryColors": ["dominant color 1", "color 2"],
   "pattern": "pattern type (e.g., solid, floral, stripes, geometric, animal print)",
-  "silhouette": "overall shape (e.g., fitted, oversized, A-line, boxy, cropped)",
-  "sleeveType": "sleeve style (e.g., long, short, kimono, puff, sleeveless)",
-  "necklineCollar": "neckline/collar (e.g., v-neck, crew, collared, off-shoulder)",
-  "length": "garment length (e.g., cropped, hip-length, midi, maxi)",
-  "closureType": "fastening (e.g., button-front, zip, wrap, pullover)",
-  "notableDetails": ["detail 1", "detail 2"],
-  "era": "style era (e.g., 90s, vintage, modern, Y2K)",
-  "aesthetic": "overall vibe (e.g., romantic, minimalist, bohemian, grunge)"
+  "silhouette": "overall shape (e.g., fitted, oversized, A-line, boxy, cropped, chunky, sleek)",
+  "sleeveType": "sleeve style if applicable (e.g., long, short, kimono, puff, sleeveless, N/A)",
+  "necklineCollar": "neckline/collar if applicable (e.g., v-neck, crew, collared, off-shoulder, N/A)",
+  "length": "garment length (e.g., cropped, hip-length, midi, maxi, ankle, knee-high)",
+  "closureType": "fastening (e.g., button-front, zip, wrap, pullover, lace-up, buckle)",
+  "notableDetails": ["detail 1", "detail 2", "e.g., studs, embroidery, distressing, platform sole"],
+  "era": "style era (e.g., 90s, vintage, modern, Y2K, punk)",
+  "aesthetic": "overall vibe (e.g., romantic, minimalist, bohemian, grunge, edgy, punk)"
 }`
           },
           {
@@ -80,7 +88,7 @@ serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: 'Analyze this clothing item in extreme detail and return ONLY valid JSON with all the fields specified. Be as specific as possible about every attribute.'
+                text: `${cropInstruction}\n\nAnalyze the MAIN fashion item in extreme detail and return ONLY valid JSON with all the fields specified. Be as specific as possible about every attribute, especially unique details like studs, embellishments, hardware, or distinctive features.`
               },
               {
                 type: 'image_url',
@@ -121,14 +129,16 @@ serve(async (req) => {
       })
       .eq('id', searchId);
 
-    // Step 2: Generate search query and URLs from attributes - include shape details
-    const searchQuery = `${attributes.category || attributes.itemType} ${attributes.silhouette || ''} ${attributes.length || ''} ${attributes.necklineCollar || ''} ${attributes.fabricType || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.pattern || ''}`.trim();
+    // Step 2: Generate search query and URLs from attributes - prioritize notable details
+    const notableDetailsStr = attributes.notableDetails?.join(' ') || '';
+    const searchQuery = `${attributes.category || attributes.itemType} ${notableDetailsStr} ${attributes.silhouette || ''} ${attributes.length || ''} ${attributes.fabricType || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.pattern || ''}`.trim();
     console.log('Generated search query:', searchQuery);
-    console.log('Key shape attributes:', {
+    console.log('Key item attributes:', {
+      itemType: attributes.itemType,
+      category: attributes.category,
+      notableDetails: attributes.notableDetails,
       silhouette: attributes.silhouette,
-      length: attributes.length,
-      neckline: attributes.necklineCollar,
-      notableDetails: attributes.notableDetails
+      length: attributes.length
     });
 
     // Step 3: Search multiple platforms directly
@@ -272,41 +282,37 @@ ${truncatedHtml}`
       description: item.title || ''
     }));
 
-    // Calculate similarity with heavy emphasis on shape attributes
+    // Calculate similarity with emphasis on item type, notable details, and shape
     const scoredItems = mappedItems.map(item => {
-      let score = 0.3; // Lower base score
+      let score = 0.2; // Lower base score
       const itemText = (item.title || '').toLowerCase();
       
-      // CRITICAL: Shape attributes (worth 0.4 total)
-      if (attributes.silhouette && itemText.includes(attributes.silhouette.toLowerCase())) {
-        score += 0.25; // Silhouette is most important
+      // CRITICAL: Item type must match (worth 0.2)
+      if (attributes.itemType && itemText.includes(attributes.itemType.toLowerCase())) {
+        score += 0.2;
       }
-      if (attributes.length && itemText.includes(attributes.length.toLowerCase())) {
-        score += 0.15; // Length is very important
-      }
-      
-      // Secondary shape details (worth 0.3 total)
-      if (attributes.necklineCollar) {
-        const necklineParts = attributes.necklineCollar.toLowerCase().split(' ');
-        necklineParts.forEach((part: string) => {
-          if (part.length > 3 && itemText.includes(part)) score += 0.1;
-        });
-      }
-      if (attributes.sleeveType && itemText.includes(attributes.sleeveType.toLowerCase())) {
+      if (attributes.category && itemText.includes(attributes.category.toLowerCase())) {
         score += 0.1;
       }
-      if (attributes.notableDetails) {
+      
+      // Notable details are crucial (worth 0.3 total)
+      if (attributes.notableDetails && attributes.notableDetails.length > 0) {
         attributes.notableDetails.forEach((detail: string) => {
-          if (detail.length > 4 && itemText.includes(detail.toLowerCase())) {
-            score += 0.05;
+          if (detail.length > 3 && itemText.includes(detail.toLowerCase())) {
+            score += 0.15;
           }
         });
       }
       
-      // Basic attributes (worth 0.3 total)
-      if (attributes.category && itemText.includes(attributes.category.toLowerCase())) {
-        score += 0.1;
+      // Shape attributes (worth 0.3 total)
+      if (attributes.silhouette && itemText.includes(attributes.silhouette.toLowerCase())) {
+        score += 0.15;
       }
+      if (attributes.length && itemText.includes(attributes.length.toLowerCase())) {
+        score += 0.15;
+      }
+      
+      // Secondary attributes (worth 0.2 total)
       if (attributes.primaryColors?.[0] && itemText.includes(attributes.primaryColors[0].toLowerCase())) {
         score += 0.1;
       }
@@ -342,12 +348,13 @@ ${truncatedHtml}`
     try {
       const insertPromises = topMatches.map(result => {
         const matchedAttrs = [];
-        // Prioritize shape attributes in the match explanation
-        if (attributes.silhouette) matchedAttrs.push(`${attributes.silhouette} silhouette`);
-        if (attributes.length) matchedAttrs.push(`${attributes.length} length`);
-        if (attributes.necklineCollar) matchedAttrs.push(attributes.necklineCollar);
-        if (attributes.category) matchedAttrs.push(attributes.category);
-        if (attributes.primaryColors?.[0]) matchedAttrs.push(attributes.primaryColors[0]);
+        // Prioritize item type and notable details in match explanation
+        if (attributes.itemType) matchedAttrs.push(attributes.itemType);
+        if (attributes.notableDetails && attributes.notableDetails.length > 0) {
+          matchedAttrs.push(...attributes.notableDetails);
+        }
+        if (attributes.silhouette) matchedAttrs.push(`${attributes.silhouette} fit`);
+        if (attributes.category && attributes.category !== attributes.itemType) matchedAttrs.push(attributes.category);
         
         return supabase
           .from('search_results')
