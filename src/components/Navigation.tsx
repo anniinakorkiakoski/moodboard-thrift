@@ -7,7 +7,24 @@ export const Navigation = () => {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    const checkSessionExpiry = async () => {
+      const sessionExpiry = localStorage.getItem('sessionExpiry');
+      const rememberMe = localStorage.getItem('rememberMe');
+      
+      if (sessionExpiry && rememberMe === 'false') {
+        const expiryDate = new Date(sessionExpiry);
+        const now = new Date();
+        
+        if (now > expiryDate) {
+          await supabase.auth.signOut();
+          localStorage.removeItem('sessionExpiry');
+          localStorage.removeItem('rememberMe');
+        }
+      }
+    };
+
     const getUser = async () => {
+      await checkSessionExpiry();
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
     };
@@ -22,6 +39,8 @@ export const Navigation = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem('sessionExpiry');
+    localStorage.removeItem('rememberMe');
   };
 
   return (

@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export const Auth = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ export const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [userRole, setUserRole] = useState<'customer' | 'thrifter'>('customer');
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -93,6 +95,19 @@ export const Auth = () => {
         
         if (error) throw error;
         
+        // Store remember me preference
+        if (rememberMe) {
+          localStorage.setItem('rememberMe', 'true');
+          const expiryDate = new Date();
+          expiryDate.setDate(expiryDate.getDate() + 30);
+          localStorage.setItem('sessionExpiry', expiryDate.toISOString());
+        } else {
+          localStorage.setItem('rememberMe', 'false');
+          const expiryDate = new Date();
+          expiryDate.setHours(expiryDate.getHours() + 24);
+          localStorage.setItem('sessionExpiry', expiryDate.toISOString());
+        }
+        
         toast({
           title: "Welcome back!",
           description: "You have successfully signed in."
@@ -165,6 +180,22 @@ export const Auth = () => {
                   className="w-full"
                   minLength={6}
                 />
+              </div>
+            )}
+
+            {!isSignUp && !isForgotPassword && (
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="remember" 
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                />
+                <Label 
+                  htmlFor="remember" 
+                  className="text-sm font-normal cursor-pointer text-muted-foreground"
+                >
+                  Remember me for 30 days
+                </Label>
               </div>
             )}
 
