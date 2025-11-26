@@ -27,12 +27,11 @@ const Gallery = () => {
     }, 3000);
   };
 
-  const handleImageSearch = async (image: { url: string; caption: string; aspectRatio: number }) => {
+  const handleImageSearch = async (image: { url: string; caption: string; aspectRatio: number; id?: string }) => {
     setIsSearching(true);
     try {
-      await startSearch(image.url);
-      // startSearch already shows success toast, just navigate
-      navigate('/cura-cart');
+      // startSearch now navigates to visual-search-results with imageUrl in state
+      navigate('/visual-search-results', { state: { imageUrl: image.url, imageId: image.id } });
     } catch (error) {
       console.error('Search failed:', error);
       toast({

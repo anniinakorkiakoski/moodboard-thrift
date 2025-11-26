@@ -1,117 +1,112 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Navigation } from '@/components/Navigation';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { ExternalLink, Trash2, ShoppingBag } from 'lucide-react';
 
-interface SearchResult {
+interface SavedItem {
   id: string;
-  platform: string;
   item_url: string;
   title: string;
   price: number;
   currency: string;
   image_url: string | null;
-  similarity_score: number;
-  match_explanation: string | null;
-}
-
-interface GroupedResults {
-  search_id: string;
-  inspiration_image: string;
-  top_match: SearchResult;
-  alternatives: SearchResult[];
+  platform: string;
+  notes: string | null;
+  created_at: string;
 }
 
 export default function CuraCart() {
-  const [groupedResults, setGroupedResults] = useState<GroupedResults[]>([]);
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const { toast } = useToast();
+  const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchCuratedMatches();
+    fetchSavedItems();
   }, []);
 
-  const fetchCuratedMatches = async () => {
+  const fetchSavedItems = async () => {
     try {
       const { data: user } = await supabase.auth.getUser();
-      if (!user.user) return;
-
-      // Get all completed searches
-      const { data: searches, error: searchError } = await supabase
-        .from('visual_searches')
-        .select('*')
-        .eq('user_id', user.user.id)
-        .eq('status', 'completed')
-        .order('created_at', { ascending: false });
-
-      if (searchError) throw searchError;
-
-      // Get results for each search
-      const grouped: GroupedResults[] = [];
-      
-      for (const search of searches || []) {
-        const { data: results, error: resultsError } = await supabase
-          .from('search_results')
-          .select('*')
-          .eq('search_id', search.id)
-          .order('similarity_score', { ascending: false })
-          .limit(5);
-
-        if (resultsError) throw resultsError;
-        
-        if (results && results.length > 0) {
-          grouped.push({
-            search_id: search.id,
-            inspiration_image: search.image_url,
-            top_match: results[0],
-            alternatives: results.slice(1)
-          });
-        }
+      if (!user.user) {
+        navigate('/auth');
+        return;
       }
 
-      setGroupedResults(grouped);
+      const { data, error } = await supabase
+        .from('saved_items')
+        .select('*')
+        .eq('user_id', user.user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setSavedItems(data || []);
     } catch (error) {
-      console.error('Error fetching matches:', error);
+      console.error('Error fetching saved items:', error);
       toast({
-        title: "Error loading matches",
-        description: "Please try again later.",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Failed to load your saved items',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleExpanded = (searchId: string) => {
-    setExpandedItems(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(searchId)) {
-        newSet.delete(searchId);
-      } else {
-        newSet.add(searchId);
-      }
-      return newSet;
-    });
+  const handleRemoveItem = async (itemId: string) => {
+    try {
+      const { error } = await supabase
+        .from('saved_items')
+        .delete()
+        .eq('id', itemId);
+
+      if (error) throw error;
+
+      setSavedItems(prev => prev.filter(item => item.id !== itemId));
+      toast({
+        title: 'Removed',
+        description: 'Item removed from your cart',
+      });
+    } catch (error) {
+      console.error('Error removing item:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to remove item',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleUpdateNotes = async (itemId: string, notes: string) => {
+    try {
+      const { error } = await supabase
+        .from('saved_items')
+        .update({ notes })
+        .eq('id', itemId);
+
+      if (error) throw error;
+
+      setSavedItems(prev =>
+        prev.map(item => (item.id === itemId ? { ...item, notes } : item))
+      );
+    } catch (error) {
+      console.error('Error updating notes:', error);
+    }
   };
 
   const formatPrice = (price: number, currency: string) => {
-    // Normalize currency code to valid ISO format
     const validCurrency = (() => {
       if (!currency) return 'EUR';
       const curr = currency.toUpperCase().trim();
-      // Map common symbols/abbreviations to ISO codes
       if (curr === '€' || curr === 'EUR') return 'EUR';
       if (curr === '$' || curr === 'USD') return 'USD';
       if (curr === '£' || curr === 'GBP') return 'GBP';
       if (curr === 'KR' || curr === 'SEK') return 'SEK';
       if (curr === 'DKK') return 'DKK';
       if (curr === 'NOK') return 'NOK';
-      // Default to EUR if unrecognized
       return 'EUR';
     })();
     
@@ -125,187 +120,148 @@ export default function CuraCart() {
     }
   };
 
-  const getPlatformColor = (platform: string) => {
-    const colors: Record<string, string> = {
-      vinted: 'bg-orange-500',
-      depop: 'bg-green-500',
-      tise: 'bg-blue-500',
-      etsy: 'bg-orange-600',
-      grailed: 'bg-gray-700',
-      poshmark: 'bg-pink-600'
-    };
-    return colors[platform] || 'bg-burgundy';
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="max-w-7xl mx-auto px-4 pt-32 pb-16">
-          <div className="text-center">
-            <p className="text-muted-foreground font-light">Loading your curated matches...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (groupedResults.length === 0) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="max-w-7xl mx-auto px-4 pt-32 pb-16">
-          <div className="text-center space-y-4">
-            <h1 className="text-3xl font-light font-serif text-primary">Your Cura Cart</h1>
-            <p className="text-muted-foreground font-light">No curated matches yet. Start by searching from your gallery.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const totalPrice = savedItems.reduce((sum, item) => sum + item.price, 0);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
-      <div className="max-w-7xl mx-auto px-4 pt-32 pb-16">
-        {/* Header */}
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-light font-serif text-primary mb-3">Your Cura Cart</h1>
-          <p className="text-muted-foreground font-light">AI-curated secondhand matches for your inspiration</p>
-        </div>
 
-        {/* Masonry Grid */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {groupedResults.map((group) => {
-            const isExpanded = expandedItems.has(group.search_id);
-            const hasAlternatives = group.alternatives.length > 0;
+      <div className="container mx-auto px-4 py-8 pt-32">
+        <div className="max-w-5xl mx-auto space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-4">
+            <h1 className="text-3xl font-black text-primary uppercase tracking-[0.3em]">
+              Your Cart
+            </h1>
+            <div className="w-16 h-px bg-primary/40 mx-auto" />
+            <p className="text-sm text-muted-foreground font-lora">
+              Items you've saved to purchase
+            </p>
+          </div>
 
-            return (
-              <div key={group.search_id} className="break-inside-avoid">
-                <Card className="border-2 border-muted bg-card overflow-hidden">
-                  {/* Inspiration Image */}
-                  <div className="relative">
-                    <img 
-                      src={group.inspiration_image} 
-                      alt="Inspiration"
-                      className="w-full h-auto object-cover"
-                    />
-                    <Badge className="absolute top-2 left-2 bg-burgundy text-burgundy-foreground">
-                      Inspiration
-                    </Badge>
-                  </div>
+          {/* Loading State */}
+          {loading && (
+            <div className="text-center py-12">
+              <div className="w-8 h-8 border-2 border-burgundy border-t-transparent rounded-full animate-spin mx-auto" />
+            </div>
+          )}
 
-                  <div className="p-4 space-y-4">
-                    {/* Top Match */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Badge className={`${getPlatformColor(group.top_match.platform)} text-white`}>
-                          {group.top_match.platform}
-                        </Badge>
-                        <Badge variant="outline" className="border-burgundy text-burgundy">
-                          {Math.round(group.top_match.similarity_score * 100)}% match
-                        </Badge>
-                      </div>
+          {/* Empty State */}
+          {!loading && savedItems.length === 0 && (
+            <div className="text-center py-16 space-y-6">
+              <div className="w-20 h-20 mx-auto rounded-full bg-muted flex items-center justify-center">
+                <ShoppingBag className="w-10 h-10 text-muted-foreground" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-xl font-semibold text-primary">Your cart is empty</h2>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                  Start searching your inspiration images in the gallery to find items you love
+                </p>
+              </div>
+              <Button
+                onClick={() => navigate('/gallery')}
+                className="bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground"
+              >
+                Go to Gallery
+              </Button>
+            </div>
+          )}
 
-                      {group.top_match.image_url && (
-                        <img 
-                          src={group.top_match.image_url}
-                          alt={group.top_match.title}
-                          className="w-full h-auto object-cover rounded"
+          {/* Cart Items */}
+          {!loading && savedItems.length > 0 && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {savedItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                  >
+                    {item.image_url && (
+                      <div className="aspect-square bg-muted relative">
+                        <img
+                          src={item.image_url}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
                         />
-                      )}
-
-                      <div className="space-y-2">
-                        <h3 className="text-sm font-medium line-clamp-2">{group.top_match.title}</h3>
-                        <p className="text-lg font-serif text-burgundy">
-                          {formatPrice(group.top_match.price, group.top_match.currency)}
-                        </p>
-                        {group.top_match.match_explanation && (
-                          <p className="text-xs text-muted-foreground font-light">
-                            {group.top_match.match_explanation}
-                          </p>
-                        )}
-                      </div>
-
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
-                        onClick={() => window.open(group.top_match.item_url, '_blank')}
-                      >
-                        <ExternalLink className="w-3 h-3 mr-2" />
-                        View on {group.top_match.platform}
-                      </Button>
-
-                      {/* Alternatives Toggle */}
-                      {hasAlternatives && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="w-full"
-                          onClick={() => toggleExpanded(group.search_id)}
+                          className="absolute top-2 right-2 bg-white/90 hover:bg-white"
+                          onClick={() => handleRemoveItem(item.id)}
                         >
-                          {isExpanded ? (
-                            <>
-                              <ChevronUp className="w-4 h-4 mr-2" />
-                              Hide alternatives
-                            </>
-                          ) : (
-                            <>
-                              <ChevronDown className="w-4 h-4 mr-2" />
-                              {group.alternatives.length} more option{group.alternatives.length !== 1 ? 's' : ''}
-                            </>
-                          )}
+                          <Trash2 className="w-4 h-4" />
                         </Button>
-                      )}
-                    </div>
-
-                    {/* Alternative Matches */}
-                    {isExpanded && hasAlternatives && (
-                      <div className="space-y-4 pt-4 border-t border-muted">
-                        {group.alternatives.map((alt) => (
-                          <div key={alt.id} className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <Badge className={`${getPlatformColor(alt.platform)} text-white text-xs`}>
-                                {alt.platform}
-                              </Badge>
-                              <Badge variant="outline" className="border-muted-foreground/30 text-xs">
-                                {Math.round(alt.similarity_score * 100)}% match
-                              </Badge>
-                            </div>
-
-                            {alt.image_url && (
-                              <img 
-                                src={alt.image_url}
-                                alt={alt.title}
-                                className="w-full h-auto object-cover rounded"
-                              />
-                            )}
-
-                            <h4 className="text-xs font-medium line-clamp-2">{alt.title}</h4>
-                            <p className="text-sm font-serif text-burgundy">
-                              {formatPrice(alt.price, alt.currency)}
-                            </p>
-
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="w-full text-xs"
-                              onClick={() => window.open(alt.item_url, '_blank')}
-                            >
-                              <ExternalLink className="w-3 h-3 mr-1" />
-                              View
-                            </Button>
-                          </div>
-                        ))}
                       </div>
                     )}
+                    
+                    <div className="p-4 space-y-4">
+                      <h3 className="font-semibold line-clamp-2">{item.title}</h3>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-xl font-bold text-burgundy">
+                          {formatPrice(item.price, item.currency)}
+                        </span>
+                        <span className="text-xs text-muted-foreground uppercase">
+                          {item.platform}
+                        </span>
+                      </div>
+
+                      {/* Notes */}
+                      <div>
+                        <label className="text-xs text-muted-foreground block mb-1">
+                          Notes (optional):
+                        </label>
+                        <textarea
+                          value={item.notes || ''}
+                          onChange={(e) => handleUpdateNotes(item.id, e.target.value)}
+                          placeholder="Size notes, questions, etc..."
+                          className="w-full px-3 py-2 text-sm border border-input rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-burgundy"
+                          rows={2}
+                        />
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex gap-2">
+                        <Button
+                          className="flex-1 bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground"
+                          onClick={() => window.open(item.item_url, '_blank')}
+                        >
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          View on {item.platform}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </Card>
+                ))}
               </div>
-            );
-          })}
+
+              {/* Summary */}
+              <div className="border-t border-border pt-6 mt-8">
+                <div className="max-w-md mx-auto space-y-4">
+                  <div className="flex justify-between items-center text-lg">
+                    <span className="font-semibold">Total ({savedItems.length} items):</span>
+                    <span className="text-2xl font-bold text-burgundy">
+                      {formatPrice(totalPrice, 'EUR')}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Approximate total. Final prices may vary by seller.
+                  </p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-center gap-4 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/gallery')}
+                  className="border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"
+                >
+                  Continue Shopping
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -33,13 +33,13 @@ export const useVisualSearch = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const startSearch = async (imageUrl: string, cropData?: any, budget?: { min: number; max: number }) => {
+  const startSearch = async (imageUrl: string, cropData?: any, budget?: { min: number; max: number }, userImageId?: string) => {
     setLoading(true);
     try {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
 
-      // Create search record with budget
+      // Create search record with budget and link to gallery image
       const { data: search, error: searchError } = await supabase
         .from('visual_searches')
         .insert({
@@ -48,6 +48,7 @@ export const useVisualSearch = () => {
           status: 'pending',
           crop_data: cropData,
           analysis_data: budget ? { budget } : null,
+          user_image_id: userImageId || null,
         })
         .select()
         .single();
