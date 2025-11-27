@@ -50,10 +50,10 @@ const Index = () => {
                 </div>
               </div>
               <div className="px-8 py-16">
-                <p className="text-sm md:text-base font-light text-foreground/70 max-w-lg mx-auto leading-loose font-mono text-center">
+                <p className="text-sm md:text-base font-light text-foreground/70 max-w-lg mx-auto leading-loose text-center">
                   Upload your style inspiration, and let AI and professional thrifters and stylists find the perfect secondhand pieces from across multiple platforms.
                 </p>
-                <p className="text-xs md:text-sm font-light text-foreground/60 max-w-md mx-auto mt-6 font-mono text-center italic">
+                <p className="text-xs md:text-sm font-light text-foreground/60 max-w-md mx-auto mt-6 text-center italic">
                   Sustainable fashion, curated for you.
                 </p>
               </div>
@@ -65,7 +65,7 @@ const Index = () => {
                 <div className="text-center space-y-6 mb-12">
                   <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">SOURCING FROM</h2>
                   <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-                  <p className="text-sm font-light text-foreground/60 tracking-wide font-mono">
+                  <p className="text-sm font-light text-foreground/60 tracking-wide">
                     A network of trusted platforms
                   </p>
                 </div>
@@ -95,7 +95,7 @@ const Index = () => {
             <div className="text-center mb-24 space-y-6">
               <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">THE PROCESS</h2>
               <div className="w-16 h-px bg-primary/40 mx-auto"></div>
-              <p className="text-sm md:text-base font-light text-foreground/70 leading-loose font-mono">
+              <p className="text-sm md:text-base font-light text-foreground/70 leading-loose">
                 Three simple steps to curate your perfect wardrobe
               </p>
             </div>
@@ -192,7 +192,7 @@ const Index = () => {
                 Ready to Begin Your CURA Journey?
               </h2>
               <div className="w-24 h-px bg-burgundy mx-auto"></div>
-              <p className="text-sm md:text-base font-light text-foreground/60 max-w-lg mx-auto leading-loose font-mono">
+              <p className="text-sm md:text-base font-light text-foreground/60 max-w-lg mx-auto leading-loose">
                 Start building your curated secondhand wardrobe today
               </p>
             </div>
