@@ -148,6 +148,11 @@
     font-family: 'Courier Prime', 'Courier New', monospace !important;
     font-weight: 300 !important;
   }
+
+  /* Keep display font for hero CURA logo */
+  .hero-logo {
+    font-family: 'Playfair Display', Georgia, serif !important;
+  }
 }
 
 @layer components {
