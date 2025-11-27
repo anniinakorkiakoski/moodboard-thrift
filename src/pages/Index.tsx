@@ -104,7 +104,7 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
               
               {/* Step 1 */}
-              <div className="group relative h-[350px]">
+              <div className="group relative h-[350px] process-card">
                 <img 
                   src={notecardStack} 
                   alt="Note card" 
@@ -126,7 +126,7 @@ const Index = () => {
               </div>
 
               {/* Step 2 */}
-              <div className="group relative h-[350px]">
+              <div className="group relative h-[350px] process-card">
                 <img 
                   src={notecardStack} 
                   alt="Note card" 
@@ -148,7 +148,7 @@ const Index = () => {
               </div>
 
               {/* Step 3 */}
-              <div className="group relative h-[350px]">
+              <div className="group relative h-[350px] process-card">
                 <img 
                   src={notecardStack} 
                   alt="Note card" 

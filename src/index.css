@@ -123,8 +123,8 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Courier Prime', 'Courier New', monospace;
-    font-weight: 300;
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 400;
     color: hsl(0 0% 16%);
   }
 
@@ -133,9 +133,20 @@
     font-weight: 700;
   }
 
-  p, span, small, label, li, button, a, input, textarea {
-    font-family: 'Courier Prime', 'Courier New', monospace;
-    font-weight: 300;
+  p, span, small, label, li, a, input, textarea {
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 400;
+  }
+
+  button {
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 400;
+  }
+
+  /* Navigation and notecard overrides to keep Courier Prime */
+  .nav-header, .nav-header *, .process-card, .process-card * {
+    font-family: 'Courier Prime', 'Courier New', monospace !important;
+    font-weight: 300 !important;
   }
 }
 
