@@ -47,10 +47,10 @@ export const Navigation = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border nav-header">
       <div className="container mx-auto flex justify-between items-center p-4">
         <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-          <div className="w-12 h-12 border-2 border-burgundy flex flex-col items-center justify-center p-1">
-            <span className="font-display font-black text-burgundy text-xs leading-none">CU</span>
-            <div className="w-full h-[1px] bg-burgundy my-0.5"></div>
-            <span className="font-display font-black text-burgundy text-xs leading-none">RA</span>
+          <div className="w-16 h-16 border-[3px] border-burgundy flex flex-col items-center justify-center px-2 py-1.5 bg-background">
+            <span className="font-display font-black text-burgundy text-lg leading-none tracking-tight">CU</span>
+            <div className="w-full h-[2px] bg-burgundy my-1"></div>
+            <span className="font-display font-black text-burgundy text-lg leading-none tracking-tight">RA</span>
           </div>
         </Link>
         
