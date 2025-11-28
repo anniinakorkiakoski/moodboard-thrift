@@ -177,7 +177,7 @@ export const HowToUse = () => {
               <div className="grid md:grid-cols-2 gap-12 items-start">
                 <div>
                   <div className="relative">
-                    <img src={laptopMockup} alt="CURA Gallery on laptop" className="w-full h-auto" />
+                    <img src={laptopMockup} alt="CURA Gallery on laptop" className="w-full h-auto shadow-glow" />
                   </div>
                 </div>
 
