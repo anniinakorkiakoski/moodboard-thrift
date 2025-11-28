@@ -5,8 +5,7 @@ import notecardStack from '@/assets/notecard-stack.png';
 import shareCouple from '@/assets/share-couple.jpg';
 import curaLogo from '@/assets/cura-logo.png';
 import shareVintage from '@/assets/share-vintage.jpg';
-import laptopPhoto from '@/assets/laptop-floor-source.png';
-import curaScreen from '@/assets/cura-gallery-screenshot-exact.png';
+import laptopMockup from '@/assets/laptop-cura-mockup.png';
 import { Navigation } from '@/components/Navigation';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -178,19 +177,7 @@ export const HowToUse = () => {
               <div className="grid md:grid-cols-2 gap-12 items-start">
                 <div>
                   <div className="relative">
-                    <img src={laptopPhoto} alt="Laptop photo" className="w-full h-auto shadow-lg" />
-                    <img
-                      src={curaScreen}
-                      alt="CURA Gallery interface"
-                      className="absolute pointer-events-none"
-                      style={{
-                        top: '6.2%',
-                        left: '17.4%',
-                        width: '65.0%',
-                        transform: 'skewY(-5.4deg) rotate(-1.2deg) perspective(1200px) rotateX(9deg)',
-                        transformOrigin: 'top left',
-                      }}
-                    />
+                    <img src={laptopMockup} alt="CURA Gallery on laptop" className="w-full h-auto" />
                   </div>
                 </div>
 
