@@ -43,8 +43,8 @@ export const HowToUse = () => {
                     alt="Note card" 
                     className="w-full h-full object-contain"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center p-8">
-                    <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex flex-col items-center text-center space-y-3">
                       <div className="w-10 h-10 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <span className="text-sm font-medium text-burgundy-foreground">01</span>
                       </div>
@@ -60,8 +60,8 @@ export const HowToUse = () => {
                     alt="Note card" 
                     className="w-full h-full object-contain"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center p-8">
-                    <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex flex-col items-center text-center space-y-3">
                       <div className="w-10 h-10 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <span className="text-sm font-medium text-burgundy-foreground">02</span>
                       </div>
@@ -77,8 +77,8 @@ export const HowToUse = () => {
                     alt="Note card" 
                     className="w-full h-full object-contain"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center p-8">
-                    <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex flex-col items-center text-center space-y-3">
                       <div className="w-10 h-10 bg-burgundy flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <span className="text-sm font-medium text-burgundy-foreground">03</span>
                       </div>
