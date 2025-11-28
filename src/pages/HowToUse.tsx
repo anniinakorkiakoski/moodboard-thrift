@@ -37,11 +37,11 @@ export const HowToUse = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                 
                 {/* Step 1 */}
-                <div className="group relative h-[200px]">
+                <div className="group relative h-[280px]">
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
-                    className="absolute inset-0 w-full h-full object-contain"
+                    className="w-full h-full object-contain"
                   />
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <div className="flex flex-col items-center text-center space-y-4">
@@ -54,11 +54,11 @@ export const HowToUse = () => {
                 </div>
 
                 {/* Step 2 */}
-                <div className="group relative h-[200px]">
+                <div className="group relative h-[280px]">
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
-                    className="absolute inset-0 w-full h-full object-contain"
+                    className="w-full h-full object-contain"
                   />
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <div className="flex flex-col items-center text-center space-y-4">
@@ -71,11 +71,11 @@ export const HowToUse = () => {
                 </div>
 
                 {/* Step 3 */}
-                <div className="group relative h-[200px]">
+                <div className="group relative h-[280px]">
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
-                    className="absolute inset-0 w-full h-full object-contain"
+                    className="w-full h-full object-contain"
                   />
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <div className="flex flex-col items-center text-center space-y-4">
