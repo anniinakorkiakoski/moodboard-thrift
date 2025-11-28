@@ -118,7 +118,7 @@ const Index = () => {
                     <div className="space-y-3">
                       <h3 className="text-sm font-bold text-primary uppercase tracking-[0.2em]">SHARE</h3>
                       <p className="text-xs font-light text-foreground/70 leading-relaxed font-mono">
-                        Upload your style inspiration — mood boards, outfit photos, or curated imagery that speaks to your aesthetic vision.
+                        Begin by uploading images that capture your vision. Mood boards, runway shots, street style—anything that speaks to your aesthetic sensibility.
                       </p>
                     </div>
                   </div>
@@ -140,7 +140,7 @@ const Index = () => {
                     <div className="space-y-3">
                       <h3 className="text-sm font-bold text-primary uppercase tracking-[0.2em]">DISCOVER</h3>
                       <p className="text-xs font-light text-foreground/70 leading-relaxed font-mono">
-                        Our AI carefully searches through premium secondhand platforms to find pieces that match your unique vision.
+                        Watch as our AI scours curated secondhand platforms—Vinted, Depop, Vestiaire—to surface pieces that mirror your inspiration down to the details.
                       </p>
                     </div>
                   </div>
@@ -162,7 +162,7 @@ const Index = () => {
                     <div className="space-y-3">
                       <h3 className="text-sm font-bold text-primary uppercase tracking-[0.2em]">CURATE</h3>
                       <p className="text-xs font-light text-foreground/70 leading-relaxed font-mono">
-                        Review your personalized collection and make thoughtful additions to build your perfect wardrobe.
+                        Refine your collection. Save favorites, compare options, and build a wardrobe that reflects intention over impulse.
                       </p>
                     </div>
                   </div>
