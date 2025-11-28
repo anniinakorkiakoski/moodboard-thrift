@@ -31,7 +31,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/thrifter-terms" element={<ThrifterTerms />} />
           <Route path="/thrifter-dashboard" element={<ThrifterDashboard />} />
-          <Route path="/search" element={<VisualSearchResults />} />
+          <Route path="/visual-search-results" element={<VisualSearchResults />} />
           <Route path="/profile" element={<StyleProfile />} />
           <Route path="/style-profile" element={<StyleProfile />} /> {/* Redirect old route */}
           <Route path="/our-mission" element={<OurMission />} />
