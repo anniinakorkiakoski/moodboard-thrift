@@ -24,7 +24,7 @@ export const HowToUse = () => {
             <h1 className="text-5xl md:text-6xl font-black text-primary tracking-tight leading-none uppercase">
               HOW TO USE
             </h1>
-          <p className="text-sm md:text-base text-foreground/60 mt-8 max-w-2xl leading-loose font-mono">
+          <p className="text-sm md:text-base text-foreground/60 mt-8 max-w-2xl leading-loose font-lora">
             A thoughtful approach to discovering pieces that resonate with your personal aesthetic. 
             Building a wardrobe that feels authentic, intentional, and entirely yours.
             Below, each step of the process is introduced in more detail.
@@ -210,7 +210,7 @@ export const HowToUse = () => {
                           AI-POWERED
                         </h3>
                       </div>
-                      <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
+                      <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-lora">
                         Intelligent search that understands your aesthetic and finds pieces that match your vision.
                       </p>
                     </div>
@@ -222,7 +222,7 @@ export const HowToUse = () => {
                           HUMAN TOUCH
                         </h3>
                       </div>
-                      <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-mono">
+                      <p className="text-sm md:text-base leading-relaxed text-foreground/60 pl-11 font-lora">
                         Connect with professional thrifters and stylists who share your aesthetic for personalized service.
                       </p>
                     </div>
