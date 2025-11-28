@@ -123,11 +123,11 @@ export const HowToUse = () => {
                 </div>
               </div>
 
-              <div className="md:col-span-6 md:col-start-7 relative h-[600px]">
-                {/* Scattered macOS-style windows */}
+              <div className="md:col-span-6 md:col-start-7 relative h-[650px]">
+                {/* Scattered macOS-style windows with improved composition */}
                 
                 {/* Window 1 - Top Left - Couple Photo */}
-                <div className="absolute top-0 left-0 w-56 rounded-lg overflow-hidden shadow-2xl">
+                <div className="absolute top-8 left-0 w-64 rounded-lg overflow-hidden shadow-2xl z-20 transform -rotate-2">
                   <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
                     <div className="flex items-center">
                       <div className="w-3 h-3 flex items-center justify-center">
@@ -136,11 +136,11 @@ export const HowToUse = () => {
                     </div>
                     <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">Unfold_01.jpg</div>
                   </div>
-                  <img src={shareCouple} alt="Fashion inspiration" className="w-full h-64 object-cover bg-white" />
+                  <img src={shareCouple} alt="Fashion inspiration" className="w-full h-72 object-cover bg-white" />
                 </div>
 
-                {/* Window 2 - Middle Right - Street Style (Black & White) */}
-                <div className="absolute top-32 right-12 w-52 rounded-lg overflow-hidden shadow-2xl z-10">
+                {/* Window 2 - Center Right - Street Style (Black & White) */}
+                <div className="absolute top-32 right-4 w-56 rounded-lg overflow-hidden shadow-2xl z-30 transform rotate-1">
                   <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
                     <div className="flex items-center">
                       <div className="w-3 h-3 flex items-center justify-center">
@@ -149,11 +149,11 @@ export const HowToUse = () => {
                     </div>
                     <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">Street_15.jpg</div>
                   </div>
-                  <img src={shareStreetStyle} alt="Street style" className="w-full h-60 object-cover bg-white grayscale" />
+                  <img src={shareStreetStyle} alt="Street style" className="w-full h-64 object-cover bg-white grayscale" />
                 </div>
 
-                {/* Window 3 - Bottom Right - Vintage Fashion */}
-                <div className="absolute bottom-0 right-0 w-60 rounded-lg overflow-hidden shadow-2xl">
+                {/* Window 3 - Bottom Left - Vintage Fashion */}
+                <div className="absolute bottom-4 left-16 w-60 rounded-lg overflow-hidden shadow-2xl z-10 transform rotate-2">
                   <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
                     <div className="flex items-center">
                       <div className="w-3 h-3 flex items-center justify-center">
@@ -162,7 +162,7 @@ export const HowToUse = () => {
                     </div>
                     <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">08.jpg</div>
                   </div>
-                  <img src={shareVintage} alt="Vintage fashion" className="w-full h-56 object-cover bg-white" />
+                  <img src={shareVintage} alt="Vintage fashion" className="w-full h-64 object-cover bg-white" />
                 </div>
               </div>
             </div>
