@@ -479,6 +479,7 @@ export type Database = {
           created_at: string
           dream_brands: string[] | null
           id: string
+          material_preferences: string[] | null
           style_tags: string[] | null
           updated_at: string
           user_id: string
@@ -487,6 +488,7 @@ export type Database = {
           created_at?: string
           dream_brands?: string[] | null
           id?: string
+          material_preferences?: string[] | null
           style_tags?: string[] | null
           updated_at?: string
           user_id: string
@@ -495,6 +497,7 @@ export type Database = {
           created_at?: string
           dream_brands?: string[] | null
           id?: string
+          material_preferences?: string[] | null
           style_tags?: string[] | null
           updated_at?: string
           user_id?: string
