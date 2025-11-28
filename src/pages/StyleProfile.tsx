@@ -8,6 +8,7 @@ import { AutocompleteInput } from '@/components/AutocompleteInput';
 import { useStyleProfile } from '@/hooks/useStyleProfile';
 import { useMeasurements } from '@/hooks/useMeasurements';
 import { useToast } from '@/hooks/use-toast';
+import demoProfilePic from '@/assets/demo-profile-pic.png';
 
 const STYLE_TAGS = [
   'Minimalist', 'Streetwear', 'Vintage', 'Bohemian', 'Classic', 'Avant-Garde',
@@ -206,6 +207,17 @@ export const StyleProfile = () => {
 
             {/* Right Column */}
             <div className="space-y-8">
+              {/* Profile Picture */}
+              <div className="flex justify-center mb-6">
+                <div className="w-48 h-48 border border-foreground/20 bg-background flex items-center justify-center overflow-hidden">
+                  <img 
+                    src={demoProfilePic} 
+                    alt="Profile" 
+                    className="w-full h-full object-contain p-4"
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-6">
                 {MEASUREMENT_FIELDS.map(field => (
                   <div key={field.key}>
