@@ -52,8 +52,8 @@ export const ImageCropOverlay = ({ imageUrl, onConfirm, onCancel }: ImageCropOve
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-4xl">
+    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
+      <div className="relative w-full max-w-4xl my-auto">
         {/* Close button */}
         <Button
           variant="ghost"
