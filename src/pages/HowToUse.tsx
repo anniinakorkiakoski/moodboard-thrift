@@ -134,7 +134,7 @@ export const HowToUse = () => {
                         <span className="text-gray-600 text-xs">×</span>
                       </div>
                     </div>
-                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">Unfold_01.jpg</div>
+                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">accessories.jpg</div>
                   </div>
                   <img src={shareCouple} alt="Fashion inspiration" className="w-full h-72 object-cover bg-white" />
                 </div>
@@ -147,7 +147,7 @@ export const HowToUse = () => {
                         <span className="text-gray-600 text-xs">×</span>
                       </div>
                     </div>
-                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">Street_15.jpg</div>
+                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">specific_pieces_.jpg</div>
                   </div>
                   <img src={shareStreetStyle} alt="Street style" className="w-full h-64 object-cover bg-white grayscale" />
                 </div>
@@ -160,7 +160,7 @@ export const HowToUse = () => {
                         <span className="text-gray-600 text-xs">×</span>
                       </div>
                     </div>
-                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">08.jpg</div>
+                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">outfits.jpg</div>
                   </div>
                   <img src={shareVintage} alt="Vintage fashion" className="w-full h-64 object-cover bg-white" />
                 </div>
