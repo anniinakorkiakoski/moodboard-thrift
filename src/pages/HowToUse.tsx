@@ -41,7 +41,7 @@ export const HowToUse = () => {
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-contain"
                   />
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <div className="flex flex-col items-center text-center space-y-4">
@@ -58,7 +58,7 @@ export const HowToUse = () => {
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-contain"
                   />
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <div className="flex flex-col items-center text-center space-y-4">
@@ -75,7 +75,7 @@ export const HowToUse = () => {
                   <img 
                     src={notecardStack} 
                     alt="Note card" 
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-contain"
                   />
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <div className="flex flex-col items-center text-center space-y-4">
