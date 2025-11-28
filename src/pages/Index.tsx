@@ -186,7 +186,7 @@ const Index = () => {
       {/* Final CTA */}
       <section className="py-32 bg-background">
         <div className="container mx-auto px-8">
-          <div className="text-center space-y-16">
+          <div className="text-center space-y-24">
             <div className="space-y-6">
               <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-[0.3em]">
                 Ready to Begin Your CURA Journey?
