@@ -5,6 +5,7 @@ import notecardStack from '@/assets/notecard-stack.png';
 import shareCouple from '@/assets/share-couple.jpg';
 import curaLogo from '@/assets/cura-logo.png';
 import shareVintage from '@/assets/share-vintage.jpg';
+import shareStreetStyle from '@/assets/share-street-style.jpg';
 import laptopMockup from '@/assets/laptop-cura-mockup.png';
 import { Navigation } from '@/components/Navigation';
 import { Link } from 'react-router-dom';
@@ -138,8 +139,21 @@ export const HowToUse = () => {
                   <img src={shareCouple} alt="Fashion inspiration" className="w-full h-64 object-cover bg-white" />
                 </div>
 
-                {/* Window 2 - Bottom Right - Vintage Fashion */}
-                <div className="absolute top-56 right-0 w-60 rounded-lg overflow-hidden shadow-2xl">
+                {/* Window 2 - Middle Right - Street Style (Black & White) */}
+                <div className="absolute top-32 right-12 w-52 rounded-lg overflow-hidden shadow-2xl z-10">
+                  <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 flex items-center justify-center">
+                        <span className="text-gray-600 text-xs">×</span>
+                      </div>
+                    </div>
+                    <div className="flex-1 text-center text-[10px] text-gray-700 font-medium">Street_15.jpg</div>
+                  </div>
+                  <img src={shareStreetStyle} alt="Street style" className="w-full h-60 object-cover bg-white grayscale" />
+                </div>
+
+                {/* Window 3 - Bottom Right - Vintage Fashion */}
+                <div className="absolute bottom-0 right-0 w-60 rounded-lg overflow-hidden shadow-2xl">
                   <div className="bg-gradient-to-b from-gray-300 to-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-400/30">
                     <div className="flex items-center">
                       <div className="w-3 h-3 flex items-center justify-center">
