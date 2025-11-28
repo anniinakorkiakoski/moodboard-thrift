@@ -148,317 +148,132 @@ CRITICAL: Read all visible text, logos, and brand names in the image carefully. 
       length: attributes.length
     });
 
-    // Step 3: Search multiple platforms directly
-    console.log('Searching multiple platforms...');
+    // Step 3: Search catalog items using database query
+    console.log('Searching catalog database...');
     
-    const searchUrls = [
-      `https://www.vinted.fi/catalog?search_text=${encodeURIComponent(searchQuery)}`,
-      `https://www.vinted.se/catalog?search_text=${encodeURIComponent(searchQuery)}`,
-      `https://www.vinted.dk/catalog?search_text=${encodeURIComponent(searchQuery)}`,
-      `https://www.depop.com/search/?q=${encodeURIComponent(searchQuery)}`,
-      `https://www.tise.fi/search?q=${encodeURIComponent(searchQuery)}`,
-    ];
+    let catalogQuery = supabase
+      .from('catalog_items')
+      .select('*')
+      .eq('is_active', true);
 
-    // Use AI to extract items from search result pages
-    const allItems: any[] = [];
-    
-    // Only process 1 platform for speed
-    const url = searchUrls[0];
-    
-    try {
-      console.log('Fetching:', url);
-      
-      const pageResponse = await fetch(url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        },
-      });
-      
-      if (!pageResponse.ok) {
-        throw new Error(`Failed to fetch: ${pageResponse.status}`);
+    // Apply budget filters if provided
+    if (budget) {
+      if (budget.min) {
+        catalogQuery = catalogQuery.gte('price', budget.min);
       }
-      
-      const html = await pageResponse.text();
-      const truncatedHtml = html.substring(0, 50000); // More HTML for better extraction
-      
-      console.log('Extracting items with AI...');
-      
-      // Log a sample of HTML to verify we're getting product data
-      const htmlSample = html.substring(0, 2000);
-      console.log('HTML sample:', htmlSample.substring(0, 500));
-      
-      // Extract items using AI with strict validation
-      const extractResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'google/gemini-2.5-flash',
-          messages: [{
-            role: 'user',
-            content: `You are extracting real product listings from this Vinted search results page HTML.
-
-CRITICAL RULES - READ CAREFULLY:
-1. Extract ONLY data that is LITERALLY PRESENT in the HTML below
-2. DO NOT invent, estimate, or hallucinate ANY data
-3. If you cannot find real product URLs in the HTML, return an empty items array []
-4. Prices must be realistic for secondhand clothing (typically €5-100)
-5. Look for product links in <a> tags with href attributes containing "/items/"
-6. Look for prices in elements with text like "€10" or "10,00 €"
-7. Extract EXACTLY what you see - do not modify or interpret
-
-If you cannot find clear product listings with URLs and prices in the HTML, return {"items": []}
-
-HTML:
-${truncatedHtml}`
-          }],
-          tools: [{
-            type: 'function',
-            function: {
-              name: 'extract_items',
-              parameters: {
-                type: 'object',
-                properties: {
-                  items: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        itemUrl: { 
-                          type: 'string',
-                          description: 'Exact product URL found in HTML href attribute'
-                        },
-                        imageUrl: { type: 'string' },
-                        title: { type: 'string' },
-                        price: { type: 'string', description: 'Numeric price only, e.g. "15.50"' },
-                        currency: { type: 'string', description: 'Currency code like EUR' }
-                      },
-                      required: ['itemUrl', 'title', 'price']
-                    }
-                  }
-                },
-                required: ['items']
-              }
-            }
-          }],
-          tool_choice: { type: 'function', function: { name: 'extract_items' } }
-        })
-      });
-      
-      if (extractResponse.ok) {
-        const extractData = await extractResponse.json();
-        const toolCall = extractData.choices?.[0]?.message?.tool_calls?.[0];
-        if (toolCall) {
-          const result = JSON.parse(toolCall.function.arguments);
-          console.log('AI extracted data:', JSON.stringify(result, null, 2));
-          
-          const platform = url.includes('vinted') ? 'vinted' : url.includes('depop') ? 'depop' : 'tise';
-          const baseUrl = new URL(url).origin;
-          
-          // Validate and add items with strict filtering
-          result.items.slice(0, 8).forEach((item: any) => {
-            let itemUrl = item.itemUrl || item.item_url || '';
-            const priceNum = parseFloat((item.price || '0').toString().replace(/[^0-9.]/g, ''));
-            
-            // STRICT VALIDATION: Reject obviously fake data
-            if (!itemUrl || !item.title) {
-              console.log('Rejected: Missing URL or title');
-              return;
-            }
-            
-            // Reject unrealistic prices for secondhand clothing
-            const maxPrice = budget?.max || 500;
-            if (priceNum > maxPrice || priceNum < 0.5) {
-              console.log('Rejected price outside budget:', item.title, priceNum, `(budget: ${budget?.min}-${budget?.max})`);
-              return;
-            }
-            
-            // Check minimum budget
-            if (budget && budget.min && priceNum < budget.min) {
-              console.log('Rejected: Below minimum budget:', item.title, priceNum);
-              return;
-            }
-            
-            // Convert relative URLs to absolute
-            if (itemUrl && !itemUrl.startsWith('http')) {
-              itemUrl = baseUrl + (itemUrl.startsWith('/') ? '' : '/') + itemUrl;
-            }
-            
-            // Only add if URL contains the platform domain (validate it's real)
-            if (itemUrl && (itemUrl.includes('vinted') || itemUrl.includes('depop') || itemUrl.includes('tise'))) {
-              allItems.push({
-                ...item,
-                itemUrl,
-                item_url: itemUrl,
-                platform,
-                attributes: {},
-              });
-              console.log('Added valid item:', item.title, priceNum, itemUrl);
-            } else {
-              console.log('Rejected invalid URL:', itemUrl);
-            }
-          });
-          
-          console.log(`Extracted ${allItems.length} validated items from ${platform}`);
-        } else {
-          console.log('No tool call in response');
-        }
-      } else {
-        const errorText = await extractResponse.text();
-        console.error('Extract API error:', errorText);
+      if (budget.max) {
+        catalogQuery = catalogQuery.lte('price', budget.max);
       }
-    } catch (err) {
-      console.error('Error processing URL:', url, err);
+      console.log('Applied budget filter:', budget);
     }
 
-    console.log(`Total items extracted: ${allItems.length}`);
+    const { data: catalogItems, error: catalogError } = await catalogQuery;
 
-    // If no items found, try a simpler search query
-    if (allItems.length === 0) {
-      console.log('No items found with detailed query, trying simpler search...');
-      
-      const simpleQuery = `${attributes.category || attributes.itemType} ${attributes.primaryColors?.[0] || ''}`.trim();
-      const simpleUrl = `https://www.vinted.fi/catalog?search_text=${encodeURIComponent(simpleQuery)}`;
-      
-      try {
-        const retryResponse = await fetch(simpleUrl, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
-        });
-        
-        if (retryResponse.ok) {
-          const retryHtml = await retryResponse.text();
-          console.log('Retry search with simpler query:', simpleQuery);
-          // Quick extraction attempt - don't do full validation
-          const quickExtract = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'google/gemini-2.5-flash',
-              messages: [{ role: 'user', content: `Extract up to 5 product listings from this HTML. Return empty array if none found.\n\n${retryHtml.substring(0, 30000)}` }],
-              tools: [{
-                type: 'function',
-                function: {
-                  name: 'extract_items',
-                  parameters: {
-                    type: 'object',
-                    properties: {
-                      items: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          properties: {
-                            itemUrl: { type: 'string' },
-                            title: { type: 'string' },
-                            price: { type: 'string' }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }],
-              tool_choice: { type: 'function', function: { name: 'extract_items' } }
-            })
-          });
-          
-          if (quickExtract.ok) {
-            const quickData = await quickExtract.json();
-            const quickResult = JSON.parse(quickData.choices?.[0]?.message?.tool_calls?.[0]?.function.arguments || '{"items":[]}');
-            console.log('Retry extracted:', quickResult.items.length, 'items');
-            
-            quickResult.items.forEach((item: any) => {
-              const priceNum = parseFloat((item.price || '0').toString().replace(/[^0-9.]/g, ''));
-              if (priceNum > 0 && priceNum < 500 && item.itemUrl && item.title) {
-                allItems.push({
-                  itemUrl: item.itemUrl.startsWith('http') ? item.itemUrl : `https://www.vinted.fi${item.itemUrl}`,
-                  item_url: item.itemUrl.startsWith('http') ? item.itemUrl : `https://www.vinted.fi${item.itemUrl}`,
-                  title: item.title,
-                  price: item.price,
-                  platform: 'vinted',
-                  attributes: {}
-                });
-              }
-            });
+    if (catalogError) {
+      console.error('Catalog query error:', catalogError);
+      throw new Error('Failed to query catalog');
+    }
+
+    console.log(`Found ${catalogItems?.length || 0} catalog items`);
+
+    if (!catalogItems || catalogItems.length === 0) {
+      await supabase
+        .from('visual_searches')
+        .update({ 
+          status: 'no_matches',
+          analysis_data: { 
+            attributes,
+            reason: 'No items in catalog match your search criteria.',
+            suggestions: [
+              'Try adjusting your budget range',
+              'Upload a different item to search for',
+              'Check back later as we add more items'
+            ]
           }
-        }
-      } catch (retryErr) {
-        console.error('Retry search failed:', retryErr);
-      }
+        })
+        .eq('id', searchId);
+
+      return new Response(JSON.stringify({ 
+        status: 'no_matches',
+        attributes,
+        message: 'No matches found in catalog.',
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
-    
-    console.log(`Final item count: ${allItems.length}`);
 
-    // Map items to database schema format with safety checks
-    const mappedItems = allItems.map(item => ({
-      platform: item.platform || 'vinted',
-      item_url: item.itemUrl || item.item_url || '',
-      title: item.title || 'Fashion Item',
-      price: parseFloat((item.price || '0').toString().replace(/[^0-9.]/g, '')) || 0,
-      currency: (item.currency || 'EUR').toUpperCase().trim(),
-      image_url: item.imageUrl || item.image_url || null,
-      description: item.title || ''
-    }));
-
-    // Calculate similarity with balanced weighting across all attributes
-    const scoredItems = mappedItems.map(item => {
-      let score = 0.15; // Lower base score
-      const itemText = (item.title || '').toLowerCase();
+    // Score each catalog item based on attribute matching
+    const scoredItems = catalogItems.map(item => {
+      const itemAttrs = item.attributes || {};
+      const itemText = `${item.title} ${item.description || ''}`.toLowerCase();
       
-      // CRITICAL: Item type must match (worth 0.25)
+      // Calculate attribute-based similarity
+      const attrScore = calculateAttributeSimilarity(attributes, itemAttrs);
+      
+      // Text-based matching for additional confidence
+      let textScore = 0;
+      
+      // Item type match (critical)
       if (attributes.itemType && itemText.includes(attributes.itemType.toLowerCase())) {
-        score += 0.25;
-      }
-      if (attributes.category && itemText.includes(attributes.category.toLowerCase())) {
-        score += 0.1;
+        textScore += 0.25;
       }
       
-      // Notable details are crucial (worth 0.25 total)
+      // Category match
+      if (attributes.category && itemText.includes(attributes.category.toLowerCase())) {
+        textScore += 0.15;
+      }
+      
+      // Notable details
       if (attributes.notableDetails && attributes.notableDetails.length > 0) {
         attributes.notableDetails.forEach((detail: string) => {
           if (detail.length > 3 && itemText.includes(detail.toLowerCase())) {
-            score += 0.125;
+            textScore += 0.1;
           }
         });
       }
       
-      // Shape attributes (worth 0.2 total)
-      if (attributes.silhouette && itemText.includes(attributes.silhouette.toLowerCase())) {
-        score += 0.1;
-      }
-      if (attributes.length && itemText.includes(attributes.length.toLowerCase())) {
-        score += 0.1;
-      }
-      
-      // Visible text/brands/logos (worth 0.15 - helpful but not dominant)
-      if (attributes.visibleText && attributes.visibleText.length > 0) {
-        attributes.visibleText.forEach((text: string) => {
-          if (text.length > 2 && itemText.includes(text.toLowerCase())) {
-            score += 0.075; // Moderate boost for brand match
+      // Color match
+      if (attributes.primaryColors && attributes.primaryColors.length > 0) {
+        attributes.primaryColors.forEach((color: string) => {
+          if (itemText.includes(color.toLowerCase())) {
+            textScore += 0.1;
           }
         });
       }
       
-      // Secondary attributes (worth 0.15 total)
-      if (attributes.primaryColors?.[0] && itemText.includes(attributes.primaryColors[0].toLowerCase())) {
-        score += 0.075;
-      }
-      if (attributes.fabricType && itemText.includes(attributes.fabricType.toLowerCase())) {
-        score += 0.0375;
-      }
-      if (attributes.pattern && itemText.includes(attributes.pattern.toLowerCase())) {
-        score += 0.0375;
-      }
+      // Combine scores (70% attribute matching, 30% text matching)
+      const finalScore = (attrScore * 0.7) + (Math.min(textScore, 1.0) * 0.3);
       
-      return { ...item, similarity_score: Math.min(score, 1.0) };
-    }).sort((a, b) => b.similarity_score - a.similarity_score);
+      const matchedAttrs = findMatchedAttributes(attributes, itemAttrs);
+      
+      return {
+        ...item,
+        similarity_score: finalScore,
+        matched_attributes: matchedAttrs,
+        match_explanation: generateMatchExplanation(matchedAttrs)
+      };
+    })
+    .filter(item => item.similarity_score > 0.1) // Only keep items with some relevance
+    .sort((a, b) => b.similarity_score - a.similarity_score)
+    .slice(0, 8); // Top 8 results
 
-    // Take all items
-    const topMatches = scoredItems.slice(0, 8);
+    console.log(`Scored ${scoredItems.length} matches, top score: ${scoredItems[0]?.similarity_score || 0}`);
+
+    // Map to response format
+    const mappedItems = scoredItems.map(item => ({
+      platform: item.platform,
+      item_url: item.item_url,
+      title: item.title,
+      price: item.price,
+      currency: item.currency || 'EUR',
+      image_url: item.image_url,
+      description: item.description || item.title,
+      similarity_score: item.similarity_score,
+      matched_attributes: item.matched_attributes,
+      match_explanation: item.match_explanation
+    }));
+
+    const topMatches = mappedItems;
 
     if (topMatches.length === 0) {
       await supabase
@@ -495,18 +310,7 @@ ${truncatedHtml}`
 
     // Store results with error handling
     try {
-      const insertPromises = topMatches.map(result => {
-        const matchedAttrs = [];
-        // Balanced match explanation
-        if (attributes.itemType) matchedAttrs.push(attributes.itemType);
-        if (attributes.notableDetails && attributes.notableDetails.length > 0) {
-          matchedAttrs.push(...attributes.notableDetails.slice(0, 2));
-        }
-        if (attributes.silhouette) matchedAttrs.push(`${attributes.silhouette} fit`);
-        if (attributes.visibleText && attributes.visibleText.length > 0) {
-          matchedAttrs.push(...attributes.visibleText.map((t: string) => `"${t}"`));
-        }
-        
+      const insertPromises = topMatches.map(result => {        
         return supabase
           .from('search_results')
           .insert({
@@ -519,8 +323,8 @@ ${truncatedHtml}`
             image_url: result.image_url,
             similarity_score: result.similarity_score,
             description: result.description,
-            matched_attributes: { matched: matchedAttrs },
-            match_explanation: `Matches: ${matchedAttrs.join(', ')}`
+            matched_attributes: { matched: result.matched_attributes || [] },
+            match_explanation: result.match_explanation || 'Similar item'
           });
       });
 
