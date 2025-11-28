@@ -56,115 +56,125 @@ export const Navigation = () => {
         </Link>
         
         {user ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1">
             <Link to="/gallery">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
                 gallery
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/cura-cart">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
-                cura cart
+                cart
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/profile">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
                 profile
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/connect">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
                 connect
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/how-to-use">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
-                how to use
+                guide
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/our-mission">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
-                our mission
+                mission
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleSignOut}
-              className="text-foreground hover:bg-muted font-mono"
+              className="text-foreground hover:bg-muted font-mono px-2"
             >
-              sign out
+              signout
             </Button>
           </div>
         ) : (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1">
             <Link to="/gallery">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
                 gallery
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/connect">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
                 connect
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/how-to-use">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
-                how to use
+                guide
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/our-mission">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
-                our mission
+                mission
               </Button>
             </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/auth">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-foreground hover:bg-muted font-mono"
+                className="text-foreground hover:bg-muted font-mono px-2"
               >
-                sign in
+                signin
               </Button>
             </Link>
           </div>
