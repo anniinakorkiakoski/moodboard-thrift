@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 interface StyleProfile {
   style_tags: string[];
   dream_brands: string[];
+  material_preferences: string[];
 }
 
 export const useStyleProfile = () => {
@@ -27,13 +28,13 @@ export const useStyleProfile = () => {
 
       const { data, error } = await supabase
         .from('user_style_profiles')
-        .select('style_tags, dream_brands')
+        .select('style_tags, dream_brands, material_preferences')
         .eq('user_id', user.id)
         .maybeSingle();
 
       if (error) throw error;
 
-      setProfile(data || { style_tags: [], dream_brands: [] });
+      setProfile(data || { style_tags: [], dream_brands: [], material_preferences: [] });
     } catch (error) {
       console.error('Error fetching style profile:', error);
     } finally {
