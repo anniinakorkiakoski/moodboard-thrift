@@ -364,17 +364,29 @@ function calculateAttributeSimilarity(searchAttrs: any, itemAttrs: any): number 
   let score = 0;
   let maxScore = 0;
 
+  // Helper to safely get string value
+  const getString = (val: any): string | null => {
+    if (!val) return null;
+    if (typeof val === 'string') return val.toLowerCase();
+    if (Array.isArray(val)) return val.join(' ').toLowerCase();
+    return String(val).toLowerCase();
+  };
+
   // Item type match (weight: 20%)
   maxScore += 0.20;
-  if (searchAttrs.itemType && itemAttrs.itemType) {
-    if (searchAttrs.itemType.toLowerCase() === itemAttrs.itemType.toLowerCase()) score += 0.20;
+  const searchType = getString(searchAttrs.itemType);
+  const itemType = getString(itemAttrs.itemType);
+  if (searchType && itemType) {
+    if (searchType === itemType) score += 0.20;
   }
 
   // Fabric type match (weight: 15%)
   maxScore += 0.15;
-  if (searchAttrs.fabricType && itemAttrs.fabricType) {
-    if (searchAttrs.fabricType.toLowerCase() === itemAttrs.fabricType.toLowerCase()) score += 0.15;
-    else if (itemAttrs.fabricType.toLowerCase().includes(searchAttrs.fabricType.toLowerCase())) score += 0.075;
+  const searchFabric = getString(searchAttrs.fabricType);
+  const itemFabric = getString(itemAttrs.fabricType);
+  if (searchFabric && itemFabric) {
+    if (searchFabric === itemFabric) score += 0.15;
+    else if (itemFabric.includes(searchFabric)) score += 0.075;
   }
 
   // Color match (weight: 15%)
@@ -400,20 +412,26 @@ function calculateAttributeSimilarity(searchAttrs: any, itemAttrs: any): number 
 
   // Aesthetic match (weight: 10%)
   maxScore += 0.10;
-  if (searchAttrs.aesthetic && itemAttrs.aesthetic) {
-    if (searchAttrs.aesthetic.toLowerCase() === itemAttrs.aesthetic.toLowerCase()) score += 0.10;
+  const searchAesthetic = getString(searchAttrs.aesthetic);
+  const itemAesthetic = getString(itemAttrs.aesthetic);
+  if (searchAesthetic && itemAesthetic) {
+    if (searchAesthetic === itemAesthetic || itemAesthetic.includes(searchAesthetic)) score += 0.10;
   }
 
   // Era match (weight: 10%)
   maxScore += 0.10;
-  if (searchAttrs.era && itemAttrs.era) {
-    if (searchAttrs.era.toLowerCase() === itemAttrs.era.toLowerCase()) score += 0.10;
+  const searchEra = getString(searchAttrs.era);
+  const itemEra = getString(itemAttrs.era);
+  if (searchEra && itemEra) {
+    if (searchEra === itemEra) score += 0.10;
   }
 
   // Length match (weight: 5%)
   maxScore += 0.05;
-  if (searchAttrs.length && itemAttrs.length) {
-    if (searchAttrs.length.toLowerCase() === itemAttrs.length.toLowerCase()) score += 0.05;
+  const searchLength = getString(searchAttrs.length);
+  const itemLength = getString(itemAttrs.length);
+  if (searchLength && itemLength) {
+    if (searchLength === itemLength) score += 0.05;
   }
 
   return maxScore > 0 ? score / maxScore : 0;
@@ -422,9 +440,18 @@ function calculateAttributeSimilarity(searchAttrs: any, itemAttrs: any): number 
 // Find which attributes matched between search and item
 function findMatchedAttributes(searchAttrs: any, itemAttrs: any): string[] {
   const matched: string[] = [];
+  
+  // Helper to safely get string value
+  const getString = (val: any): string | null => {
+    if (!val) return null;
+    if (typeof val === 'string') return val.toLowerCase();
+    if (Array.isArray(val)) return val.join(' ').toLowerCase();
+    return String(val).toLowerCase();
+  };
 
-  if (searchAttrs.fabricType && itemAttrs.fabricType && 
-      searchAttrs.fabricType.toLowerCase() === itemAttrs.fabricType.toLowerCase()) {
+  const searchFabric = getString(searchAttrs.fabricType);
+  const itemFabric = getString(itemAttrs.fabricType);
+  if (searchFabric && itemFabric && searchFabric === itemFabric) {
     matched.push(`${searchAttrs.fabricType} fabric`);
   }
 
@@ -437,28 +464,33 @@ function findMatchedAttributes(searchAttrs: any, itemAttrs: any): string[] {
     }
   }
 
-  if (searchAttrs.pattern && itemAttrs.pattern && 
-      searchAttrs.pattern.toLowerCase() === itemAttrs.pattern.toLowerCase()) {
+  const searchPattern = getString(searchAttrs.pattern);
+  const itemPattern = getString(itemAttrs.pattern);
+  if (searchPattern && itemPattern && searchPattern === itemPattern) {
     matched.push(`${searchAttrs.pattern} pattern`);
   }
 
-  if (searchAttrs.silhouette && itemAttrs.silhouette && 
-      searchAttrs.silhouette.toLowerCase() === itemAttrs.silhouette.toLowerCase()) {
+  const searchSilhouette = getString(searchAttrs.silhouette);
+  const itemSilhouette = getString(itemAttrs.silhouette);
+  if (searchSilhouette && itemSilhouette && searchSilhouette === itemSilhouette) {
     matched.push(`${searchAttrs.silhouette} silhouette`);
   }
 
-  if (searchAttrs.sleeveType && itemAttrs.sleeveType && 
-      searchAttrs.sleeveType.toLowerCase() === itemAttrs.sleeveType.toLowerCase()) {
+  const searchSleeve = getString(searchAttrs.sleeveType);
+  const itemSleeve = getString(itemAttrs.sleeveType);
+  if (searchSleeve && itemSleeve && searchSleeve === itemSleeve) {
     matched.push(`${searchAttrs.sleeveType} sleeves`);
   }
 
-  if (searchAttrs.length && itemAttrs.length && 
-      searchAttrs.length.toLowerCase() === itemAttrs.length.toLowerCase()) {
+  const searchLength = getString(searchAttrs.length);
+  const itemLength = getString(itemAttrs.length);
+  if (searchLength && itemLength && searchLength === itemLength) {
     matched.push(`${searchAttrs.length} length`);
   }
 
-  if (searchAttrs.aesthetic && itemAttrs.aesthetic && 
-      searchAttrs.aesthetic.toLowerCase() === itemAttrs.aesthetic.toLowerCase()) {
+  const searchAesthetic = getString(searchAttrs.aesthetic);
+  const itemAesthetic = getString(itemAttrs.aesthetic);
+  if (searchAesthetic && itemAesthetic && (searchAesthetic === itemAesthetic || itemAesthetic.includes(searchAesthetic))) {
     matched.push(`${searchAttrs.aesthetic} aesthetic`);
   }
 
