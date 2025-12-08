@@ -8,8 +8,7 @@ const corsHeaders = {
 };
 
 // Thresholds for match quality
-const HIGH_THRESHOLD = 0.80;  // Show as good match
-const FALLBACK_THRESHOLD = 0.60;  // Show tentative matches with confirmation
+const HIGH_THRESHOLD = 0.80;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -63,7 +62,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a fashion expert AI analyzing clothing items for precise visual search. 
+            content: `You are a fashion expert AI analyzing clothing items for precise visual search on Etsy. 
 
 CRITICAL: ${cropInstruction}
 
@@ -83,17 +82,18 @@ Extract structured attributes in JSON format with these exact fields:
   "closureType": "fastening (e.g., button-front, zip, wrap, pullover, lace-up, buckle)",
   "notableDetails": ["detail 1", "detail 2", "e.g., studs, embroidery, distressing, platform sole"],
   "era": "style era (e.g., 90s, vintage, modern, Y2K, punk)",
-  "aesthetic": "overall vibe (e.g., romantic, minimalist, bohemian, grunge, edgy, punk)"
+  "aesthetic": "overall vibe (e.g., romantic, minimalist, bohemian, grunge, edgy, punk)",
+  "etsySearchQuery": "best search query for Etsy (2-5 words, focus on item type and key features)"
 }
 
-CRITICAL: Read all visible text, logos, and brand names in the image carefully. Include them in the visibleText array.`
+CRITICAL: Generate an optimal Etsy search query that will find similar items. Focus on the item type and most distinctive features.`
           },
           {
             role: 'user',
             content: [
               {
                 type: 'text',
-                text: `${cropInstruction}\n\nAnalyze the MAIN fashion item in extreme detail and return ONLY valid JSON with all the fields specified. Be as specific as possible about every attribute, especially unique details like studs, embellishments, hardware, or distinctive features.`
+                text: `${cropInstruction}\n\nAnalyze the MAIN fashion item in extreme detail and return ONLY valid JSON with all the fields specified. Be as specific as possible about every attribute, especially unique details. Generate a concise but effective Etsy search query.`
               },
               {
                 type: 'image_url',
@@ -115,7 +115,6 @@ CRITICAL: Read all visible text, logos, and brand names in the image carefully. 
     let attributes;
     try {
       const content = attributeData.choices[0].message.content;
-      // Extract JSON from markdown code blocks if present
       const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/) || content.match(/(\{[\s\S]*\})/);
       attributes = JSON.parse(jsonMatch ? jsonMatch[1] : content);
       console.log('Extracted attributes:', attributes);
@@ -134,181 +133,79 @@ CRITICAL: Read all visible text, logos, and brand names in the image carefully. 
       })
       .eq('id', searchId);
 
-    // Step 2: Generate search query and URLs from attributes - prioritize visible text and notable details
-    const visibleTextStr = attributes.visibleText?.join(' ') || '';
-    const notableDetailsStr = attributes.notableDetails?.join(' ') || '';
-    const searchQuery = `${visibleTextStr} ${attributes.category || attributes.itemType} ${notableDetailsStr} ${attributes.silhouette || ''} ${attributes.length || ''} ${attributes.fabricType || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.pattern || ''}`.trim();
-    console.log('Generated search query:', searchQuery);
-    console.log('Key item attributes:', {
-      itemType: attributes.itemType,
-      category: attributes.category,
-      visibleText: attributes.visibleText,
-      notableDetails: attributes.notableDetails,
-      silhouette: attributes.silhouette,
-      length: attributes.length
-    });
-
-    // Step 3: Search catalog items using database query
-    console.log('Searching catalog database...');
+    // Step 2: Generate Etsy search query
+    const etsyQuery = attributes.etsySearchQuery || 
+      `${attributes.itemType || ''} ${attributes.category || ''} ${attributes.primaryColors?.[0] || ''} ${attributes.fabricType || ''}`.trim();
     
-    let catalogQuery = supabase
-      .from('catalog_items')
-      .select('*')
-      .eq('is_active', true);
+    console.log('Etsy search query:', etsyQuery);
 
-    // Apply budget filters if provided
-    if (budget) {
-      if (budget.min) {
-        catalogQuery = catalogQuery.gte('price', budget.min);
-      }
-      if (budget.max) {
-        catalogQuery = catalogQuery.lte('price', budget.max);
-      }
-      console.log('Applied budget filter:', budget);
-    }
+    // Step 3: Scrape Etsy search results
+    console.log('Scraping Etsy for:', etsyQuery);
+    
+    const etsyItems = await scrapeEtsy(etsyQuery, LOVABLE_API_KEY, budget);
+    console.log(`Found ${etsyItems.length} items from Etsy`);
 
-    const { data: catalogItems, error: catalogError } = await catalogQuery;
+    if (etsyItems.length === 0) {
+      // Try a simpler search query
+      const simpleQuery = `vintage ${attributes.itemType || 'clothing'}`;
+      console.log('No results, trying simpler query:', simpleQuery);
+      const fallbackItems = await scrapeEtsy(simpleQuery, LOVABLE_API_KEY, budget);
+      
+      if (fallbackItems.length === 0) {
+        await supabase
+          .from('visual_searches')
+          .update({ 
+            status: 'no_matches',
+            analysis_data: { 
+              attributes,
+              reason: 'No matching items found on Etsy.',
+              suggestions: [
+                'Try uploading a different angle of the item',
+                'Search manually on Etsy for: ' + etsyQuery
+              ]
+            }
+          })
+          .eq('id', searchId);
 
-    if (catalogError) {
-      console.error('Catalog query error:', catalogError);
-      throw new Error('Failed to query catalog');
-    }
-
-    console.log(`Found ${catalogItems?.length || 0} catalog items`);
-
-    if (!catalogItems || catalogItems.length === 0) {
-      await supabase
-        .from('visual_searches')
-        .update({ 
+        return new Response(JSON.stringify({ 
           status: 'no_matches',
-          analysis_data: { 
-            attributes,
-            reason: 'No items in catalog match your search criteria.',
-            suggestions: [
-              'Try adjusting your budget range',
-              'Upload a different item to search for',
-              'Check back later as we add more items'
-            ]
-          }
-        })
-        .eq('id', searchId);
-
-      return new Response(JSON.stringify({ 
-        status: 'no_matches',
-        attributes,
-        message: 'No matches found in catalog.',
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+          attributes,
+          message: 'No matches found on Etsy.',
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      etsyItems.push(...fallbackItems);
     }
 
-    // Score each catalog item based on attribute matching
-    const scoredItems = catalogItems.map(item => {
-      const itemAttrs = item.attributes || {};
-      const itemText = `${item.title} ${item.description || ''}`.toLowerCase();
-      
-      // Calculate attribute-based similarity
-      const attrScore = calculateAttributeSimilarity(attributes, itemAttrs);
-      
-      // Text-based matching for additional confidence
-      let textScore = 0;
-      
-      // Item type match (critical)
-      if (attributes.itemType && itemText.includes(attributes.itemType.toLowerCase())) {
-        textScore += 0.25;
-      }
-      
-      // Category match
-      if (attributes.category && itemText.includes(attributes.category.toLowerCase())) {
-        textScore += 0.15;
-      }
-      
-      // Notable details
-      if (attributes.notableDetails && attributes.notableDetails.length > 0) {
-        attributes.notableDetails.forEach((detail: string) => {
-          if (detail.length > 3 && itemText.includes(detail.toLowerCase())) {
-            textScore += 0.1;
-          }
-        });
-      }
-      
-      // Color match
-      if (attributes.primaryColors && attributes.primaryColors.length > 0) {
-        attributes.primaryColors.forEach((color: string) => {
-          if (itemText.includes(color.toLowerCase())) {
-            textScore += 0.1;
-          }
-        });
-      }
-      
-      // Combine scores (70% attribute matching, 30% text matching)
-      const finalScore = (attrScore * 0.7) + (Math.min(textScore, 1.0) * 0.3);
-      
-      const matchedAttrs = findMatchedAttributes(attributes, itemAttrs);
-      
+    // Step 4: Score items based on attribute matching
+    const scoredItems = etsyItems.map(item => {
+      const score = calculateItemScore(attributes, item);
       return {
         ...item,
-        similarity_score: finalScore,
-        matched_attributes: matchedAttrs,
-        match_explanation: generateMatchExplanation(matchedAttrs)
+        similarity_score: score,
+        match_explanation: generateMatchExplanation(attributes, item)
       };
     })
-    .filter(item => item.similarity_score > 0.1) // Only keep items with some relevance
     .sort((a, b) => b.similarity_score - a.similarity_score)
-    .slice(0, 8); // Top 8 results
+    .slice(0, 8);
 
     console.log(`Scored ${scoredItems.length} matches, top score: ${scoredItems[0]?.similarity_score || 0}`);
 
-    // Map to response format
-    const mappedItems = scoredItems.map(item => ({
-      platform: item.platform,
+    // Store results
+    const topMatches = scoredItems.map(item => ({
+      platform: 'etsy' as const,
       item_url: item.item_url,
       title: item.title,
       price: item.price,
-      currency: item.currency || 'EUR',
+      currency: item.currency || 'USD',
       image_url: item.image_url,
-      description: item.description || item.title,
+      description: item.title,
       similarity_score: item.similarity_score,
-      matched_attributes: item.matched_attributes,
       match_explanation: item.match_explanation
     }));
 
-    const topMatches = mappedItems;
-
-    if (topMatches.length === 0) {
-      await supabase
-        .from('visual_searches')
-        .update({ 
-          status: 'no_matches',
-          analysis_data: { 
-            attributes,
-            reason: 'Could not extract valid product listings from marketplace. The items may have been removed, prices were unrealistic, or the search query did not match available inventory.',
-            suggestions: [
-              'Try uploading a different angle of the item',
-              'Make sure the item is clearly visible in the photo',
-              'Consider searching for similar but more common items',
-              `Search manually on Vinted for: ${searchQuery}`
-            ]
-          }
-        })
-        .eq('id', searchId);
-
-      return new Response(JSON.stringify({ 
-        status: 'no_matches',
-        attributes,
-        searchQuery,
-        message: 'No valid matches found. Please try a different image or search manually.',
-        suggestions: [
-          'Try uploading a clearer photo with the item as the main focus',
-          'Search manually on marketplace sites',
-          `Suggested search term: "${searchQuery}"`
-        ]
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Store results with error handling
     try {
       const insertPromises = topMatches.map(result => {        
         return supabase
@@ -323,8 +220,8 @@ CRITICAL: Read all visible text, logos, and brand names in the image carefully. 
             image_url: result.image_url,
             similarity_score: result.similarity_score,
             description: result.description,
-            matched_attributes: { matched: result.matched_attributes || [] },
-            match_explanation: result.match_explanation || 'Similar item'
+            matched_attributes: { matched: [] },
+            match_explanation: result.match_explanation || 'Similar item from Etsy'
           });
       });
 
@@ -343,7 +240,6 @@ CRITICAL: Read all visible text, logos, and brand names in the image carefully. 
       status: 'completed',
       resultsCount: topMatches.length,
       highQualityCount: topMatches.filter(m => m.similarity_score >= HIGH_THRESHOLD).length,
-      tentativeCount: topMatches.filter(m => m.similarity_score < HIGH_THRESHOLD).length,
       attributes
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -359,148 +255,180 @@ CRITICAL: Read all visible text, logos, and brand names in the image carefully. 
   }
 });
 
-// Calculate similarity between search attributes and catalog item attributes
-function calculateAttributeSimilarity(searchAttrs: any, itemAttrs: any): number {
-  let score = 0;
-  let maxScore = 0;
+// Scrape Etsy search results using AI to extract listings
+async function scrapeEtsy(query: string, apiKey: string, budget?: { min?: number; max?: number }): Promise<any[]> {
+  try {
+    const encodedQuery = encodeURIComponent(query);
+    
+    // Build Etsy URL with price filters if budget provided
+    let etsyUrl = `https://www.etsy.com/search?q=${encodedQuery}&ref=search_bar`;
+    if (budget?.min) {
+      etsyUrl += `&min=${budget.min}`;
+    }
+    if (budget?.max) {
+      etsyUrl += `&max=${budget.max}`;
+    }
+    
+    console.log('Fetching Etsy URL:', etsyUrl);
 
-  // Helper to safely get string value
-  const getString = (val: any): string | null => {
-    if (!val) return null;
-    if (typeof val === 'string') return val.toLowerCase();
-    if (Array.isArray(val)) return val.join(' ').toLowerCase();
-    return String(val).toLowerCase();
-  };
+    // Fetch the Etsy search page
+    const response = await fetch(etsyUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+      }
+    });
 
-  // Item type match (weight: 20%)
-  maxScore += 0.20;
-  const searchType = getString(searchAttrs.itemType);
-  const itemType = getString(itemAttrs.itemType);
-  if (searchType && itemType) {
-    if (searchType === itemType) score += 0.20;
-  }
+    if (!response.ok) {
+      console.error('Etsy fetch failed:', response.status);
+      return [];
+    }
 
-  // Fabric type match (weight: 15%)
-  maxScore += 0.15;
-  const searchFabric = getString(searchAttrs.fabricType);
-  const itemFabric = getString(itemAttrs.fabricType);
-  if (searchFabric && itemFabric) {
-    if (searchFabric === itemFabric) score += 0.15;
-    else if (itemFabric.includes(searchFabric)) score += 0.075;
-  }
+    const html = await response.text();
+    console.log('Fetched HTML length:', html.length);
 
-  // Color match (weight: 15%)
-  maxScore += 0.15;
-  if (searchAttrs.primaryColors && itemAttrs.primaryColors) {
-    const colorMatch = searchAttrs.primaryColors.some((c: string) => 
-      itemAttrs.primaryColors.some((ic: string) => ic.toLowerCase().includes(c.toLowerCase()))
-    );
-    if (colorMatch) score += 0.15;
-  }
+    // Use AI to extract product listings from the HTML
+    const extractResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert at extracting product listings from Etsy HTML. Extract up to 10 product listings.
 
-  // Pattern match (weight: 10%)
-  maxScore += 0.10;
-  if (searchAttrs.pattern && itemAttrs.pattern) {
-    if (searchAttrs.pattern.toLowerCase() === itemAttrs.pattern.toLowerCase()) score += 0.10;
-  }
-
-  // Silhouette match (weight: 15%)
-  maxScore += 0.15;
-  if (searchAttrs.silhouette && itemAttrs.silhouette) {
-    if (searchAttrs.silhouette.toLowerCase() === itemAttrs.silhouette.toLowerCase()) score += 0.15;
-  }
-
-  // Aesthetic match (weight: 10%)
-  maxScore += 0.10;
-  const searchAesthetic = getString(searchAttrs.aesthetic);
-  const itemAesthetic = getString(itemAttrs.aesthetic);
-  if (searchAesthetic && itemAesthetic) {
-    if (searchAesthetic === itemAesthetic || itemAesthetic.includes(searchAesthetic)) score += 0.10;
-  }
-
-  // Era match (weight: 10%)
-  maxScore += 0.10;
-  const searchEra = getString(searchAttrs.era);
-  const itemEra = getString(itemAttrs.era);
-  if (searchEra && itemEra) {
-    if (searchEra === itemEra) score += 0.10;
-  }
-
-  // Length match (weight: 5%)
-  maxScore += 0.05;
-  const searchLength = getString(searchAttrs.length);
-  const itemLength = getString(itemAttrs.length);
-  if (searchLength && itemLength) {
-    if (searchLength === itemLength) score += 0.05;
-  }
-
-  return maxScore > 0 ? score / maxScore : 0;
+Return a JSON array with objects containing:
+{
+  "title": "product title",
+  "price": 29.99,
+  "currency": "USD",
+  "item_url": "https://www.etsy.com/listing/...",
+  "image_url": "https://i.etsystatic.com/..."
 }
 
-// Find which attributes matched between search and item
-function findMatchedAttributes(searchAttrs: any, itemAttrs: any): string[] {
-  const matched: string[] = [];
-  
-  // Helper to safely get string value
-  const getString = (val: any): string | null => {
-    if (!val) return null;
-    if (typeof val === 'string') return val.toLowerCase();
-    if (Array.isArray(val)) return val.join(' ').toLowerCase();
-    return String(val).toLowerCase();
-  };
+CRITICAL RULES:
+1. Only extract REAL Etsy listings with valid URLs starting with https://www.etsy.com/listing/
+2. Image URLs should be from i.etsystatic.com
+3. Parse prices as numbers (remove currency symbols)
+4. Return ONLY the JSON array, no other text
+5. If you can't find valid listings, return an empty array []`
+          },
+          {
+            role: 'user',
+            content: `Extract product listings from this Etsy search results page HTML. Return a JSON array only.\n\nHTML (truncated to 50000 chars):\n${html.substring(0, 50000)}`
+          }
+        ],
+      }),
+    });
 
-  const searchFabric = getString(searchAttrs.fabricType);
-  const itemFabric = getString(itemAttrs.fabricType);
-  if (searchFabric && itemFabric && searchFabric === itemFabric) {
-    matched.push(`${searchAttrs.fabricType} fabric`);
-  }
+    if (!extractResponse.ok) {
+      console.error('AI extraction failed:', await extractResponse.text());
+      return [];
+    }
 
-  if (searchAttrs.primaryColors && itemAttrs.primaryColors) {
-    const colorMatch = searchAttrs.primaryColors.filter((c: string) => 
-      itemAttrs.primaryColors.some((ic: string) => ic.toLowerCase().includes(c.toLowerCase()))
+    const extractData = await extractResponse.json();
+    const content = extractData.choices?.[0]?.message?.content || '[]';
+    
+    // Parse the JSON array
+    let items = [];
+    try {
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      items = JSON.parse(jsonMatch ? jsonMatch[0] : content);
+    } catch (e) {
+      console.error('Failed to parse extracted items:', e);
+      return [];
+    }
+
+    // Validate and filter items
+    const validItems = items.filter((item: any) => 
+      item.title && 
+      item.item_url && 
+      item.item_url.includes('etsy.com/listing') &&
+      item.image_url &&
+      typeof item.price === 'number' &&
+      item.price > 0 &&
+      item.price < 10000
     );
-    if (colorMatch.length > 0) {
-      matched.push(`${colorMatch.join(', ')} color`);
+
+    console.log(`Extracted ${validItems.length} valid Etsy items`);
+    return validItems;
+
+  } catch (error) {
+    console.error('Error scraping Etsy:', error);
+    return [];
+  }
+}
+
+// Calculate similarity score between search attributes and item
+function calculateItemScore(searchAttrs: any, item: any): number {
+  let score = 0.5; // Base score for being from Etsy search
+  
+  const titleLower = (item.title || '').toLowerCase();
+  
+  // Item type match
+  if (searchAttrs.itemType && titleLower.includes(searchAttrs.itemType.toLowerCase())) {
+    score += 0.15;
+  }
+  
+  // Category match
+  if (searchAttrs.category && titleLower.includes(searchAttrs.category.toLowerCase())) {
+    score += 0.1;
+  }
+  
+  // Color match
+  if (searchAttrs.primaryColors) {
+    for (const color of searchAttrs.primaryColors) {
+      if (titleLower.includes(color.toLowerCase())) {
+        score += 0.1;
+        break;
+      }
     }
   }
-
-  const searchPattern = getString(searchAttrs.pattern);
-  const itemPattern = getString(itemAttrs.pattern);
-  if (searchPattern && itemPattern && searchPattern === itemPattern) {
-    matched.push(`${searchAttrs.pattern} pattern`);
+  
+  // Fabric match
+  if (searchAttrs.fabricType && titleLower.includes(searchAttrs.fabricType.toLowerCase())) {
+    score += 0.1;
   }
-
-  const searchSilhouette = getString(searchAttrs.silhouette);
-  const itemSilhouette = getString(itemAttrs.silhouette);
-  if (searchSilhouette && itemSilhouette && searchSilhouette === itemSilhouette) {
-    matched.push(`${searchAttrs.silhouette} silhouette`);
+  
+  // Era/aesthetic match
+  if (searchAttrs.era && titleLower.includes(searchAttrs.era.toLowerCase())) {
+    score += 0.05;
   }
-
-  const searchSleeve = getString(searchAttrs.sleeveType);
-  const itemSleeve = getString(itemAttrs.sleeveType);
-  if (searchSleeve && itemSleeve && searchSleeve === itemSleeve) {
-    matched.push(`${searchAttrs.sleeveType} sleeves`);
+  if (searchAttrs.aesthetic && titleLower.includes(searchAttrs.aesthetic.toLowerCase())) {
+    score += 0.05;
   }
-
-  const searchLength = getString(searchAttrs.length);
-  const itemLength = getString(itemAttrs.length);
-  if (searchLength && itemLength && searchLength === itemLength) {
-    matched.push(`${searchAttrs.length} length`);
-  }
-
-  const searchAesthetic = getString(searchAttrs.aesthetic);
-  const itemAesthetic = getString(itemAttrs.aesthetic);
-  if (searchAesthetic && itemAesthetic && (searchAesthetic === itemAesthetic || itemAesthetic.includes(searchAesthetic))) {
-    matched.push(`${searchAttrs.aesthetic} aesthetic`);
-  }
-
-  return matched;
+  
+  return Math.min(score, 1.0);
 }
 
-// Generate human-readable match explanation
-function generateMatchExplanation(matchedAttributes: string[]): string {
-  if (matchedAttributes.length === 0) {
-    return 'Similar style and characteristics';
+// Generate match explanation
+function generateMatchExplanation(searchAttrs: any, item: any): string {
+  const matches: string[] = [];
+  const titleLower = (item.title || '').toLowerCase();
+  
+  if (searchAttrs.itemType && titleLower.includes(searchAttrs.itemType.toLowerCase())) {
+    matches.push(searchAttrs.itemType);
   }
-  return matchedAttributes.join(' • ');
+  if (searchAttrs.primaryColors) {
+    for (const color of searchAttrs.primaryColors) {
+      if (titleLower.includes(color.toLowerCase())) {
+        matches.push(color + ' color');
+        break;
+      }
+    }
+  }
+  if (searchAttrs.fabricType && titleLower.includes(searchAttrs.fabricType.toLowerCase())) {
+    matches.push(searchAttrs.fabricType + ' material');
+  }
+  
+  if (matches.length === 0) {
+    return 'Similar style from Etsy';
+  }
+  
+  return 'Matches: ' + matches.join(', ');
 }
