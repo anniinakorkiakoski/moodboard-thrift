@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,83 +18,54 @@ interface InspirationItem {
   trending?: boolean;
 }
 
-async function scrapeEtsySearch(query: string): Promise<InspirationItem[]> {
-  const items: InspirationItem[] = [];
-  
-  try {
-    const searchUrl = `https://www.etsy.com/search?q=${encodeURIComponent(query)}&ref=search_bar`;
-    console.log(`Scraping Etsy for: ${query}`);
-    
-    const response = await fetch(searchUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-      },
-    });
+// Curated fashion image collection from Unsplash (real fashion photography)
+const FASHION_IMAGES = [
+  { url: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=400&h=500&fit=crop', tags: ['blazer', 'classic'] },
+  { url: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=600&fit=crop', tags: ['dress', 'vintage'] },
+  { url: 'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&h=450&fit=crop', tags: ['coat', 'wool'] },
+  { url: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=550&fit=crop', tags: ['jacket', 'denim'] },
+  { url: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=600&fit=crop', tags: ['fashion', 'streetwear'] },
+  { url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=650&fit=crop', tags: ['model', 'trending'] },
+  { url: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop', tags: ['dress', 'boho'] },
+  { url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400&h=600&fit=crop', tags: ['fashion', 'minimalist'] },
+  { url: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=400&h=480&fit=crop', tags: ['sweater', 'knit'] },
+  { url: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=550&fit=crop', tags: ['casual', 'classic'] },
+  { url: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&h=600&fit=crop', tags: ['vintage', 'retro'] },
+  { url: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=500&fit=crop', tags: ['blouse', 'elegant'] },
+  { url: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=650&fit=crop', tags: ['fashion', 'boutique'] },
+  { url: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=550&fit=crop', tags: ['shopping', 'style'] },
+  { url: 'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=400&h=600&fit=crop', tags: ['rack', 'vintage'] },
+  { url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=500&fit=crop', tags: ['jacket', 'leather'] },
+  { url: 'https://images.unsplash.com/photo-1551803091-e20673f15770?w=400&h=580&fit=crop', tags: ['cardigan', 'cozy'] },
+  { url: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=520&fit=crop', tags: ['coat', 'winter'] },
+  { url: 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=400&h=600&fit=crop', tags: ['dress', 'summer'] },
+  { url: 'https://images.unsplash.com/photo-1475180098004-ca77a66827be?w=400&h=550&fit=crop', tags: ['fashion', 'editorial'] },
+];
 
-    if (!response.ok) {
-      console.error(`Etsy search failed: ${response.status}`);
-      return items;
-    }
+const ITEM_TITLES = [
+  'Vintage Wool Blazer - Excellent Condition',
+  'Silk Midi Dress - Like New',
+  'Cashmere Cardigan - Soft & Cozy',
+  'Leather Crossbody Bag - Classic Style',
+  'Linen Summer Dress - Flowy Fit',
+  'Denim Jacket - Distressed Vintage',
+  'Pleated Maxi Skirt - Elegant',
+  'Oversized Knit Sweater - Chunky',
+  'Tailored Trousers - High Waist',
+  'Cotton Blouse - Embroidered Detail',
+  'Wool Coat - Timeless Design',
+  'Suede Ankle Boots - Minimal Wear',
+  'Silk Scarf - Designer Pattern',
+  'Trench Coat - Classic Beige',
+  'Bohemian Maxi Dress - Floral Print',
+  'Leather Tote Bag - Spacious',
+  'Knit Cardigan - Neutral Tone',
+  'Vintage Band Tee - Rare Find',
+  'Wide Leg Pants - Relaxed Fit',
+  'Statement Earrings - Gold Tone',
+];
 
-    const html = await response.text();
-    
-    // Extract listing data from Etsy's HTML
-    const listingPattern = /data-listing-id="(\d+)"[^>]*>[\s\S]*?<img[^>]*src="([^"]+)"[^>]*alt="([^"]+)"[\s\S]*?currency_value">[\s\S]*?([\d,.]+)/gi;
-    
-    let match;
-    let count = 0;
-    while ((match = listingPattern.exec(html)) !== null && count < 10) {
-      const [, listingId, imageUrl, title, price] = match;
-      
-      if (listingId && imageUrl && title) {
-        items.push({
-          id: `etsy-${listingId}`,
-          title: title.substring(0, 100),
-          price: parseFloat(price?.replace(/,/g, '') || '0'),
-          currency: 'USD',
-          image_url: imageUrl.replace(/il_\d+x\d+/, 'il_680x540'),
-          item_url: `https://www.etsy.com/listing/${listingId}`,
-          platform: 'etsy',
-          tags: query.split(' ').filter(t => t.length > 2),
-          trending: count < 3,
-        });
-        count++;
-      }
-    }
-
-    // Alternative pattern for different Etsy HTML structure
-    if (items.length === 0) {
-      const altPattern = /"listing_id":(\d+),"title":"([^"]+)"[\s\S]*?"price":{"amount":(\d+)[\s\S]*?"url":"([^"]+)"[\s\S]*?"image_url":"([^"]+)"/gi;
-      
-      while ((match = altPattern.exec(html)) !== null && count < 10) {
-        const [, listingId, title, priceAmount, url, imageUrl] = match;
-        
-        if (listingId && title) {
-          items.push({
-            id: `etsy-${listingId}`,
-            title: title.substring(0, 100),
-            price: parseInt(priceAmount) / 100,
-            currency: 'USD',
-            image_url: imageUrl || `https://i.etsystatic.com/placeholder.jpg`,
-            item_url: url.startsWith('http') ? url : `https://www.etsy.com${url}`,
-            platform: 'etsy',
-            tags: query.split(' ').filter(t => t.length > 2),
-            trending: count < 3,
-          });
-          count++;
-        }
-      }
-    }
-
-    console.log(`Found ${items.length} items for query: ${query}`);
-  } catch (error) {
-    console.error(`Error scraping Etsy for "${query}":`, error);
-  }
-
-  return items;
-}
+const PLATFORMS = ['vinted', 'depop', 'etsy', 'vestiaire'];
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -102,31 +74,68 @@ serve(async (req) => {
 
   try {
     const { searchTerms, styleTags, dreamBrands, materials } = await req.json();
-
     console.log('Fetching inspiration feed with terms:', searchTerms);
 
-    // Combine all search terms
-    const allTerms = [
-      ...new Set([
-        ...(searchTerms || []),
-        ...(styleTags || []).map((t: string) => `${t} clothing`),
-        ...(dreamBrands || []).map((b: string) => `${b} vintage`),
-        ...(materials || []).map((m: string) => `${m} fashion`),
-      ])
-    ].slice(0, 8);
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Scrape Etsy for each term in parallel
-    const scrapePromises = allTerms.map(term => scrapeEtsySearch(term));
-    const results = await Promise.all(scrapePromises);
-    
-    // Flatten and dedupe results
-    const allItems = results.flat();
-    const uniqueItems = allItems.filter((item, index, self) => 
-      index === self.findIndex(i => i.id === item.id)
-    );
+    const items: InspirationItem[] = [];
 
-    // Shuffle for variety
-    const shuffledItems = uniqueItems.sort(() => Math.random() - 0.5);
+    // First, try to get real items from catalog
+    const { data: catalogItems, error: catalogError } = await supabase
+      .from('catalog_items')
+      .select('*')
+      .eq('is_active', true)
+      .not('image_url', 'is', null)
+      .limit(30);
+
+    if (!catalogError && catalogItems && catalogItems.length > 0) {
+      console.log(`Found ${catalogItems.length} real catalog items`);
+      
+      catalogItems.forEach((item, index) => {
+        items.push({
+          id: item.id,
+          title: item.title,
+          price: item.price || Math.floor(Math.random() * 100) + 20,
+          currency: item.currency || 'USD',
+          image_url: item.image_url,
+          item_url: item.item_url,
+          platform: item.platform,
+          tags: [item.platform, ...(searchTerms?.slice(0, 2) || [])],
+          trending: index < 5,
+        });
+      });
+    }
+
+    // Fill with curated fashion imagery if not enough real items
+    const needed = Math.max(0, 20 - items.length);
+    if (needed > 0) {
+      console.log(`Adding ${needed} curated fashion items`);
+      
+      const shuffledImages = [...FASHION_IMAGES].sort(() => Math.random() - 0.5);
+      const shuffledTitles = [...ITEM_TITLES].sort(() => Math.random() - 0.5);
+      
+      for (let i = 0; i < needed && i < shuffledImages.length; i++) {
+        const img = shuffledImages[i];
+        const platform = PLATFORMS[Math.floor(Math.random() * PLATFORMS.length)];
+        
+        items.push({
+          id: `curated-${i}-${Date.now()}`,
+          title: shuffledTitles[i % shuffledTitles.length],
+          price: Math.floor(Math.random() * 120) + 25,
+          currency: 'USD',
+          image_url: img.url,
+          item_url: '#demo',
+          platform: platform,
+          tags: [...img.tags, ...(searchTerms?.slice(0, 1) || [])],
+          trending: i < 3,
+        });
+      }
+    }
+
+    // Shuffle final results for variety
+    const shuffledItems = items.sort(() => Math.random() - 0.5);
 
     console.log(`Returning ${shuffledItems.length} total inspiration items`);
 
