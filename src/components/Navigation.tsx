@@ -67,6 +67,16 @@ export const Navigation = () => {
               </Button>
             </Link>
             <span className="text-foreground/40 font-mono">/</span>
+            <Link to="/inspiration">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-foreground hover:bg-muted font-mono px-2"
+              >
+                inspiration
+              </Button>
+            </Link>
+            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/cura-cart">
               <Button
                 variant="ghost"
@@ -135,6 +145,16 @@ export const Navigation = () => {
                 className="text-foreground hover:bg-muted font-mono px-2"
               >
                 gallery
+              </Button>
+            </Link>
+            <span className="text-foreground/40 font-mono">/</span>
+            <Link to="/inspiration">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-foreground hover:bg-muted font-mono px-2"
+              >
+                inspiration
               </Button>
             </Link>
             <span className="text-foreground/40 font-mono">/</span>
