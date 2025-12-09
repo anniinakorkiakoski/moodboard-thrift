@@ -16,6 +16,7 @@ import { CatalogAdmin } from "./pages/CatalogAdmin";
 import CatalogScraper from "./pages/CatalogScraper";
 import Gallery from "./pages/Gallery";
 import CuraCart from "./pages/CuraCart";
+import Inspiration from "./pages/Inspiration";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/how-to-use" element={<HowToUse />} />
           <Route path="/connect" element={<Connect />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/inspiration" element={<Inspiration />} />
           <Route path="/catalog-admin" element={<CatalogAdmin />} />
           <Route path="/catalog-scraper" element={<CatalogScraper />} />
           <Route path="/cura-cart" element={<CuraCart />} />
