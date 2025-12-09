@@ -157,39 +157,24 @@ serve(async (req) => {
       .eq('id', searchId);
 
     // ============================================================
-    // STEP 2: PRODUCT SEARCH / RETRIEVAL (Using Vinted API)
+    // STEP 2: PRODUCT SEARCH / RETRIEVAL (Using Local Catalog)
     // ============================================================
-    console.log('\n[STEP 2] Searching Vinted with generated queries...');
+    console.log('\n[STEP 2] Searching local catalog with generated queries...');
     
     const searchQueries = [
       attributes.searchQueries.primary,
       attributes.searchQueries.fallback,
       attributes.searchQueries.alternative,
-      ...attributes.searchQueries.keywords.slice(0, 2)
+      ...attributes.searchQueries.keywords
     ].filter(Boolean);
-
-    let allItems: any[] = [];
-    const searchedQueries: string[] = [];
     
-    for (const query of searchQueries) {
-      if (allItems.length >= 30) break;
-      
-      console.log(`  Searching Vinted: "${query}"`);
-      searchedQueries.push(query);
-      
-      const items = await searchVinted(query, budget);
-      console.log(`  Found ${items.length} items`);
-      
-      items.forEach(item => item._searchQuery = query);
-      allItems.push(...items);
-    }
+    const searchedQueries: string[] = searchQueries;
 
-    // Deduplicate by URL
-    const uniqueItems = Array.from(
-      new Map(allItems.map(item => [item.item_url, item])).values()
-    );
+    // Search the local catalog_items table
+    const items = await searchLocalCatalog(supabase, searchQueries, attributes, budget);
+    console.log(`Found ${items.length} items in local catalog`);
     
-    console.log(`Total unique items: ${uniqueItems.length}`);
+    const uniqueItems = items;
 
     if (uniqueItems.length === 0) {
       await supabase
@@ -198,10 +183,10 @@ serve(async (req) => {
           status: 'no_matches',
           analysis_data: { 
             attributes,
-            reason: 'No matching items found on Vinted.',
+            reason: 'No matching items found in catalog.',
             searchedQueries,
             suggestions: [
-              `Try searching Vinted for: ${attributes.searchQueries.primary}`,
+              `Try adding more items to the catalog`,
               'Upload a clearer photo of the item',
               'Consider hiring a professional thrifter'
             ]
@@ -262,16 +247,19 @@ serve(async (req) => {
     const topMatches = scoredItems.slice(0, 12);
     
     try {
-      const insertPromises = topMatches.map(result => {        
+      const insertPromises = topMatches.map((result: ScoredItem) => {
+        // Get platform from result, default to depop
+        const platform = (result as any).platform || 'depop';
+        
         return supabase
           .from('search_results')
           .insert({
             search_id: searchId,
-            platform: 'vinted' as const,
+            platform: platform as any,
             item_url: result.item_url,
             title: result.title,
             price: result.price,
-            currency: result.currency || 'USD',
+            currency: result.currency || 'EUR',
             image_url: result.image_url,
             similarity_score: result.similarity_score,
             description: result.title,
@@ -465,84 +453,96 @@ Return ONLY valid JSON.`
 }
 
 // ============================================================
-// VINTED API SEARCH
-// Uses Vinted's public search API which is more accessible
+// LOCAL CATALOG SEARCH
+// Searches the catalog_items table with text matching
 // ============================================================
-async function searchVinted(
-  query: string, 
+async function searchLocalCatalog(
+  supabase: any,
+  queries: string[],
+  attributes: ExtractedAttributes,
   budget?: { min?: number; max?: number }
 ): Promise<any[]> {
   try {
-    const encodedQuery = encodeURIComponent(query);
+    // Build a text search query from all search terms
+    const allKeywords = new Set<string>();
     
-    // Vinted API endpoint - uses their public search API
-    let vintedUrl = `https://www.vinted.com/api/v2/catalog/items?search_text=${encodedQuery}&per_page=20&order=relevance`;
-    if (budget?.min) vintedUrl += `&price_from=${budget.min}`;
-    if (budget?.max) vintedUrl += `&price_to=${budget.max}`;
-
-    console.log('Fetching Vinted:', vintedUrl);
-
-    const response = await fetch(vintedUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json, text/plain, */*',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Referer': 'https://www.vinted.com/',
-      }
+    // Add words from all queries
+    queries.forEach(q => {
+      q.toLowerCase().split(/\s+/).forEach(word => {
+        if (word.length > 2) allKeywords.add(word);
+      });
     });
-
-    if (!response.ok) {
-      console.error('Vinted API failed:', response.status);
+    
+    // Add color and category
+    if (attributes.colors?.primary) {
+      allKeywords.add(attributes.colors.primary.toLowerCase());
+    }
+    if (attributes.category) {
+      attributes.category.toLowerCase().split(/\s+/).forEach(w => allKeywords.add(w));
+    }
+    
+    console.log('Searching catalog with keywords:', Array.from(allKeywords).slice(0, 10));
+    
+    // Query catalog_items with text search
+    let query = supabase
+      .from('catalog_items')
+      .select('*')
+      .eq('is_active', true);
+    
+    // Apply budget filters
+    if (budget?.min) {
+      query = query.gte('price', budget.min);
+    }
+    if (budget?.max) {
+      query = query.lte('price', budget.max);
+    }
+    
+    const { data: items, error } = await query.limit(50);
+    
+    if (error) {
+      console.error('Catalog query error:', error);
+      return [];
+    }
+    
+    console.log(`Retrieved ${items?.length || 0} items from catalog`);
+    
+    if (!items || items.length === 0) {
+      return [];
+    }
+    
+    // Score items by keyword match
+    const scoredItems = items.map((item: any) => {
+      const searchText = `${item.title || ''} ${item.description || ''}`.toLowerCase();
+      let matchCount = 0;
       
-      // Fallback: Try Vinted FR which may have different rate limits
-      const frUrl = `https://www.vinted.fr/api/v2/catalog/items?search_text=${encodedQuery}&per_page=20&order=relevance`;
-      const frResponse = await fetch(frUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': 'application/json, text/plain, */*',
-          'Accept-Language': 'en-US,en;q=0.9',
-          'Referer': 'https://www.vinted.fr/',
+      allKeywords.forEach(keyword => {
+        if (searchText.includes(keyword)) {
+          matchCount++;
         }
       });
       
-      if (!frResponse.ok) {
-        console.error('Vinted FR also failed:', frResponse.status);
-        return [];
-      }
-      
-      const frData = await frResponse.json();
-      return parseVintedItems(frData, 'fr');
-    }
-
-    const data = await response.json();
-    return parseVintedItems(data, 'com');
+      return {
+        ...item,
+        title: item.title,
+        price: item.price || 0,
+        currency: item.currency || 'EUR',
+        item_url: item.item_url,
+        image_url: item.image_url,
+        shopName: item.platform,
+        _matchScore: matchCount / Math.max(allKeywords.size, 1)
+      };
+    });
+    
+    // Sort by match score and return top items
+    return scoredItems
+      .filter((item: any) => item._matchScore > 0 || items.length <= 10)
+      .sort((a: any, b: any) => b._matchScore - a._matchScore)
+      .slice(0, 20);
     
   } catch (error) {
-    console.error('Vinted search error:', error);
+    console.error('Local catalog search error:', error);
     return [];
   }
-}
-
-function parseVintedItems(data: any, domain: string): any[] {
-  const items = data?.items || [];
-  
-  return items.map((item: any) => ({
-    title: item.title || '',
-    price: parseFloat(item.price?.amount || item.total_item_price?.amount || '0'),
-    currency: item.price?.currency_code || 'EUR',
-    item_url: `https://www.vinted.${domain}/items/${item.id}`,
-    image_url: item.photo?.url || item.photos?.[0]?.url || '',
-    shopName: item.user?.login || '',
-    freeShipping: false,
-    brand: item.brand_title || '',
-    size: item.size_title || '',
-    condition: item.status || ''
-  })).filter((item: any) => 
-    item.title && 
-    item.item_url && 
-    item.image_url &&
-    item.price > 0
-  );
 }
 
 // ============================================================
