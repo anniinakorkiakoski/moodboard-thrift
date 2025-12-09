@@ -7,13 +7,99 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Ranking weights based on your spec
+// Weighted scoring formula per your AI Shopping Agent spec
 const WEIGHTS = {
-  imageSimilarity: 0.55,
-  textSimilarity: 0.25,
-  attributeMatch: 0.15,
-  qualityScore: 0.05
+  visualSimilarity: 0.40,   // Estimated from attribute/color/pattern matching
+  textSimilarity: 0.25,     // Description vs listing text
+  attributeMatch: 0.25,     // Structured attribute comparison
+  qualityScore: 0.10        // Marketplace indicators
 };
+
+// Attribute importance weights for detailed matching
+const ATTRIBUTE_WEIGHTS = {
+  category: 0.20,           // Item type (dress, top, pants)
+  silhouette: 0.15,         // Shape/cut (A-line, fitted, oversized)
+  color: 0.15,              // Primary color match
+  pattern: 0.12,            // Pattern type (floral, solid, stripes)
+  material: 0.12,           // Fabric type
+  style: 0.10,              // Aesthetic (boho, minimal, vintage)
+  distinctiveFeatures: 0.16 // Unique details
+};
+
+interface ExtractedAttributes {
+  category: string;
+  subcategory?: string;
+  colors: {
+    primary: string;
+    secondary?: string;
+    colorFamily: string;
+  };
+  material: {
+    fabric: string;
+    texture?: string;
+    weight?: string;
+  };
+  pattern: {
+    type: string;
+    scale?: string;
+  };
+  construction: {
+    silhouette: string;
+    length?: string;
+    sleeves?: string;
+    neckline?: string;
+    closure?: string;
+  };
+  style: {
+    era?: string;
+    aesthetic: string;
+    culturalOrigin?: string;
+  };
+  distinctiveFeatures: string[];
+  searchQueries: {
+    primary: string;
+    fallback: string;
+    alternative: string;
+    keywords: string[];
+  };
+  textDescription: string;
+  visualSignature: {
+    dominantColors: string[];
+    patternDescription: string;
+    shapeDescription: string;
+  };
+}
+
+interface ScoredItem {
+  title: string;
+  price: number;
+  currency: string;
+  item_url: string;
+  image_url: string;
+  shopName?: string;
+  freeShipping?: boolean;
+  originalPrice?: number;
+  similarity_score: number;
+  match_explanation: string;
+  _scores: MatchScores;
+  _searchQuery?: string;
+}
+
+interface MatchScores {
+  visualSimilarity: number;
+  textSimilarity: number;
+  attributeMatch: number;
+  qualityScore: number;
+  breakdown: {
+    categoryMatch: number;
+    colorMatch: number;
+    patternMatch: number;
+    materialMatch: number;
+    silhouetteMatch: number;
+    styleMatch: number;
+    featureMatch: number;
+  };
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -30,7 +116,9 @@ serve(async (req) => {
       });
     }
 
-    console.log('Search request:', { searchId, hasBudget: !!budget });
+    console.log('=== AI SHOPPING AGENT: Visual Search ===');
+    console.log('Search ID:', searchId);
+    console.log('Budget:', budget || 'No budget set');
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -41,112 +129,22 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log('Starting visual search for:', searchId);
-
     // Update status to analyzing
     await supabase
       .from('visual_searches')
       .update({ status: 'analyzing', crop_data: cropData })
       .eq('id', searchId);
 
-    // STEP 1: Advanced attribute extraction using vision model
-    console.log('Extracting detailed garment attributes...');
+    // ============================================================
+    // STEP 1: ADVANCED IMAGE ANALYSIS / FEATURE EXTRACTION
+    // ============================================================
+    console.log('\n[STEP 1] Extracting visual features and attributes...');
     
-    const cropInstruction = cropData 
-      ? `Focus ONLY on the cropped/highlighted area of this image.` 
-      : `Identify the SINGLE MOST PROMINENT fashion item in this image.`;
-    
-    const attributeResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a fashion expert AI specialized in identifying garment attributes for resale marketplace search.
-
-${cropInstruction}
-
-Extract structured attributes in JSON format:
-{
-  "category": "specific item type (e.g., 'wrap top', 'midi dress', 'cargo pants', 'ankle boots')",
-  "subcategory": "even more specific (e.g., 'hanfu wrap top', 'A-line midi dress')",
-  "colors": {
-    "primary": "main color",
-    "secondary": "accent color if any",
-    "colorFamily": "broad category (warm/cool/neutral)"
-  },
-  "material": {
-    "fabric": "material type (e.g., 'organza', 'cotton', 'leather', 'denim')",
-    "texture": "texture (e.g., 'sheer', 'matte', 'distressed', 'smooth')",
-    "weight": "light/medium/heavy"
-  },
-  "pattern": {
-    "type": "pattern (e.g., 'floral jacquard', 'solid', 'stripes', 'animal print')",
-    "scale": "small/medium/large if patterned"
-  },
-  "construction": {
-    "silhouette": "shape (e.g., 'loose', 'fitted', 'A-line', 'oversized')",
-    "length": "garment length",
-    "sleeves": "sleeve type if applicable",
-    "neckline": "neckline type if applicable",
-    "closure": "how it fastens (e.g., 'frog buttons', 'zipper', 'wrap')"
-  },
-  "style": {
-    "era": "vintage era if applicable (e.g., 'Y2K', '90s', 'vintage')",
-    "aesthetic": "style category (e.g., 'bohemian', 'minimalist', 'traditional Chinese', 'punk')",
-    "culturalOrigin": "if traditional garment (e.g., 'Hanfu', 'Kimono', null)"
-  },
-  "distinctiveFeatures": ["unique details like 'embroidery', 'studs', 'frog closures'"],
-  "searchQueries": {
-    "primary": "best 3-5 word Etsy search query",
-    "fallback": "simpler 2-3 word search query",
-    "alternative": "related style search query"
-  },
-  "textDescription": "One sentence describing the item for text matching"
-}`
-          },
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: 'Analyze this fashion item in detail. Return ONLY valid JSON with all fields.'
-              },
-              {
-                type: 'image_url',
-                image_url: { url: imageUrl }
-              }
-            ]
-          }
-        ],
-      }),
-    });
-
-    if (!attributeResponse.ok) {
-      const errorText = await attributeResponse.text();
-      console.error('Attribute extraction error:', errorText);
-      throw new Error('Failed to extract attributes');
-    }
-
-    const attributeData = await attributeResponse.json();
-    let attributes: any;
-    try {
-      const content = attributeData.choices[0].message.content;
-      const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/) || content.match(/(\{[\s\S]*\})/);
-      attributes = JSON.parse(jsonMatch ? jsonMatch[1] : content);
-      console.log('Extracted attributes:', JSON.stringify(attributes, null, 2));
-    } catch (e) {
-      console.error('Failed to parse attributes:', e);
-      attributes = { 
-        category: 'clothing',
-        searchQueries: { primary: 'vintage clothing', fallback: 'clothing' }
-      };
-    }
+    const attributes = await extractDetailedAttributes(imageUrl, cropData, LOVABLE_API_KEY);
+    console.log('Extracted category:', attributes.category);
+    console.log('Primary color:', attributes.colors.primary);
+    console.log('Silhouette:', attributes.construction.silhouette);
+    console.log('Search queries:', attributes.searchQueries);
 
     // Store analysis data
     await supabase
@@ -158,26 +156,30 @@ Extract structured attributes in JSON format:
       })
       .eq('id', searchId);
 
-    // STEP 2: Search Etsy with multiple query strategies
-    console.log('Searching Etsy with extracted queries...');
+    // ============================================================
+    // STEP 2: PRODUCT SEARCH / RETRIEVAL
+    // ============================================================
+    console.log('\n[STEP 2] Searching marketplace with generated queries...');
     
     const searchQueries = [
-      attributes.searchQueries?.primary,
-      attributes.searchQueries?.fallback,
-      attributes.searchQueries?.alternative,
-      `vintage ${attributes.category || 'clothing'}`
+      attributes.searchQueries.primary,
+      attributes.searchQueries.fallback,
+      attributes.searchQueries.alternative,
+      ...attributes.searchQueries.keywords.slice(0, 2)
     ].filter(Boolean);
 
     let allItems: any[] = [];
+    const searchedQueries: string[] = [];
     
     for (const query of searchQueries) {
-      if (allItems.length >= 20) break; // Enough items
+      if (allItems.length >= 30) break;
       
-      console.log(`Searching Etsy for: "${query}"`);
+      console.log(`  Searching: "${query}"`);
+      searchedQueries.push(query);
+      
       const items = await scrapeEtsy(query, LOVABLE_API_KEY, budget);
-      console.log(`Found ${items.length} items for query "${query}"`);
+      console.log(`  Found ${items.length} items`);
       
-      // Add query source to items
       items.forEach(item => item._searchQuery = query);
       allItems.push(...items);
     }
@@ -196,11 +198,12 @@ Extract structured attributes in JSON format:
           status: 'no_matches',
           analysis_data: { 
             attributes,
-            reason: 'No matching items found on Etsy.',
-            searchedQueries: searchQueries,
+            reason: 'No matching items found.',
+            searchedQueries,
             suggestions: [
-              'Try uploading a clearer photo',
-              'Search manually on Etsy for: ' + (attributes.searchQueries?.primary || attributes.category)
+              `Try searching Etsy for: ${attributes.searchQueries.primary}`,
+              'Upload a clearer photo of the item',
+              'Consider hiring a professional thrifter'
             ]
           }
         })
@@ -209,19 +212,24 @@ Extract structured attributes in JSON format:
       return new Response(JSON.stringify({ 
         status: 'no_matches',
         attributes,
-        message: 'No matches found on Etsy.',
+        message: 'No matches found.',
+        searchedQueries
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // STEP 3: Score each item using the weighted formula
-    console.log('Scoring items with weighted matching algorithm...');
+    // ============================================================
+    // STEP 3: MATCHING & SCORING WITH WEIGHTED ALGORITHM
+    // ============================================================
+    console.log('\n[STEP 3] Scoring items with weighted matching algorithm...');
     
-    const scoredItems = uniqueItems.map(item => {
-      const scores = calculateMatchScores(attributes, item);
+    const scoredItems: ScoredItem[] = uniqueItems.map(item => {
+      const scores = calculateAdvancedMatchScores(attributes, item);
+      
+      // Apply weighted formula
       const finalScore = 
-        (scores.imageSimilarity * WEIGHTS.imageSimilarity) +
+        (scores.visualSimilarity * WEIGHTS.visualSimilarity) +
         (scores.textSimilarity * WEIGHTS.textSimilarity) +
         (scores.attributeMatch * WEIGHTS.attributeMatch) +
         (scores.qualityScore * WEIGHTS.qualityScore);
@@ -230,64 +238,92 @@ Extract structured attributes in JSON format:
         ...item,
         similarity_score: Math.min(finalScore, 1.0),
         _scores: scores,
-        match_explanation: generateDetailedExplanation(attributes, item, scores)
+        match_explanation: generateMatchExplanation(attributes, item, scores)
       };
     })
     .sort((a, b) => b.similarity_score - a.similarity_score)
-    .slice(0, 12); // Top 12 results
+    .slice(0, 15); // Top 15 results
 
-    console.log(`Top match score: ${scoredItems[0]?.similarity_score.toFixed(2)}`);
+    // ============================================================
+    // STEP 4: FILTER BY MATCH QUALITY THRESHOLDS
+    // ============================================================
+    console.log('\n[STEP 4] Filtering by quality thresholds...');
+    
+    const highQuality = scoredItems.filter(i => i.similarity_score >= 0.70);
+    const mediumQuality = scoredItems.filter(i => i.similarity_score >= 0.50 && i.similarity_score < 0.70);
+    const lowQuality = scoredItems.filter(i => i.similarity_score < 0.50);
+    
+    console.log(`High quality (≥70%): ${highQuality.length}`);
+    console.log(`Medium quality (50-69%): ${mediumQuality.length}`);
+    console.log(`Low quality (<50%): ${lowQuality.length}`);
+    console.log(`Top score: ${(scoredItems[0]?.similarity_score * 100).toFixed(1)}%`);
 
-    // Store results
-    const topMatches = scoredItems.map(item => ({
-      platform: 'etsy' as const,
-      item_url: item.item_url,
-      title: item.title,
-      price: item.price,
-      currency: item.currency || 'USD',
-      image_url: item.image_url,
-      description: item.title,
-      similarity_score: item.similarity_score,
-      match_explanation: item.match_explanation
-    }));
-
+    // Store results in database
+    const topMatches = scoredItems.slice(0, 12);
+    
     try {
       const insertPromises = topMatches.map(result => {        
         return supabase
           .from('search_results')
           .insert({
             search_id: searchId,
-            platform: result.platform,
+            platform: 'etsy' as const,
             item_url: result.item_url,
             title: result.title,
             price: result.price,
-            currency: result.currency,
+            currency: result.currency || 'USD',
             image_url: result.image_url,
             similarity_score: result.similarity_score,
-            description: result.description,
-            matched_attributes: { matched: [] },
+            description: result.title,
+            matched_attributes: {
+              breakdown: result._scores.breakdown,
+              matchedFeatures: extractMatchedFeatures(attributes, result)
+            },
             match_explanation: result.match_explanation
           });
       });
 
       await Promise.all(insertPromises);
-      console.log(`Stored ${topMatches.length} results`);
+      console.log(`\nStored ${topMatches.length} results to database`);
     } catch (dbError) {
       console.error('Database insert error:', dbError);
     }
 
-    // Update status
+    // Update final status
+    const finalStatus = highQuality.length > 0 ? 'completed' : 
+                        mediumQuality.length > 0 ? 'completed' : 'no_matches';
+    
     await supabase
       .from('visual_searches')
-      .update({ status: 'completed' })
+      .update({ 
+        status: finalStatus,
+        analysis_data: {
+          attributes,
+          searchedQueries,
+          matchStats: {
+            total: uniqueItems.length,
+            highQuality: highQuality.length,
+            mediumQuality: mediumQuality.length,
+            lowQuality: lowQuality.length,
+            topScore: scoredItems[0]?.similarity_score
+          }
+        }
+      })
       .eq('id', searchId);
 
+    console.log('\n=== SEARCH COMPLETE ===');
+
     return new Response(JSON.stringify({ 
-      status: 'completed',
+      status: finalStatus,
       resultsCount: topMatches.length,
-      highQualityCount: topMatches.filter(m => m.similarity_score >= 0.7).length,
+      highQualityCount: highQuality.length,
       attributes,
-      searchedQueries: searchQueries
+      searchedQueries,
+      matchStats: {
+        highQuality: highQuality.length,
+        mediumQuality: mediumQuality.length,
+        topScore: scoredItems[0]?.similarity_score
+      }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -302,37 +338,161 @@ Extract structured attributes in JSON format:
   }
 });
 
-// Enhanced Etsy scraping with better extraction
-async function scrapeEtsy(query: string, apiKey: string, budget?: { min?: number; max?: number }): Promise<any[]> {
+// ============================================================
+// ADVANCED ATTRIBUTE EXTRACTION
+// Uses Gemini vision to extract detailed garment features
+// ============================================================
+async function extractDetailedAttributes(
+  imageUrl: string, 
+  cropData: any, 
+  apiKey: string
+): Promise<ExtractedAttributes> {
+  const cropInstruction = cropData 
+    ? `Focus ONLY on the cropped/highlighted area of this image.` 
+    : `Identify the SINGLE MOST PROMINENT fashion item in this image.`;
+
+  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'google/gemini-2.5-flash',
+      messages: [
+        {
+          role: 'system',
+          content: `You are an expert fashion AI that extracts detailed visual attributes for product matching.
+
+${cropInstruction}
+
+Analyze the garment and return a JSON object with these exact fields:
+
+{
+  "category": "specific item type (e.g., 'wrap top', 'midi dress', 'cargo pants')",
+  "subcategory": "more specific type (e.g., 'hanfu wrap top', 'A-line midi dress')",
+  "colors": {
+    "primary": "main color (e.g., 'sage green', 'burgundy', 'cream')",
+    "secondary": "accent color if visible",
+    "colorFamily": "warm/cool/neutral/earth"
+  },
+  "material": {
+    "fabric": "material type (e.g., 'organza', 'cotton', 'leather', 'silk')",
+    "texture": "texture description (e.g., 'sheer', 'matte', 'textured')",
+    "weight": "light/medium/heavy"
+  },
+  "pattern": {
+    "type": "pattern (e.g., 'floral', 'solid', 'stripes', 'jacquard')",
+    "scale": "small/medium/large if patterned"
+  },
+  "construction": {
+    "silhouette": "shape (e.g., 'loose', 'fitted', 'A-line', 'oversized', 'flowy')",
+    "length": "garment length (e.g., 'cropped', 'midi', 'full-length')",
+    "sleeves": "sleeve type (e.g., 'bell', 'cap', 'long', 'sleeveless')",
+    "neckline": "neckline (e.g., 'V-neck', 'mandarin', 'scoop')",
+    "closure": "closure type (e.g., 'frog buttons', 'wrap tie', 'zipper')"
+  },
+  "style": {
+    "era": "vintage era if applicable (e.g., 'Y2K', '90s', '70s', null)",
+    "aesthetic": "style (e.g., 'bohemian', 'minimalist', 'romantic', 'streetwear')",
+    "culturalOrigin": "if traditional (e.g., 'Hanfu', 'Kimono', null)"
+  },
+  "distinctiveFeatures": ["list", "of", "unique", "details"],
+  "searchQueries": {
+    "primary": "best 3-5 word search query for this exact item",
+    "fallback": "simpler 2-3 word search",
+    "alternative": "related style search",
+    "keywords": ["key", "search", "terms"]
+  },
+  "textDescription": "One detailed sentence describing the item",
+  "visualSignature": {
+    "dominantColors": ["color1", "color2"],
+    "patternDescription": "detailed pattern description",
+    "shapeDescription": "overall shape and structure"
+  }
+}
+
+Be very specific and detailed. For vintage or cultural items, include relevant terms.
+Return ONLY valid JSON.`
+        },
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: 'Analyze this fashion item in detail.' },
+            { type: 'image_url', image_url: { url: imageUrl } }
+          ]
+        }
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Attribute extraction error:', errorText);
+    throw new Error('Failed to extract attributes');
+  }
+
+  const data = await response.json();
+  const content = data.choices[0].message.content;
+  
+  try {
+    const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/) || content.match(/(\{[\s\S]*\})/);
+    return JSON.parse(jsonMatch ? jsonMatch[1] : content);
+  } catch (e) {
+    console.error('Failed to parse attributes, using defaults');
+    return {
+      category: 'clothing',
+      colors: { primary: 'unknown', colorFamily: 'neutral' },
+      material: { fabric: 'unknown' },
+      pattern: { type: 'unknown' },
+      construction: { silhouette: 'regular' },
+      style: { aesthetic: 'casual' },
+      distinctiveFeatures: [],
+      searchQueries: { 
+        primary: 'vintage clothing', 
+        fallback: 'clothing',
+        alternative: 'fashion',
+        keywords: ['clothing']
+      },
+      textDescription: 'A clothing item',
+      visualSignature: {
+        dominantColors: [],
+        patternDescription: '',
+        shapeDescription: ''
+      }
+    };
+  }
+}
+
+// ============================================================
+// ETSY SCRAPING WITH IMPROVED EXTRACTION
+// ============================================================
+async function scrapeEtsy(
+  query: string, 
+  apiKey: string, 
+  budget?: { min?: number; max?: number }
+): Promise<any[]> {
   try {
     const encodedQuery = encodeURIComponent(query);
-    
-    // Build Etsy URL with filters
     let etsyUrl = `https://www.etsy.com/search?q=${encodedQuery}&ref=search_bar&explicit=1`;
     if (budget?.min) etsyUrl += `&min=${budget.min}`;
     if (budget?.max) etsyUrl += `&max=${budget.max}`;
-    
-    console.log('Fetching:', etsyUrl);
 
     const response = await fetch(etsyUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Cache-Control': 'no-cache',
       }
     });
 
     if (!response.ok) {
-      console.error('Etsy fetch failed:', response.status, response.statusText);
+      console.error('Etsy fetch failed:', response.status);
       return [];
     }
 
     const html = await response.text();
-    console.log('HTML length:', html.length);
 
-    // Use AI to extract listings with detailed info
     const extractResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -344,39 +504,35 @@ async function scrapeEtsy(query: string, apiKey: string, budget?: { min?: number
         messages: [
           {
             role: 'system',
-            content: `Extract product listings from Etsy HTML. Return a JSON array with up to 15 products.
+            content: `Extract product listings from Etsy HTML. Return JSON array with up to 15 products:
 
-Each product object:
 {
-  "title": "full product title",
+  "title": "full product title - keep all descriptive words",
   "price": 29.99,
   "currency": "USD",
   "item_url": "https://www.etsy.com/listing/...",
   "image_url": "https://i.etsystatic.com/...",
-  "shopName": "seller shop name if visible",
+  "shopName": "seller name",
   "freeShipping": true/false,
-  "originalPrice": 39.99 (if on sale, otherwise null)
+  "originalPrice": 39.99
 }
 
 RULES:
-1. URLs must start with https://www.etsy.com/listing/
-2. Image URLs from i.etsystatic.com
-3. Parse prices as numbers (remove $, €, etc.)
-4. Return ONLY the JSON array
-5. If no valid listings found, return []`
+- URLs must start with https://www.etsy.com/listing/
+- Image URLs from i.etsystatic.com (pick highest quality)
+- Parse prices as numbers
+- Keep FULL product titles with all details
+- Return ONLY JSON array`
           },
           {
             role: 'user',
-            content: `Extract Etsy listings from this HTML (first 60000 chars):\n\n${html.substring(0, 60000)}`
+            content: `Extract listings:\n\n${html.substring(0, 65000)}`
           }
         ],
       }),
     });
 
-    if (!extractResponse.ok) {
-      console.error('AI extraction failed');
-      return [];
-    }
+    if (!extractResponse.ok) return [];
 
     const extractData = await extractResponse.json();
     const content = extractData.choices?.[0]?.message?.content || '[]';
@@ -385,13 +541,11 @@ RULES:
     try {
       const jsonMatch = content.match(/\[[\s\S]*\]/);
       items = JSON.parse(jsonMatch ? jsonMatch[0] : '[]');
-    } catch (e) {
-      console.error('Failed to parse items:', e);
+    } catch {
       return [];
     }
 
-    // Validate items
-    const validItems = items.filter((item: any) => 
+    return items.filter((item: any) => 
       item.title && 
       item.item_url?.includes('etsy.com/listing') &&
       item.image_url?.includes('etsystatic.com') &&
@@ -399,135 +553,267 @@ RULES:
       item.price > 0 &&
       item.price < 5000
     );
-
-    console.log(`Validated ${validItems.length}/${items.length} items`);
-    return validItems;
-
   } catch (error) {
     console.error('Etsy scrape error:', error);
     return [];
   }
 }
 
-// Calculate multi-factor match scores
-function calculateMatchScores(attributes: any, item: any): {
-  imageSimilarity: number;
-  textSimilarity: number;
-  attributeMatch: number;
-  qualityScore: number;
-} {
+// ============================================================
+// ADVANCED MATCH SCORING ALGORITHM
+// Hybrid: Text similarity + Attribute matching + Quality signals
+// ============================================================
+function calculateAdvancedMatchScores(
+  attributes: ExtractedAttributes, 
+  item: any
+): MatchScores {
   const titleLower = (item.title || '').toLowerCase();
+  const titleWords = new Set(titleLower.split(/\s+/));
   
-  // Since we don't have actual CLIP embeddings, estimate image similarity via text proxy
-  // In production, this would use real visual embeddings
-  let imageSimilarity = 0.5; // Base score
-  
-  // Boost if primary search query matches (indicates visual relevance)
-  if (item._searchQuery === attributes.searchQueries?.primary) {
-    imageSimilarity += 0.2;
-  }
-  
-  // Text similarity - compare AI description to listing title
-  let textSimilarity = 0;
-  const description = (attributes.textDescription || '').toLowerCase();
-  const descWords = description.split(/\s+/).filter((w: string) => w.length > 3);
-  
-  descWords.forEach((word: string) => {
-    if (titleLower.includes(word)) {
-      textSimilarity += 0.15;
-    }
-  });
-  textSimilarity = Math.min(textSimilarity, 1.0);
-  
-  // Attribute matching
-  let attributeMatch = 0;
-  const attrChecks = [
-    { attr: attributes.category, weight: 0.25 },
-    { attr: attributes.subcategory, weight: 0.15 },
-    { attr: attributes.colors?.primary, weight: 0.15 },
-    { attr: attributes.material?.fabric, weight: 0.15 },
-    { attr: attributes.pattern?.type, weight: 0.1 },
-    { attr: attributes.style?.era, weight: 0.1 },
-    { attr: attributes.style?.aesthetic, weight: 0.1 },
-  ];
-  
-  attrChecks.forEach(check => {
-    if (check.attr && titleLower.includes(check.attr.toLowerCase())) {
-      attributeMatch += check.weight;
-    }
-  });
-  
-  // Check distinctive features
-  if (attributes.distinctiveFeatures) {
-    attributes.distinctiveFeatures.forEach((feature: string) => {
-      if (titleLower.includes(feature.toLowerCase())) {
-        attributeMatch += 0.1;
+  // ---- ATTRIBUTE MATCHING (structured comparison) ----
+  const breakdown = {
+    categoryMatch: 0,
+    colorMatch: 0,
+    patternMatch: 0,
+    materialMatch: 0,
+    silhouetteMatch: 0,
+    styleMatch: 0,
+    featureMatch: 0
+  };
+
+  // Category match (20%)
+  if (attributes.category) {
+    const categoryTerms = attributes.category.toLowerCase().split(/\s+/);
+    const matches = categoryTerms.filter(t => titleLower.includes(t));
+    breakdown.categoryMatch = matches.length / categoryTerms.length;
+    
+    // Subcategory bonus
+    if (attributes.subcategory) {
+      const subTerms = attributes.subcategory.toLowerCase().split(/\s+/);
+      const subMatches = subTerms.filter(t => titleLower.includes(t));
+      if (subMatches.length > 0) {
+        breakdown.categoryMatch = Math.min(1, breakdown.categoryMatch + 0.3);
       }
-    });
+    }
   }
-  attributeMatch = Math.min(attributeMatch, 1.0);
+
+  // Color match (15%)
+  if (attributes.colors?.primary) {
+    const colorTerms = attributes.colors.primary.toLowerCase().split(/\s+/);
+    if (colorTerms.some(c => titleLower.includes(c))) {
+      breakdown.colorMatch = 0.8;
+    }
+    // Secondary color bonus
+    if (attributes.colors.secondary && 
+        titleLower.includes(attributes.colors.secondary.toLowerCase())) {
+      breakdown.colorMatch = Math.min(1, breakdown.colorMatch + 0.2);
+    }
+  }
+
+  // Pattern match (12%)
+  if (attributes.pattern?.type) {
+    const patternTerms = attributes.pattern.type.toLowerCase().split(/\s+/);
+    if (patternTerms.some(p => titleLower.includes(p))) {
+      breakdown.patternMatch = 1.0;
+    } else if (attributes.pattern.type.toLowerCase() === 'solid' && 
+               !titleLower.match(/floral|stripe|plaid|print|pattern/)) {
+      breakdown.patternMatch = 0.6; // Implicit solid match
+    }
+  }
+
+  // Material match (12%)
+  if (attributes.material?.fabric) {
+    const materialTerms = attributes.material.fabric.toLowerCase().split(/\s+/);
+    if (materialTerms.some(m => titleLower.includes(m))) {
+      breakdown.materialMatch = 1.0;
+    }
+    // Texture bonus
+    if (attributes.material.texture && 
+        titleLower.includes(attributes.material.texture.toLowerCase())) {
+      breakdown.materialMatch = Math.min(1, breakdown.materialMatch + 0.2);
+    }
+  }
+
+  // Silhouette match (15%)
+  if (attributes.construction?.silhouette) {
+    const silTerms = attributes.construction.silhouette.toLowerCase().split(/\s+/);
+    if (silTerms.some(s => titleLower.includes(s))) {
+      breakdown.silhouetteMatch = 0.8;
+    }
+    // Length and other construction details
+    if (attributes.construction.length && 
+        titleLower.includes(attributes.construction.length.toLowerCase())) {
+      breakdown.silhouetteMatch = Math.min(1, breakdown.silhouetteMatch + 0.2);
+    }
+  }
+
+  // Style match (10%)
+  if (attributes.style) {
+    if (attributes.style.aesthetic && 
+        titleLower.includes(attributes.style.aesthetic.toLowerCase())) {
+      breakdown.styleMatch = 0.7;
+    }
+    if (attributes.style.era && 
+        titleLower.includes(attributes.style.era.toLowerCase())) {
+      breakdown.styleMatch = Math.min(1, breakdown.styleMatch + 0.3);
+    }
+    if (attributes.style.culturalOrigin && 
+        titleLower.includes(attributes.style.culturalOrigin.toLowerCase())) {
+      breakdown.styleMatch = Math.min(1, breakdown.styleMatch + 0.4);
+    }
+  }
+
+  // Distinctive features match (16%)
+  if (attributes.distinctiveFeatures?.length > 0) {
+    const featureMatches = attributes.distinctiveFeatures.filter(f => 
+      titleLower.includes(f.toLowerCase())
+    );
+    breakdown.featureMatch = Math.min(1, featureMatches.length / Math.max(2, attributes.distinctiveFeatures.length));
+  }
+
+  // Calculate weighted attribute score
+  const attributeMatch = 
+    (breakdown.categoryMatch * ATTRIBUTE_WEIGHTS.category) +
+    (breakdown.colorMatch * ATTRIBUTE_WEIGHTS.color) +
+    (breakdown.patternMatch * ATTRIBUTE_WEIGHTS.pattern) +
+    (breakdown.materialMatch * ATTRIBUTE_WEIGHTS.material) +
+    (breakdown.silhouetteMatch * ATTRIBUTE_WEIGHTS.silhouette) +
+    (breakdown.styleMatch * ATTRIBUTE_WEIGHTS.style) +
+    (breakdown.featureMatch * ATTRIBUTE_WEIGHTS.distinctiveFeatures);
+
+  // ---- VISUAL SIMILARITY ESTIMATION ----
+  // Without CLIP embeddings, estimate from visual description matching
+  let visualSimilarity = 0.4; // Base score
   
-  // Quality score - Etsy listing quality indicators
+  // Boost from visual signature matches
+  if (attributes.visualSignature) {
+    const colorMatches = attributes.visualSignature.dominantColors?.filter(c => 
+      titleLower.includes(c.toLowerCase())
+    ).length || 0;
+    visualSimilarity += colorMatches * 0.15;
+    
+    // Pattern description similarity
+    if (attributes.visualSignature.patternDescription) {
+      const patternWords = attributes.visualSignature.patternDescription.toLowerCase().split(/\s+/);
+      const patternMatches = patternWords.filter(w => w.length > 3 && titleLower.includes(w)).length;
+      visualSimilarity += Math.min(0.2, patternMatches * 0.05);
+    }
+  }
+  
+  // Primary search query match (strong signal)
+  if (item._searchQuery === attributes.searchQueries?.primary) {
+    visualSimilarity += 0.15;
+  }
+  
+  visualSimilarity = Math.min(1, visualSimilarity);
+
+  // ---- TEXT SIMILARITY ----
+  let textSimilarity = 0;
+  if (attributes.textDescription) {
+    const descWords = attributes.textDescription.toLowerCase()
+      .split(/\s+/)
+      .filter(w => w.length > 3);
+    
+    const wordMatches = descWords.filter(w => titleWords.has(w) || titleLower.includes(w));
+    textSimilarity = Math.min(1, wordMatches.length / Math.max(5, descWords.length));
+  }
+
+  // Keyword matching bonus
+  if (attributes.searchQueries?.keywords) {
+    const keywordMatches = attributes.searchQueries.keywords.filter(k => 
+      titleLower.includes(k.toLowerCase())
+    ).length;
+    textSimilarity = Math.min(1, textSimilarity + keywordMatches * 0.1);
+  }
+
+  // ---- QUALITY SCORE ----
   let qualityScore = 0.5;
-  if (item.freeShipping) qualityScore += 0.2;
+  if (item.freeShipping) qualityScore += 0.15;
   if (item.shopName) qualityScore += 0.1;
-  if (item.image_url?.includes('il_')) qualityScore += 0.2; // High-res image indicator
-  qualityScore = Math.min(qualityScore, 1.0);
-  
+  if (item.image_url?.includes('il_')) qualityScore += 0.15; // High-res indicator
+  if (item.originalPrice && item.originalPrice > item.price) qualityScore += 0.1; // On sale
+  qualityScore = Math.min(1, qualityScore);
+
   return {
-    imageSimilarity,
+    visualSimilarity,
     textSimilarity,
     attributeMatch,
-    qualityScore
+    qualityScore,
+    breakdown
   };
 }
 
-// Generate detailed match explanation
-function generateDetailedExplanation(attributes: any, item: any, scores: any): string {
+// ============================================================
+// MATCH EXPLANATION GENERATOR
+// ============================================================
+function generateMatchExplanation(
+  attributes: ExtractedAttributes, 
+  item: any, 
+  scores: MatchScores
+): string {
   const matches: string[] = [];
   const titleLower = (item.title || '').toLowerCase();
-  
-  // Category match
-  if (attributes.category && titleLower.includes(attributes.category.toLowerCase())) {
+
+  // Collect matched attributes
+  if (scores.breakdown.categoryMatch > 0.5) {
     matches.push(attributes.category);
   }
-  
-  // Color match
-  if (attributes.colors?.primary && titleLower.includes(attributes.colors.primary.toLowerCase())) {
-    matches.push(attributes.colors.primary + ' color');
+  if (scores.breakdown.colorMatch > 0.5 && attributes.colors?.primary) {
+    matches.push(attributes.colors.primary);
   }
-  
-  // Material match
-  if (attributes.material?.fabric && titleLower.includes(attributes.material.fabric.toLowerCase())) {
+  if (scores.breakdown.materialMatch > 0.5 && attributes.material?.fabric) {
     matches.push(attributes.material.fabric);
   }
-  
-  // Style match
-  if (attributes.style?.aesthetic && titleLower.includes(attributes.style.aesthetic.toLowerCase())) {
-    matches.push(attributes.style.aesthetic + ' style');
+  if (scores.breakdown.patternMatch > 0.5 && attributes.pattern?.type !== 'solid') {
+    matches.push(attributes.pattern.type);
   }
-  
-  // Era match
-  if (attributes.style?.era && titleLower.includes(attributes.style.era.toLowerCase())) {
-    matches.push(attributes.style.era);
+  if (scores.breakdown.silhouetteMatch > 0.5 && attributes.construction?.silhouette) {
+    matches.push(attributes.construction.silhouette + ' fit');
   }
-  
-  // Distinctive features
+  if (scores.breakdown.styleMatch > 0.5) {
+    if (attributes.style?.aesthetic) matches.push(attributes.style.aesthetic);
+    if (attributes.style?.era) matches.push(attributes.style.era);
+  }
+
+  // Add matched distinctive features
   if (attributes.distinctiveFeatures) {
-    attributes.distinctiveFeatures.forEach((f: string) => {
+    attributes.distinctiveFeatures.forEach(f => {
       if (titleLower.includes(f.toLowerCase())) {
         matches.push(f);
       }
     });
   }
-  
+
   if (matches.length === 0) {
-    const overallScore = (scores.imageSimilarity + scores.textSimilarity + scores.attributeMatch) / 3;
-    if (overallScore > 0.6) {
-      return 'Similar style from Etsy search';
-    }
+    const avgScore = (scores.visualSimilarity + scores.textSimilarity + scores.attributeMatch) / 3;
+    if (avgScore > 0.5) return 'Similar style match';
     return 'Related item';
   }
-  
-  return 'Matches: ' + matches.slice(0, 4).join(', ');
+
+  // Dedupe and limit
+  const uniqueMatches = [...new Set(matches)].slice(0, 5);
+  return 'Matches: ' + uniqueMatches.join(', ');
+}
+
+// ============================================================
+// EXTRACT MATCHED FEATURES FOR STORAGE
+// ============================================================
+function extractMatchedFeatures(attributes: ExtractedAttributes, item: ScoredItem): string[] {
+  const features: string[] = [];
+  const titleLower = (item.title || '').toLowerCase();
+
+  if (attributes.category && titleLower.includes(attributes.category.toLowerCase())) {
+    features.push(`category:${attributes.category}`);
+  }
+  if (attributes.colors?.primary && titleLower.includes(attributes.colors.primary.toLowerCase())) {
+    features.push(`color:${attributes.colors.primary}`);
+  }
+  if (attributes.material?.fabric && titleLower.includes(attributes.material.fabric.toLowerCase())) {
+    features.push(`material:${attributes.material.fabric}`);
+  }
+  if (attributes.construction?.silhouette && titleLower.includes(attributes.construction.silhouette.toLowerCase())) {
+    features.push(`silhouette:${attributes.construction.silhouette}`);
+  }
+
+  return features;
 }
