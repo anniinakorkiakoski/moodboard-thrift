@@ -157,9 +157,9 @@ serve(async (req) => {
       .eq('id', searchId);
 
     // ============================================================
-    // STEP 2: PRODUCT SEARCH / RETRIEVAL
+    // STEP 2: PRODUCT SEARCH / RETRIEVAL (Using Vinted API)
     // ============================================================
-    console.log('\n[STEP 2] Searching marketplace with generated queries...');
+    console.log('\n[STEP 2] Searching Vinted with generated queries...');
     
     const searchQueries = [
       attributes.searchQueries.primary,
@@ -174,10 +174,10 @@ serve(async (req) => {
     for (const query of searchQueries) {
       if (allItems.length >= 30) break;
       
-      console.log(`  Searching: "${query}"`);
+      console.log(`  Searching Vinted: "${query}"`);
       searchedQueries.push(query);
       
-      const items = await scrapeEtsy(query, LOVABLE_API_KEY, budget);
+      const items = await searchVinted(query, budget);
       console.log(`  Found ${items.length} items`);
       
       items.forEach(item => item._searchQuery = query);
@@ -198,10 +198,10 @@ serve(async (req) => {
           status: 'no_matches',
           analysis_data: { 
             attributes,
-            reason: 'No matching items found.',
+            reason: 'No matching items found on Vinted.',
             searchedQueries,
             suggestions: [
-              `Try searching Etsy for: ${attributes.searchQueries.primary}`,
+              `Try searching Vinted for: ${attributes.searchQueries.primary}`,
               'Upload a clearer photo of the item',
               'Consider hiring a professional thrifter'
             ]
@@ -267,7 +267,7 @@ serve(async (req) => {
           .from('search_results')
           .insert({
             search_id: searchId,
-            platform: 'etsy' as const,
+            platform: 'vinted' as const,
             item_url: result.item_url,
             title: result.title,
             price: result.price,
@@ -465,98 +465,84 @@ Return ONLY valid JSON.`
 }
 
 // ============================================================
-// ETSY SCRAPING WITH IMPROVED EXTRACTION
+// VINTED API SEARCH
+// Uses Vinted's public search API which is more accessible
 // ============================================================
-async function scrapeEtsy(
+async function searchVinted(
   query: string, 
-  apiKey: string, 
   budget?: { min?: number; max?: number }
 ): Promise<any[]> {
   try {
     const encodedQuery = encodeURIComponent(query);
-    let etsyUrl = `https://www.etsy.com/search?q=${encodedQuery}&ref=search_bar&explicit=1`;
-    if (budget?.min) etsyUrl += `&min=${budget.min}`;
-    if (budget?.max) etsyUrl += `&max=${budget.max}`;
+    
+    // Vinted API endpoint - uses their public search API
+    let vintedUrl = `https://www.vinted.com/api/v2/catalog/items?search_text=${encodedQuery}&per_page=20&order=relevance`;
+    if (budget?.min) vintedUrl += `&price_from=${budget.min}`;
+    if (budget?.max) vintedUrl += `&price_to=${budget.max}`;
 
-    const response = await fetch(etsyUrl, {
+    console.log('Fetching Vinted:', vintedUrl);
+
+    const response = await fetch(vintedUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': 'https://www.vinted.com/',
       }
     });
 
     if (!response.ok) {
-      console.error('Etsy fetch failed:', response.status);
-      return [];
+      console.error('Vinted API failed:', response.status);
+      
+      // Fallback: Try Vinted FR which may have different rate limits
+      const frUrl = `https://www.vinted.fr/api/v2/catalog/items?search_text=${encodedQuery}&per_page=20&order=relevance`;
+      const frResponse = await fetch(frUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json, text/plain, */*',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Referer': 'https://www.vinted.fr/',
+        }
+      });
+      
+      if (!frResponse.ok) {
+        console.error('Vinted FR also failed:', frResponse.status);
+        return [];
+      }
+      
+      const frData = await frResponse.json();
+      return parseVintedItems(frData, 'fr');
     }
 
-    const html = await response.text();
-
-    const extractResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          {
-            role: 'system',
-            content: `Extract product listings from Etsy HTML. Return JSON array with up to 15 products:
-
-{
-  "title": "full product title - keep all descriptive words",
-  "price": 29.99,
-  "currency": "USD",
-  "item_url": "https://www.etsy.com/listing/...",
-  "image_url": "https://i.etsystatic.com/...",
-  "shopName": "seller name",
-  "freeShipping": true/false,
-  "originalPrice": 39.99
-}
-
-RULES:
-- URLs must start with https://www.etsy.com/listing/
-- Image URLs from i.etsystatic.com (pick highest quality)
-- Parse prices as numbers
-- Keep FULL product titles with all details
-- Return ONLY JSON array`
-          },
-          {
-            role: 'user',
-            content: `Extract listings:\n\n${html.substring(0, 65000)}`
-          }
-        ],
-      }),
-    });
-
-    if (!extractResponse.ok) return [];
-
-    const extractData = await extractResponse.json();
-    const content = extractData.choices?.[0]?.message?.content || '[]';
+    const data = await response.json();
+    return parseVintedItems(data, 'com');
     
-    let items = [];
-    try {
-      const jsonMatch = content.match(/\[[\s\S]*\]/);
-      items = JSON.parse(jsonMatch ? jsonMatch[0] : '[]');
-    } catch {
-      return [];
-    }
-
-    return items.filter((item: any) => 
-      item.title && 
-      item.item_url?.includes('etsy.com/listing') &&
-      item.image_url?.includes('etsystatic.com') &&
-      typeof item.price === 'number' &&
-      item.price > 0 &&
-      item.price < 5000
-    );
   } catch (error) {
-    console.error('Etsy scrape error:', error);
+    console.error('Vinted search error:', error);
     return [];
   }
+}
+
+function parseVintedItems(data: any, domain: string): any[] {
+  const items = data?.items || [];
+  
+  return items.map((item: any) => ({
+    title: item.title || '',
+    price: parseFloat(item.price?.amount || item.total_item_price?.amount || '0'),
+    currency: item.price?.currency_code || 'EUR',
+    item_url: `https://www.vinted.${domain}/items/${item.id}`,
+    image_url: item.photo?.url || item.photos?.[0]?.url || '',
+    shopName: item.user?.login || '',
+    freeShipping: false,
+    brand: item.brand_title || '',
+    size: item.size_title || '',
+    condition: item.status || ''
+  })).filter((item: any) => 
+    item.title && 
+    item.item_url && 
+    item.image_url &&
+    item.price > 0
+  );
 }
 
 // ============================================================
