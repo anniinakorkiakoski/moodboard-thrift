@@ -3,9 +3,8 @@ import { Navigation } from '@/components/Navigation';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Heart, ExternalLink, Search, Sparkles, TrendingUp } from 'lucide-react';
+import { Heart, ExternalLink, Sparkles, TrendingUp, RefreshCw } from 'lucide-react';
 import { useStyleProfile } from '@/hooks/useStyleProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -22,66 +21,88 @@ interface InspirationItem {
   trending?: boolean;
 }
 
-const TRENDING_SEARCHES = [
-  'vintage blazer',
-  'linen dress',
-  'silk scarf',
-  'leather bag',
-  'wool coat',
-  'cashmere sweater',
-  'denim jacket',
-  'maxi skirt',
+const STYLE_CATEGORIES = [
+  { label: 'For You', value: 'foryou' },
+  { label: 'Trending', value: 'trending' },
+  { label: 'Vintage', value: 'vintage' },
+  { label: 'Minimalist', value: 'minimalist' },
+  { label: 'Bohemian', value: 'bohemian' },
+  { label: 'Streetwear', value: 'streetwear' },
+  { label: 'Classic', value: 'classic' },
+];
+
+const TRENDING_ITEMS = [
+  'vintage blazer', 'linen dress', 'silk scarf', 'leather bag',
+  'wool coat', 'cashmere sweater', 'denim jacket', 'maxi skirt',
+  'pleated trousers', 'knit cardigan', 'cotton blouse', 'suede boots',
 ];
 
 export default function Inspiration() {
   const [items, setItems] = useState<InspirationItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('foryou');
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
   const { profile } = useStyleProfile();
   const { toast } = useToast();
 
   useEffect(() => {
     fetchInspirationItems();
-  }, [profile]);
+  }, [profile, activeCategory]);
+
+  const buildSearchTerms = () => {
+    const styleTags = profile?.style_tags || [];
+    const dreamBrands = profile?.dream_brands || [];
+    const materials = profile?.material_preferences || [];
+
+    switch (activeCategory) {
+      case 'foryou':
+        // Personalized based on user profile
+        if (styleTags.length > 0 || dreamBrands.length > 0) {
+          return [
+            ...styleTags.slice(0, 3),
+            ...dreamBrands.slice(0, 2),
+            ...materials.slice(0, 2),
+          ].filter(Boolean);
+        }
+        return TRENDING_ITEMS.slice(0, 6);
+      case 'trending':
+        return TRENDING_ITEMS.slice(0, 8);
+      case 'vintage':
+        return ['vintage dress', 'retro jacket', 'antique jewelry', '80s fashion', 'victorian blouse'];
+      case 'minimalist':
+        return ['minimalist dress', 'simple linen', 'neutral tones', 'clean lines', 'capsule wardrobe'];
+      case 'bohemian':
+        return ['boho dress', 'fringe bag', 'embroidered top', 'flowy maxi', 'hippie chic'];
+      case 'streetwear':
+        return ['oversized hoodie', 'cargo pants', 'sneakers vintage', 'graphic tee', 'bomber jacket'];
+      case 'classic':
+        return ['tailored blazer', 'silk blouse', 'pearl jewelry', 'trench coat', 'oxford shoes'];
+      default:
+        return TRENDING_ITEMS.slice(0, 6);
+    }
+  };
 
   const fetchInspirationItems = async () => {
     setLoading(true);
     try {
-      // Build search queries based on user's style profile
-      const styleTags = profile?.style_tags || [];
-      const dreamBrands = profile?.dream_brands || [];
-      const materials = profile?.material_preferences || [];
+      const searchTerms = buildSearchTerms();
       
-      // Combine user preferences with trending searches
-      const searchTerms = [
-        ...styleTags.slice(0, 2),
-        ...dreamBrands.slice(0, 2),
-        ...materials.slice(0, 1),
-        ...TRENDING_SEARCHES.slice(0, 3),
-      ].filter(Boolean);
-
-      if (searchTerms.length === 0) {
-        searchTerms.push(...TRENDING_SEARCHES.slice(0, 5));
-      }
-
-      // Fetch items from Etsy based on style preferences
       const { data, error } = await supabase.functions.invoke('inspiration-feed', {
         body: { 
           searchTerms,
-          styleTags,
-          dreamBrands,
-          materials,
+          styleTags: profile?.style_tags || [],
+          dreamBrands: profile?.dream_brands || [],
+          materials: profile?.material_preferences || [],
         },
       });
 
       if (error) throw error;
 
-      setItems(data?.items || generatePlaceholderItems(searchTerms));
+      const fetchedItems = data?.items || [];
+      setItems(fetchedItems.length > 0 ? fetchedItems : generatePlaceholderItems(searchTerms));
     } catch (error) {
       console.error('Error fetching inspiration:', error);
-      // Show placeholder items for demo
-      setItems(generatePlaceholderItems(TRENDING_SEARCHES));
+      setItems(generatePlaceholderItems(buildSearchTerms()));
     } finally {
       setLoading(false);
     }
@@ -89,34 +110,34 @@ export default function Inspiration() {
 
   const generatePlaceholderItems = (terms: string[]): InspirationItem[] => {
     const placeholders: InspirationItem[] = [];
-    const heights = [200, 280, 320, 240, 360, 220, 300, 260];
+    const heights = [200, 280, 320, 240, 360, 220, 300, 260, 340, 190];
     
     terms.forEach((term, i) => {
       placeholders.push({
-        id: `placeholder-${i}`,
-        title: `${term.charAt(0).toUpperCase() + term.slice(1)} - Vintage Find`,
-        price: Math.floor(Math.random() * 150) + 20,
+        id: `item-${term.replace(/\s/g, '-')}-${i}`,
+        title: `${term.charAt(0).toUpperCase() + term.slice(1)} - Curated Find`,
+        price: Math.floor(Math.random() * 150) + 25,
         currency: 'USD',
         image_url: `https://picsum.photos/seed/${term.replace(/\s/g, '')}${i}/400/${heights[i % heights.length]}`,
         item_url: '#',
         platform: 'etsy',
-        tags: [term, 'vintage', 'sustainable'],
-        trending: i < 3,
+        tags: [term.split(' ')[0], activeCategory === 'foryou' ? 'personalized' : activeCategory],
+        trending: i < 3 && activeCategory === 'trending',
       });
     });
 
     // Generate more items for a fuller feed
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 15; i++) {
       const term = terms[i % terms.length];
       placeholders.push({
-        id: `placeholder-extra-${i}`,
-        title: `Curated ${term} piece`,
-        price: Math.floor(Math.random() * 200) + 30,
+        id: `extra-${i}-${Date.now()}`,
+        title: `${term} - Style Pick`,
+        price: Math.floor(Math.random() * 180) + 30,
         currency: 'USD',
-        image_url: `https://picsum.photos/seed/extra${i}/400/${heights[(i + 3) % heights.length]}`,
+        image_url: `https://picsum.photos/seed/extra${activeCategory}${i}/400/${heights[(i + 4) % heights.length]}`,
         item_url: '#',
         platform: 'etsy',
-        tags: [term, 'curated'],
+        tags: [term.split(' ')[0], 'curated'],
         trending: false,
       });
     }
@@ -145,7 +166,6 @@ export default function Inspiration() {
       });
       toast({ title: 'Removed from cart' });
     } else {
-      // Save to database
       const { error } = await supabase.from('saved_items').insert({
         user_id: user.user.id,
         title: item.title,
@@ -163,25 +183,12 @@ export default function Inspiration() {
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setLoading(true);
-      // Filter or fetch based on search
-      const filtered = items.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-      setItems(filtered.length > 0 ? filtered : generatePlaceholderItems([searchQuery]));
-      setLoading(false);
-    }
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
   };
 
-  const handleTrendingClick = (term: string) => {
-    setSearchQuery(term);
-    setLoading(true);
-    setItems(generatePlaceholderItems([term, ...TRENDING_SEARCHES.filter(t => t !== term)]));
-    setLoading(false);
+  const handleRefresh = () => {
+    fetchInspirationItems();
   };
 
   return (
@@ -190,54 +197,53 @@ export default function Inspiration() {
       
       <main className="container mx-auto px-4 pt-28 pb-16">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
             Discover Your Style
           </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Curated finds based on your taste and current trends
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+            Curated finds based on your taste and what's trending
           </p>
         </div>
 
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-8">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search for vintage blazers, silk scarves, leather bags..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 py-6 text-lg rounded-full border-border focus:ring-2 focus:ring-primary/20"
-            />
-          </div>
-        </form>
-
-        {/* Trending Tags */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
-          <div className="flex items-center gap-2 text-muted-foreground mr-2">
-            <TrendingUp className="w-4 h-4" />
-            <span className="text-sm font-medium">Trending:</span>
-          </div>
-          {TRENDING_SEARCHES.map((term) => (
-            <Badge
-              key={term}
-              variant="secondary"
-              className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors px-4 py-1.5"
-              onClick={() => handleTrendingClick(term)}
-            >
-              {term}
-            </Badge>
-          ))}
-        </div>
-
         {/* Style Profile Hint */}
-        {profile?.style_tags && profile.style_tags.length > 0 && (
-          <div className="flex items-center justify-center gap-2 mb-8 text-sm text-muted-foreground">
+        {profile?.style_tags && profile.style_tags.length > 0 && activeCategory === 'foryou' && (
+          <div className="flex items-center justify-center gap-2 mb-6 text-sm text-muted-foreground">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span>Personalized for your style: {profile.style_tags.slice(0, 3).join(', ')}</span>
+            <span>Personalized for: {profile.style_tags.slice(0, 3).join(', ')}</span>
           </div>
         )}
+
+        {/* Category Pills */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {STYLE_CATEGORIES.map((cat) => (
+            <Button
+              key={cat.value}
+              variant={activeCategory === cat.value ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleCategoryChange(cat.value)}
+              className={`rounded-full px-5 ${
+                activeCategory === cat.value 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'hover:bg-muted'
+              }`}
+            >
+              {cat.value === 'foryou' && <Sparkles className="w-3 h-3 mr-1.5" />}
+              {cat.value === 'trending' && <TrendingUp className="w-3 h-3 mr-1.5" />}
+              {cat.label}
+            </Button>
+          ))}
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRefresh}
+            className="rounded-full px-3"
+            disabled={loading}
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
 
         {/* Masonry Grid */}
         {loading ? (
@@ -344,7 +350,7 @@ export default function Inspiration() {
               variant="outline"
               size="lg"
               onClick={() => {
-                const moreItems = generatePlaceholderItems(TRENDING_SEARCHES);
+                const moreItems = generatePlaceholderItems(buildSearchTerms());
                 setItems(prev => [...prev, ...moreItems]);
               }}
               className="px-8"
