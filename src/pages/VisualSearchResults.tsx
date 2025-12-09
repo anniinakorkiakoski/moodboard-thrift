@@ -82,42 +82,88 @@ export const VisualSearchResults = () => {
           </div>
           
           {currentSearch?.attributes && (
-            <div className="mt-4 p-4 bg-muted/30 rounded-lg space-y-3">
+            <div className="mt-4 p-4 bg-muted/30 rounded-lg space-y-4 border border-border/50">
               <p className="text-xs font-medium text-primary uppercase tracking-wider">
-                Detected Attributes:
+                AI Analysis
               </p>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                {currentSearch.attributes.itemType && (
+              
+              {/* Text description */}
+              {currentSearch.attributes.textDescription && (
+                <p className="text-sm text-foreground/80 font-lora italic">
+                  "{currentSearch.attributes.textDescription}"
+                </p>
+              )}
+              
+              {/* Key attributes grid */}
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                {currentSearch.attributes.category && (
                   <div>
-                    <span className="text-muted-foreground">Type:</span>{' '}
-                    <span className="font-medium">{currentSearch.attributes.itemType}</span>
+                    <span className="text-muted-foreground">Category:</span>{' '}
+                    <span className="font-medium">{currentSearch.attributes.category}</span>
                   </div>
                 )}
-                {currentSearch.attributes.fabricType && (
+                {currentSearch.attributes.colors?.primary && (
                   <div>
-                    <span className="text-muted-foreground">Fabric:</span>{' '}
-                    <span className="font-medium">{currentSearch.attributes.fabricType}</span>
+                    <span className="text-muted-foreground">Color:</span>{' '}
+                    <span className="font-medium">{currentSearch.attributes.colors.primary}</span>
                   </div>
                 )}
-                {currentSearch.attributes.primaryColors && (
-                  <div className="col-span-2">
-                    <span className="text-muted-foreground">Colors:</span>{' '}
-                    <span className="font-medium">{currentSearch.attributes.primaryColors.join(', ')}</span>
+                {currentSearch.attributes.material?.fabric && (
+                  <div>
+                    <span className="text-muted-foreground">Material:</span>{' '}
+                    <span className="font-medium">{currentSearch.attributes.material.fabric}</span>
                   </div>
                 )}
-                {currentSearch.attributes.silhouette && (
+                {currentSearch.attributes.construction?.silhouette && (
                   <div>
                     <span className="text-muted-foreground">Silhouette:</span>{' '}
-                    <span className="font-medium">{currentSearch.attributes.silhouette}</span>
+                    <span className="font-medium">{currentSearch.attributes.construction.silhouette}</span>
                   </div>
                 )}
-                {currentSearch.attributes.aesthetic && (
+                {currentSearch.attributes.pattern?.type && (
                   <div>
-                    <span className="text-muted-foreground">Aesthetic:</span>{' '}
-                    <span className="font-medium">{currentSearch.attributes.aesthetic}</span>
+                    <span className="text-muted-foreground">Pattern:</span>{' '}
+                    <span className="font-medium">{currentSearch.attributes.pattern.type}</span>
+                  </div>
+                )}
+                {currentSearch.attributes.style?.aesthetic && (
+                  <div>
+                    <span className="text-muted-foreground">Style:</span>{' '}
+                    <span className="font-medium">{currentSearch.attributes.style.aesthetic}</span>
                   </div>
                 )}
               </div>
+              
+              {/* Distinctive features */}
+              {currentSearch.attributes.distinctiveFeatures?.length > 0 && (
+                <div className="text-xs">
+                  <span className="text-muted-foreground">Notable details:</span>{' '}
+                  <span className="font-medium">
+                    {currentSearch.attributes.distinctiveFeatures.join(', ')}
+                  </span>
+                </div>
+              )}
+              
+              {/* Search queries used */}
+              {currentSearch.attributes.searchQueries && (
+                <div className="pt-2 border-t border-border/30">
+                  <p className="text-xs text-muted-foreground mb-2">Search terms used:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      currentSearch.attributes.searchQueries.primary,
+                      currentSearch.attributes.searchQueries.fallback,
+                      ...(currentSearch.attributes.searchQueries.keywords || []).slice(0, 3)
+                    ].filter(Boolean).map((query: string, i: number) => (
+                      <span 
+                        key={i} 
+                        className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full"
+                      >
+                        {query}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
