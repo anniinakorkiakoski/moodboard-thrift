@@ -157,9 +157,9 @@ serve(async (req) => {
       .eq('id', searchId);
 
     // ============================================================
-    // STEP 2: PRODUCT SEARCH / RETRIEVAL (Using Local Catalog)
+    // STEP 2: PRODUCT SEARCH / RETRIEVAL (Depop + Local Catalog)
     // ============================================================
-    console.log('\n[STEP 2] Searching local catalog with generated queries...');
+    console.log('\n[STEP 2] Searching Depop and local catalog...');
     
     const searchQueries = [
       attributes.searchQueries.primary,
@@ -168,13 +168,32 @@ serve(async (req) => {
       ...attributes.searchQueries.keywords
     ].filter(Boolean);
     
-    const searchedQueries: string[] = searchQueries;
+    const searchedQueries: string[] = [];
 
-    // Search the local catalog_items table
-    const items = await searchLocalCatalog(supabase, searchQueries, attributes, budget);
-    console.log(`Found ${items.length} items in local catalog`);
+    // Try Depop first
+    let allItems: any[] = [];
+    for (const query of searchQueries.slice(0, 3)) {
+      console.log(`  Searching Depop: "${query}"`);
+      searchedQueries.push(query);
+      const depopItems = await searchDepop(query, budget);
+      console.log(`  Found ${depopItems.length} Depop items`);
+      allItems.push(...depopItems);
+      if (allItems.length >= 20) break;
+    }
     
-    const uniqueItems = items;
+    // Fallback to local catalog if no Depop results
+    if (allItems.length < 5) {
+      console.log('  Depop returned few results, searching local catalog...');
+      const localItems = await searchLocalCatalog(supabase, searchQueries, attributes, budget);
+      allItems.push(...localItems);
+    }
+    
+    // Deduplicate by URL
+    const uniqueItems = Array.from(
+      new Map(allItems.map(item => [item.item_url, item])).values()
+    );
+    
+    console.log(`Total unique items: ${uniqueItems.length}`);
 
     if (uniqueItems.length === 0) {
       await supabase
@@ -541,6 +560,64 @@ async function searchLocalCatalog(
     
   } catch (error) {
     console.error('Local catalog search error:', error);
+    return [];
+  }
+}
+
+// ============================================================
+// DEPOP API SEARCH
+// Uses Depop's internal search API
+// ============================================================
+async function searchDepop(
+  query: string,
+  budget?: { min?: number; max?: number }
+): Promise<any[]> {
+  try {
+    const encodedQuery = encodeURIComponent(query);
+    
+    // Depop's internal API endpoint
+    let depopUrl = `https://webapi.depop.com/api/v2/search/products/?what=${encodedQuery}&itemsPerPage=24`;
+    if (budget?.min) depopUrl += `&priceMin=${budget.min}`;
+    if (budget?.max) depopUrl += `&priceMax=${budget.max}`;
+
+    console.log('Fetching Depop:', depopUrl);
+
+    const response = await fetch(depopUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Origin': 'https://www.depop.com',
+        'Referer': 'https://www.depop.com/',
+      }
+    });
+
+    if (!response.ok) {
+      console.error('Depop API failed:', response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    const products = data?.products || data?.items || [];
+    
+    return products.map((item: any) => ({
+      title: item.description || item.title || '',
+      price: parseFloat(item.price?.priceAmount || item.price || '0'),
+      currency: item.price?.currencyName || 'USD',
+      item_url: `https://www.depop.com/products/${item.slug || item.id}/`,
+      image_url: item.preview?.url || item.pictures?.[0]?.url || item.image || '',
+      shopName: item.seller?.username || '',
+      platform: 'depop',
+      brand: item.brand || '',
+      size: item.sizes?.[0] || ''
+    })).filter((item: any) => 
+      item.title && 
+      item.item_url && 
+      item.image_url
+    );
+    
+  } catch (error) {
+    console.error('Depop search error:', error);
     return [];
   }
 }
