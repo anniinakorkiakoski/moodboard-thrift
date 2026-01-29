@@ -152,6 +152,57 @@ export type Database = {
         }
         Relationships: []
       }
+      listing_analysis: {
+        Row: {
+          analyzed_at: string
+          brand: string | null
+          detected_color: string | null
+          expires_at: string
+          garment_type: string | null
+          id: string
+          image_embedding: string | null
+          image_url: string | null
+          pattern: string | null
+          raw_analysis: Json | null
+          size: string | null
+          source: string
+          source_item_id: string
+          style: string | null
+        }
+        Insert: {
+          analyzed_at?: string
+          brand?: string | null
+          detected_color?: string | null
+          expires_at?: string
+          garment_type?: string | null
+          id?: string
+          image_embedding?: string | null
+          image_url?: string | null
+          pattern?: string | null
+          raw_analysis?: Json | null
+          size?: string | null
+          source: string
+          source_item_id: string
+          style?: string | null
+        }
+        Update: {
+          analyzed_at?: string
+          brand?: string | null
+          detected_color?: string | null
+          expires_at?: string
+          garment_type?: string | null
+          id?: string
+          image_embedding?: string | null
+          image_url?: string | null
+          pattern?: string | null
+          raw_analysis?: Json | null
+          size?: string | null
+          source?: string
+          source_item_id?: string
+          style?: string | null
+        }
+        Relationships: []
+      }
       saved_items: {
         Row: {
           created_at: string | null
@@ -581,6 +632,7 @@ export type Database = {
         | "facebook_marketplace"
         | "depop"
         | "other_vintage"
+        | "tradera"
       search_status:
         | "pending"
         | "analyzing"
@@ -723,6 +775,7 @@ export const Constants = {
         "facebook_marketplace",
         "depop",
         "other_vintage",
+        "tradera",
       ],
       search_status: [
         "pending",

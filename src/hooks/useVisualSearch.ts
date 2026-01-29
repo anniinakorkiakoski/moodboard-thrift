@@ -26,6 +26,14 @@ export interface VisualSearch {
   created_at: string;
 }
 
+export interface MatchStats {
+  total: number;
+  highQuality: number;
+  mediumQuality: number;
+  topScore: number;
+  sources?: string[];
+}
+
 export const useVisualSearch = () => {
   const [searches, setSearches] = useState<VisualSearch[]>([]);
   const [currentSearch, setCurrentSearch] = useState<VisualSearch | null>(null);
