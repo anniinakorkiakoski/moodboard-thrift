@@ -139,12 +139,67 @@ export const useVisualSearch = () => {
     fetchRecentSearches();
   }, []);
 
+  const startTextSearch = async (query: string, budget?: { min: number; max: number }) => {
+    setLoading(true);
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      // Create search record with text query
+      const { data: search, error: searchError } = await supabase
+        .from('visual_searches')
+        .insert({
+          user_id: user.user.id,
+          image_url: '', // No image for text search
+          status: 'pending',
+          analysis_data: { textQuery: query, budget },
+        })
+        .select()
+        .single();
+
+      if (searchError) throw searchError;
+
+      setCurrentSearch(search);
+
+      // Call edge function with textQuery instead of imageUrl
+      const { data, error } = await supabase.functions.invoke('visual-search', {
+        body: { textQuery: query, searchId: search.id, budget },
+      });
+
+      if (error) throw error;
+
+      // Fetch updated search and results
+      await fetchSearchResults(search.id);
+
+      const status = data.status;
+      toast({
+        title: status === 'no_matches' ? 'No matches found' : 'Search completed',
+        description: status === 'no_matches' 
+          ? 'Consider hiring a professional thrifter to source this item.' 
+          : `Found ${data.highQualityCount || data.resultsCount || 0} matches`,
+      });
+
+      return search.id;
+    } catch (error) {
+      console.error('Text search error:', error);
+      toast({
+        title: 'Search failed',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     searches,
     currentSearch,
     results,
     loading,
     startSearch,
+    startTextSearch,
     fetchSearchResults,
   };
 };

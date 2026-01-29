@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Upload, ImagePlus, Sparkles, Search, Trash2, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -23,6 +24,7 @@ interface GalleryUploadProps {
 }
 
 export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: GalleryUploadProps) => {
+  const navigate = useNavigate();
   const [dragActive, setDragActive] = useState(false);
   const [editingCaption, setEditingCaption] = useState<string | null>(null);
   const [editingCaptionText, setEditingCaptionText] = useState('');
@@ -34,6 +36,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
   const [selectedImageForMatches, setSelectedImageForMatches] = useState<{ id: string; url: string } | null>(null);
   const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
   const [dragOverImageId, setDragOverImageId] = useState<string | null>(null);
+  const [textSearchQuery, setTextSearchQuery] = useState('');
   
   const { images, loading, uploadImage, updateCaption: updateImageCaption, deleteImage, updateImageOrder, getImageUrl } = useUserImages();
   const { toast } = useToast();
@@ -319,6 +322,30 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
     { name: 'Emmy', initial: 'Em', color: 'bg-pink-500' }
   ];
 
+  const handleTextSearch = () => {
+    if (!textSearchQuery.trim()) {
+      toast({
+        title: "Search query required",
+        description: "Please enter a search term.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to search.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    navigate('/visual-search-results', { 
+      state: { textQuery: textSearchQuery.trim() } 
+    });
+  };
+
   const handleImageDragStart = (e: React.DragEvent, imageId: string) => {
     setDraggedImageId(imageId);
     e.dataTransfer.effectAllowed = 'move';
@@ -465,6 +492,43 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                     className="absolute inset-0 opacity-0 cursor-pointer"
                   />
                 </Button>
+              </div>
+            </Card>
+
+            {/* Text Search Input */}
+            <Card className="border-2 border-muted bg-card">
+              <div className="p-8 space-y-6">
+                <div className="text-center space-y-2">
+                  <div className="flex justify-center">
+                    <div className="w-12 h-12 border border-muted-foreground/20 flex items-center justify-center">
+                      <Search className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-light font-serif text-primary">Search by Text</h3>
+                  <p className="text-xs font-light text-muted-foreground">
+                    Describe what you're looking for
+                  </p>
+                </div>
+                <div className="flex gap-3 max-w-2xl mx-auto">
+                  <Input
+                    value={textSearchQuery}
+                    onChange={(e) => setTextSearchQuery(e.target.value)}
+                    placeholder="e.g., vintage silk blouse, 90s leather jacket..."
+                    className="font-light"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleTextSearch();
+                      }
+                    }}
+                  />
+                  <Button 
+                    onClick={handleTextSearch}
+                    disabled={!textSearchQuery.trim() || isLoading}
+                    className="bg-burgundy hover:bg-burgundy/90 text-burgundy-foreground"
+                  >
+                    <Search className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </Card>
 
