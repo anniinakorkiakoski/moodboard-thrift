@@ -94,8 +94,8 @@ function setCachedResults(source: string, query: SearchQuery, data: NormalizedLi
 // ============================================================
 class TraderaAdapter implements SourceAdapter {
   name = "tradera";
-  private appId: 5636;
-  private appKey: "1da3f721-eb75-4da3-a239-377de44a0f42";
+  private appId: string;
+  private appKey: string;
   private lastRequestTime = 0;
   private minRequestInterval = 500; // Max 2 requests/sec
 
