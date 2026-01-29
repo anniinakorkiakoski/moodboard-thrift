@@ -7,82 +7,565 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Weighted scoring formula per your AI Shopping Agent spec
+// ============================================================
+// NORMALIZED LISTING SCHEMA
+// Consistent data structure across all source adapters
+// ============================================================
+interface NormalizedListing {
+  source: string;           // tradera, ebay, local, depop
+  source_item_id: string;   // Original platform ID
+  title: string;
+  description: string;
+  price: number;
+  currency: string;         // SEK, EUR, USD
+  shipping: string | null;
+  condition: string | null;
+  brand: string | null;
+  category: string | null;
+  size: string | null;
+  color: string | null;
+  city: string | null;
+  country: string | null;
+  zip: string | null;
+  images: string[];
+  listing_url: string;
+  seller_name: string | null;
+  seller_rating: number | null;
+  end_date: string | null;
+  is_auction: boolean;
+}
+
+// ============================================================
+// SOURCE ADAPTER INTERFACE
+// Each adapter implements these methods
+// ============================================================
+interface SourceAdapter {
+  name: string;
+  search(query: SearchQuery): Promise<NormalizedListing[]>;
+  getSourceFilters(): string[];
+}
+
+interface SearchQuery {
+  searchWords: string[];
+  priceMin?: number;
+  priceMax?: number;
+  category?: string;
+  condition?: string;
+  size?: string;
+  color?: string;
+  itemsPerPage?: number;
+  pageNumber?: number;
+}
+
+// ============================================================
+// IN-MEMORY CACHE (15-minute TTL)
+// ============================================================
+const responseCache = new Map<string, { data: NormalizedListing[]; timestamp: number }>();
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+
+function getCacheKey(source: string, query: SearchQuery): string {
+  return `${source}:${JSON.stringify(query)}`;
+}
+
+function getCachedResults(source: string, query: SearchQuery): NormalizedListing[] | null {
+  const key = getCacheKey(source, query);
+  const cached = responseCache.get(key);
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL_MS) {
+    console.log(`Cache hit for ${source}`);
+    return cached.data;
+  }
+  return null;
+}
+
+function setCachedResults(source: string, query: SearchQuery, data: NormalizedListing[]): void {
+  const key = getCacheKey(source, query);
+  responseCache.set(key, { data, timestamp: Date.now() });
+  // Clean old entries
+  for (const [k, v] of responseCache.entries()) {
+    if (Date.now() - v.timestamp > CACHE_TTL_MS) {
+      responseCache.delete(k);
+    }
+  }
+}
+
+// ============================================================
+// TRADERA SOAP ADAPTER
+// Integrates with Tradera's SearchAdvanced SOAP 1.2 API
+// ============================================================
+class TraderaAdapter implements SourceAdapter {
+  name = 'tradera';
+  private appId: string;
+  private appKey: string;
+  private lastRequestTime = 0;
+  private minRequestInterval = 500; // Max 2 requests/sec
+
+  constructor() {
+    this.appId = Deno.env.get('TRADERA_APP_ID') || '';
+    this.appKey = Deno.env.get('TRADERA_APP_KEY') || '';
+  }
+
+  getSourceFilters(): string[] {
+    return ['priceMin', 'priceMax', 'category', 'condition', 'thumbnails'];
+  }
+
+  private async rateLimit(): Promise<void> {
+    const now = Date.now();
+    const elapsed = now - this.lastRequestTime;
+    if (elapsed < this.minRequestInterval) {
+      await new Promise(resolve => setTimeout(resolve, this.minRequestInterval - elapsed));
+    }
+    this.lastRequestTime = Date.now();
+  }
+
+  async search(query: SearchQuery): Promise<NormalizedListing[]> {
+    if (!this.appId || !this.appKey) {
+      console.log('Tradera credentials not configured, skipping');
+      return [];
+    }
+
+    // Check cache first
+    const cached = getCachedResults(this.name, query);
+    if (cached) return cached;
+
+    await this.rateLimit();
+
+    const searchWords = query.searchWords.join(' ');
+    console.log(`[Tradera] Searching: "${searchWords}"`);
+
+    const soapEnvelope = this.buildSoapEnvelope(query);
+    
+    try {
+      const response = await fetch('https://api.tradera.com/v3/SearchService.asmx', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/soap+xml; charset=utf-8',
+          'Host': 'api.tradera.com',
+        },
+        body: soapEnvelope,
+      });
+
+      if (!response.ok) {
+        console.error(`[Tradera] API error: ${response.status}`);
+        return [];
+      }
+
+      const xmlText = await response.text();
+      const listings = this.parseResponse(xmlText);
+      
+      console.log(`[Tradera] Found ${listings.length} items`);
+      setCachedResults(this.name, query, listings);
+      return listings;
+
+    } catch (error) {
+      console.error('[Tradera] Search error:', error);
+      return [];
+    }
+  }
+
+  private buildSoapEnvelope(query: SearchQuery): string {
+    const searchWords = query.searchWords.join(' ');
+    
+    // Fashion category IDs for Tradera (344 = Kläder & Accessoarer)
+    const categoryId = query.category ? this.mapCategory(query.category) : '';
+    
+    return `<?xml version="1.0" encoding="utf-8"?>
+<soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                 xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                 xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+  <soap12:Header>
+    <AuthenticationHeader xmlns="http://api.tradera.com">
+      <AppId>${this.appId}</AppId>
+      <AppKey>${this.appKey}</AppKey>
+    </AuthenticationHeader>
+    <ConfigurationHeader xmlns="http://api.tradera.com">
+      <Sandbox>0</Sandbox>
+      <MaxResultAge>60</MaxResultAge>
+    </ConfigurationHeader>
+  </soap12:Header>
+  <soap12:Body>
+    <SearchAdvanced xmlns="http://api.tradera.com">
+      <request>
+        <SearchWords>${this.escapeXml(searchWords)}</SearchWords>
+        ${categoryId ? `<CategoryId>${categoryId}</CategoryId>` : ''}
+        <SearchInDescription>true</SearchInDescription>
+        ${query.priceMin ? `<PriceMinimum>${Math.round(query.priceMin)}</PriceMinimum>` : ''}
+        ${query.priceMax ? `<PriceMaximum>${Math.round(query.priceMax)}</PriceMaximum>` : ''}
+        <OnlyItemsWithThumbnail>true</OnlyItemsWithThumbnail>
+        <ItemsPerPage>${query.itemsPerPage || 50}</ItemsPerPage>
+        <PageNumber>${query.pageNumber || 1}</PageNumber>
+        ${query.condition ? `<ItemCondition>${this.mapCondition(query.condition)}</ItemCondition>` : ''}
+        <OrderBy>Relevance</OrderBy>
+      </request>
+    </SearchAdvanced>
+  </soap12:Body>
+</soap12:Envelope>`;
+  }
+
+  private escapeXml(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
+  private mapCategory(category: string): string {
+    const categoryLower = category.toLowerCase();
+    // Tradera fashion category mappings
+    const categoryMap: Record<string, string> = {
+      'dress': '344001', // Klänningar
+      'top': '344002',   // Toppar
+      'pants': '344003', // Byxor
+      'jacket': '344004', // Jackor
+      'coat': '344004',
+      'shirt': '344002',
+      'blouse': '344002',
+      'skirt': '344005', // Kjolar
+      'shoes': '344006', // Skor
+      'bag': '344007',   // Väskor
+      'accessories': '344008',
+    };
+    
+    for (const [key, value] of Object.entries(categoryMap)) {
+      if (categoryLower.includes(key)) return value;
+    }
+    return '344'; // Main fashion category
+  }
+
+  private mapCondition(condition: string): string {
+    const conditionLower = condition.toLowerCase();
+    if (conditionLower.includes('new')) return 'New';
+    if (conditionLower.includes('like new')) return 'NearlyNew';
+    return 'Used';
+  }
+
+  private parseResponse(xmlText: string): NormalizedListing[] {
+    const listings: NormalizedListing[] = [];
+    
+    // Simple XML parsing for Tradera response
+    const itemMatches = xmlText.match(/<Item>([\s\S]*?)<\/Item>/g) || [];
+    
+    for (const itemXml of itemMatches) {
+      try {
+        const listing = this.parseItem(itemXml);
+        if (listing) listings.push(listing);
+      } catch (e) {
+        console.error('[Tradera] Parse item error:', e);
+      }
+    }
+    
+    return listings;
+  }
+
+  private parseItem(itemXml: string): NormalizedListing | null {
+    const getValue = (tag: string): string => {
+      const match = itemXml.match(new RegExp(`<${tag}>([^<]*)</${tag}>`));
+      return match ? match[1] : '';
+    };
+
+    const id = getValue('Id');
+    if (!id) return null;
+
+    const thumbnailLink = getValue('ThumbnailLink');
+    const imageLinks = itemXml.match(/<ImageLink>([^<]*)<\/ImageLink>/g)?.map(
+      m => m.replace(/<\/?ImageLink>/g, '')
+    ) || [];
+    
+    const images = [thumbnailLink, ...imageLinks].filter(Boolean);
+    
+    // Price parsing - prefer BuyItNowPrice, fallback to MaxBid
+    const buyNowPrice = parseFloat(getValue('BuyItNowPrice')) || 0;
+    const maxBid = parseFloat(getValue('MaxBid')) || 0;
+    const price = buyNowPrice || maxBid || parseFloat(getValue('NextBid')) || 0;
+    
+    const itemType = getValue('ItemType');
+    
+    return {
+      source: 'tradera',
+      source_item_id: id,
+      title: getValue('ShortDescription') || getValue('LongDescription') || 'Untitled',
+      description: getValue('LongDescription') || getValue('ShortDescription') || '',
+      price,
+      currency: 'SEK',
+      shipping: getValue('ShippingCondition') || null,
+      condition: getValue('ItemCondition') || null,
+      brand: null, // Not directly available in response
+      category: getValue('CategoryName') || null,
+      size: null,  // Would need to parse from description
+      color: null, // Would need to parse from description
+      city: getValue('SellerCity') || null,
+      country: 'SE',
+      zip: getValue('ZipCode') || null,
+      images,
+      listing_url: getValue('ItemUrl') || `https://www.tradera.com/item/${id}`,
+      seller_name: getValue('SellerAlias') || null,
+      seller_rating: parseFloat(getValue('SellerRating')) || null,
+      end_date: getValue('EndDate') || null,
+      is_auction: itemType?.toLowerCase() === 'auction' || !buyNowPrice,
+    };
+  }
+}
+
+// ============================================================
+// LOCAL CATALOG ADAPTER
+// Searches the catalog_items table
+// ============================================================
+class LocalCatalogAdapter implements SourceAdapter {
+  name = 'local';
+  private supabase: any;
+
+  constructor(supabase: any) {
+    this.supabase = supabase;
+  }
+
+  getSourceFilters(): string[] {
+    return ['priceMin', 'priceMax'];
+  }
+
+  async search(query: SearchQuery): Promise<NormalizedListing[]> {
+    // Check cache first
+    const cached = getCachedResults(this.name, query);
+    if (cached) return cached;
+
+    const searchWords = query.searchWords.join(' ').toLowerCase();
+    console.log(`[LocalCatalog] Searching: "${searchWords}"`);
+
+    try {
+      let dbQuery = this.supabase
+        .from('catalog_items')
+        .select('*')
+        .eq('is_active', true);
+
+      if (query.priceMin) {
+        dbQuery = dbQuery.gte('price', query.priceMin);
+      }
+      if (query.priceMax) {
+        dbQuery = dbQuery.lte('price', query.priceMax);
+      }
+
+      const { data: items, error } = await dbQuery.limit(50);
+
+      if (error) {
+        console.error('[LocalCatalog] Query error:', error);
+        return [];
+      }
+
+      if (!items?.length) {
+        console.log('[LocalCatalog] No items found');
+        return [];
+      }
+
+      // Score by keyword match
+      const keywords = new Set(searchWords.split(/\s+/).filter(w => w.length > 2));
+      
+      const scoredItems = items.map((item: any) => {
+        const text = `${item.title || ''} ${item.description || ''}`.toLowerCase();
+        let matchCount = 0;
+        keywords.forEach(kw => {
+          if (text.includes(kw)) matchCount++;
+        });
+        return { item, score: matchCount / Math.max(keywords.size, 1) };
+      });
+
+      // Filter and sort
+      const results = scoredItems
+        .filter((s: any) => s.score > 0 || items.length <= 10)
+        .sort((a: any, b: any) => b.score - a.score)
+        .slice(0, 25)
+        .map((s: any) => this.mapToNormalized(s.item));
+
+      console.log(`[LocalCatalog] Found ${results.length} items`);
+      setCachedResults(this.name, query, results);
+      return results;
+
+    } catch (error) {
+      console.error('[LocalCatalog] Search error:', error);
+      return [];
+    }
+  }
+
+  private mapToNormalized(item: any): NormalizedListing {
+    const attributes = item.attributes || {};
+    return {
+      source: 'local',
+      source_item_id: item.external_id || item.id,
+      title: item.title || '',
+      description: item.description || '',
+      price: item.price || 0,
+      currency: item.currency || 'EUR',
+      shipping: item.shipping_info || null,
+      condition: item.condition || null,
+      brand: attributes.brand || null,
+      category: attributes.category || null,
+      size: item.size || attributes.size || null,
+      color: attributes.color || null,
+      city: null,
+      country: null,
+      zip: null,
+      images: item.image_url ? [item.image_url] : [],
+      listing_url: item.item_url,
+      seller_name: item.platform || null,
+      seller_rating: null,
+      end_date: null,
+      is_auction: false,
+    };
+  }
+}
+
+// ============================================================
+// DEPOP ADAPTER (Existing functionality preserved)
+// ============================================================
+class DepopAdapter implements SourceAdapter {
+  name = 'depop';
+
+  getSourceFilters(): string[] {
+    return ['priceMin', 'priceMax'];
+  }
+
+  async search(query: SearchQuery): Promise<NormalizedListing[]> {
+    // Check cache first
+    const cached = getCachedResults(this.name, query);
+    if (cached) return cached;
+
+    const searchWords = query.searchWords.join(' ');
+    console.log(`[Depop] Searching: "${searchWords}"`);
+
+    try {
+      const encodedQuery = encodeURIComponent(searchWords);
+      let depopUrl = `https://webapi.depop.com/api/v2/search/products/?what=${encodedQuery}&itemsPerPage=24`;
+      if (query.priceMin) depopUrl += `&priceMin=${query.priceMin}`;
+      if (query.priceMax) depopUrl += `&priceMax=${query.priceMax}`;
+
+      const response = await fetch(depopUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+          'Accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Origin': 'https://www.depop.com',
+          'Referer': 'https://www.depop.com/',
+        }
+      });
+
+      if (!response.ok) {
+        console.error(`[Depop] API error: ${response.status}`);
+        return [];
+      }
+
+      const data = await response.json();
+      const products = data?.products || data?.items || [];
+
+      const results = products
+        .filter((item: any) => item.description || item.title)
+        .map((item: any) => this.mapToNormalized(item));
+
+      console.log(`[Depop] Found ${results.length} items`);
+      setCachedResults(this.name, query, results);
+      return results;
+
+    } catch (error) {
+      console.error('[Depop] Search error:', error);
+      return [];
+    }
+  }
+
+  private mapToNormalized(item: any): NormalizedListing {
+    return {
+      source: 'depop',
+      source_item_id: item.id || item.slug || '',
+      title: item.description || item.title || '',
+      description: item.description || '',
+      price: parseFloat(item.price?.priceAmount || item.price || '0'),
+      currency: item.price?.currencyName || 'USD',
+      shipping: null,
+      condition: null,
+      brand: item.brand || null,
+      category: null,
+      size: item.sizes?.[0] || null,
+      color: null,
+      city: null,
+      country: null,
+      zip: null,
+      images: [item.preview?.url || item.pictures?.[0]?.url || item.image || ''].filter(Boolean),
+      listing_url: `https://www.depop.com/products/${item.slug || item.id}/`,
+      seller_name: item.seller?.username || null,
+      seller_rating: null,
+      end_date: null,
+      is_auction: false,
+    };
+  }
+}
+
+// ============================================================
+// SOURCE ADAPTER MANAGER
+// Orchestrates parallel searches across all adapters
+// ============================================================
+class SourceAdapterManager {
+  private adapters: SourceAdapter[];
+
+  constructor(adapters: SourceAdapter[]) {
+    this.adapters = adapters;
+  }
+
+  async searchAll(query: SearchQuery): Promise<NormalizedListing[]> {
+    console.log(`[AdapterManager] Searching ${this.adapters.length} sources in parallel...`);
+    
+    const results = await Promise.allSettled(
+      this.adapters.map(adapter => adapter.search(query))
+    );
+
+    const allListings: NormalizedListing[] = [];
+    
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        allListings.push(...result.value);
+      } else {
+        console.error(`[AdapterManager] ${this.adapters[index].name} failed:`, result.reason);
+      }
+    });
+
+    // Deduplicate by listing_url
+    const uniqueListings = Array.from(
+      new Map(allListings.map(l => [l.listing_url, l])).values()
+    );
+
+    console.log(`[AdapterManager] Total unique listings: ${uniqueListings.length}`);
+    return uniqueListings;
+  }
+}
+
+// ============================================================
+// MATCHING & SCORING (preserved from original)
+// ============================================================
 const WEIGHTS = {
-  visualSimilarity: 0.40,   // Estimated from attribute/color/pattern matching
-  textSimilarity: 0.25,     // Description vs listing text
-  attributeMatch: 0.25,     // Structured attribute comparison
-  qualityScore: 0.10        // Marketplace indicators
+  visualSimilarity: 0.40,
+  textSimilarity: 0.25,
+  attributeMatch: 0.25,
+  qualityScore: 0.10
 };
 
-// Attribute importance weights for detailed matching
 const ATTRIBUTE_WEIGHTS = {
-  category: 0.20,           // Item type (dress, top, pants)
-  silhouette: 0.15,         // Shape/cut (A-line, fitted, oversized)
-  color: 0.15,              // Primary color match
-  pattern: 0.12,            // Pattern type (floral, solid, stripes)
-  material: 0.12,           // Fabric type
-  style: 0.10,              // Aesthetic (boho, minimal, vintage)
-  distinctiveFeatures: 0.16 // Unique details
+  category: 0.20,
+  silhouette: 0.15,
+  color: 0.15,
+  pattern: 0.12,
+  material: 0.12,
+  style: 0.10,
+  distinctiveFeatures: 0.16
 };
 
 interface ExtractedAttributes {
   category: string;
   subcategory?: string;
-  colors: {
-    primary: string;
-    secondary?: string;
-    colorFamily: string;
-  };
-  material: {
-    fabric: string;
-    texture?: string;
-    weight?: string;
-  };
-  pattern: {
-    type: string;
-    scale?: string;
-  };
-  construction: {
-    silhouette: string;
-    length?: string;
-    sleeves?: string;
-    neckline?: string;
-    closure?: string;
-  };
-  style: {
-    era?: string;
-    aesthetic: string;
-    culturalOrigin?: string;
-  };
+  colors: { primary: string; secondary?: string; colorFamily: string };
+  material: { fabric: string; texture?: string; weight?: string };
+  pattern: { type: string; scale?: string };
+  construction: { silhouette: string; length?: string; sleeves?: string; neckline?: string; closure?: string };
+  style: { era?: string; aesthetic: string; culturalOrigin?: string };
   distinctiveFeatures: string[];
-  searchQueries: {
-    primary: string;
-    fallback: string;
-    alternative: string;
-    keywords: string[];
-  };
+  searchQueries: { primary: string; fallback: string; alternative: string; keywords: string[] };
   textDescription: string;
-  visualSignature: {
-    dominantColors: string[];
-    patternDescription: string;
-    shapeDescription: string;
-  };
-}
-
-interface ScoredItem {
-  title: string;
-  price: number;
-  currency: string;
-  item_url: string;
-  image_url: string;
-  shopName?: string;
-  freeShipping?: boolean;
-  originalPrice?: number;
-  similarity_score: number;
-  match_explanation: string;
-  _scores: MatchScores;
-  _searchQuery?: string;
+  visualSignature: { dominantColors: string[]; patternDescription: string; shapeDescription: string };
 }
 
 interface MatchScores {
@@ -101,6 +584,15 @@ interface MatchScores {
   };
 }
 
+interface ScoredListing extends NormalizedListing {
+  similarity_score: number;
+  match_explanation: string;
+  _scores: MatchScores;
+}
+
+// ============================================================
+// MAIN HANDLER
+// ============================================================
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -116,7 +608,7 @@ serve(async (req) => {
       });
     }
 
-    console.log('=== AI SHOPPING AGENT: Visual Search ===');
+    console.log('=== SOURCE ADAPTER VISUAL SEARCH ===');
     console.log('Search ID:', searchId);
     console.log('Budget:', budget || 'No budget set');
 
@@ -136,77 +628,63 @@ serve(async (req) => {
       .eq('id', searchId);
 
     // ============================================================
-    // STEP 1: ADVANCED IMAGE ANALYSIS / FEATURE EXTRACTION
+    // STEP 1: EXTRACT ATTRIBUTES
     // ============================================================
-    console.log('\n[STEP 1] Extracting visual features and attributes...');
-    
+    console.log('\n[STEP 1] Extracting visual attributes...');
     const attributes = await extractDetailedAttributes(imageUrl, cropData, LOVABLE_API_KEY);
-    console.log('Extracted category:', attributes.category);
-    console.log('Primary color:', attributes.colors.primary);
-    console.log('Silhouette:', attributes.construction.silhouette);
+    console.log('Category:', attributes.category);
+    console.log('Color:', attributes.colors.primary);
     console.log('Search queries:', attributes.searchQueries);
 
-    // Store analysis data
     await supabase
       .from('visual_searches')
       .update({ 
         status: 'searching',
         analysis_data: { attributes },
-        attributes: attributes
+        attributes
       })
       .eq('id', searchId);
 
     // ============================================================
-    // STEP 2: PRODUCT SEARCH / RETRIEVAL (Depop + Local Catalog)
+    // STEP 2: SEARCH VIA SOURCE ADAPTERS
     // ============================================================
-    console.log('\n[STEP 2] Searching Depop and local catalog...');
+    console.log('\n[STEP 2] Searching via source adapters...');
     
-    const searchQueries = [
-      attributes.searchQueries.primary,
-      attributes.searchQueries.fallback,
-      attributes.searchQueries.alternative,
-      ...attributes.searchQueries.keywords
-    ].filter(Boolean);
+    // Initialize adapters
+    const adapters: SourceAdapter[] = [
+      new TraderaAdapter(),
+      new DepopAdapter(),
+      new LocalCatalogAdapter(supabase),
+    ];
     
-    const searchedQueries: string[] = [];
+    const adapterManager = new SourceAdapterManager(adapters);
 
-    // Try Depop first
-    let allItems: any[] = [];
-    for (const query of searchQueries.slice(0, 3)) {
-      console.log(`  Searching Depop: "${query}"`);
-      searchedQueries.push(query);
-      const depopItems = await searchDepop(query, budget);
-      console.log(`  Found ${depopItems.length} Depop items`);
-      allItems.push(...depopItems);
-      if (allItems.length >= 20) break;
-    }
-    
-    // Fallback to local catalog if no Depop results
-    if (allItems.length < 5) {
-      console.log('  Depop returned few results, searching local catalog...');
-      const localItems = await searchLocalCatalog(supabase, searchQueries, attributes, budget);
-      allItems.push(...localItems);
-    }
-    
-    // Deduplicate by URL
-    const uniqueItems = Array.from(
-      new Map(allItems.map(item => [item.item_url, item])).values()
-    );
-    
-    console.log(`Total unique items: ${uniqueItems.length}`);
+    // Build search query from attributes
+    const searchQuery: SearchQuery = {
+      searchWords: [
+        attributes.searchQueries.primary,
+        attributes.searchQueries.fallback,
+        ...attributes.searchQueries.keywords.slice(0, 2)
+      ].filter(Boolean),
+      priceMin: budget?.min,
+      priceMax: budget?.max,
+      category: attributes.category,
+      itemsPerPage: 50,
+    };
 
-    if (uniqueItems.length === 0) {
+    const allListings = await adapterManager.searchAll(searchQuery);
+
+    if (allListings.length === 0) {
       await supabase
         .from('visual_searches')
         .update({ 
           status: 'no_matches',
           analysis_data: { 
             attributes,
-            reason: 'No matching items found in catalog.',
-            searchedQueries,
+            reason: 'No matching items found.',
             suggestions: [
-              `Try adding more items to the catalog`,
-              'Upload a clearer photo of the item',
+              'Try a different search query',
+              'Upload a clearer photo',
               'Consider hiring a professional thrifter'
             ]
           }
@@ -216,89 +694,104 @@ serve(async (req) => {
       return new Response(JSON.stringify({ 
         status: 'no_matches',
         attributes,
-        message: 'No matches found.',
-        searchedQueries
+        message: 'No matches found.'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     // ============================================================
-    // STEP 3: MATCHING & SCORING WITH WEIGHTED ALGORITHM
+    // STEP 3: TWO-STAGE FILTERING & SCORING
     // ============================================================
-    console.log('\n[STEP 3] Scoring items with weighted matching algorithm...');
+    console.log('\n[STEP 3] Filtering and scoring results...');
     
-    const scoredItems: ScoredItem[] = uniqueItems.map(item => {
-      const scores = calculateAdvancedMatchScores(attributes, item);
-      
-      // Apply weighted formula
+    // Stage 1: Already done by source-side filters (price, thumbnails)
+    // Stage 2: Site-side filtering and scoring
+    const scoredListings: ScoredListing[] = allListings.map(listing => {
+      const scores = calculateMatchScores(attributes, listing);
       const finalScore = 
         (scores.visualSimilarity * WEIGHTS.visualSimilarity) +
         (scores.textSimilarity * WEIGHTS.textSimilarity) +
         (scores.attributeMatch * WEIGHTS.attributeMatch) +
         (scores.qualityScore * WEIGHTS.qualityScore);
-      
+
       return {
-        ...item,
+        ...listing,
         similarity_score: Math.min(finalScore, 1.0),
         _scores: scores,
-        match_explanation: generateMatchExplanation(attributes, item, scores)
+        match_explanation: generateMatchExplanation(attributes, listing, scores)
       };
-    })
-    .sort((a, b) => b.similarity_score - a.similarity_score)
-    .slice(0, 15); // Top 15 results
+    });
 
-    // ============================================================
-    // STEP 4: FILTER BY MATCH QUALITY THRESHOLDS
-    // ============================================================
-    console.log('\n[STEP 4] Filtering by quality thresholds...');
+    // Sort and filter
+    scoredListings.sort((a, b) => b.similarity_score - a.similarity_score);
+
+    // Smart AI threshold: Only run visual AI if >50 results
+    let finalListings = scoredListings;
+    if (scoredListings.length > 50) {
+      console.log(`[STEP 3b] ${scoredListings.length} results - filtering to top 50 by metadata first`);
+      finalListings = scoredListings.slice(0, 50);
+      // TODO: Add visual AI re-ranking here in future
+    }
+
+    const topMatches = finalListings.slice(0, 15);
     
-    const highQuality = scoredItems.filter(i => i.similarity_score >= 0.70);
-    const mediumQuality = scoredItems.filter(i => i.similarity_score >= 0.50 && i.similarity_score < 0.70);
-    const lowQuality = scoredItems.filter(i => i.similarity_score < 0.50);
+    const highQuality = topMatches.filter(i => i.similarity_score >= 0.70);
+    const mediumQuality = topMatches.filter(i => i.similarity_score >= 0.50 && i.similarity_score < 0.70);
     
     console.log(`High quality (≥70%): ${highQuality.length}`);
     console.log(`Medium quality (50-69%): ${mediumQuality.length}`);
-    console.log(`Low quality (<50%): ${lowQuality.length}`);
-    console.log(`Top score: ${(scoredItems[0]?.similarity_score * 100).toFixed(1)}%`);
 
-    // Store results in database
-    const topMatches = scoredItems.slice(0, 12);
+    // ============================================================
+    // STEP 4: STORE RESULTS
+    // ============================================================
+    console.log('\n[STEP 4] Storing results...');
     
+    // Map source to platform_type enum
+    const mapSourceToPlatform = (source: string): string => {
+      const platformMap: Record<string, string> = {
+        'tradera': 'tradera',
+        'depop': 'depop',
+        'local': 'other_vintage',
+        'ebay': 'other_vintage',
+      };
+      return platformMap[source] || 'other_vintage';
+    };
+
     try {
-      const insertPromises = topMatches.map((result: ScoredItem) => {
-        // Get platform from result, default to depop
-        const platform = (result as any).platform || 'depop';
-        
+      const insertPromises = topMatches.slice(0, 12).map((listing) => {
         return supabase
           .from('search_results')
           .insert({
             search_id: searchId,
-            platform: platform as any,
-            item_url: result.item_url,
-            title: result.title,
-            price: result.price,
-            currency: result.currency || 'EUR',
-            image_url: result.image_url,
-            similarity_score: result.similarity_score,
-            description: result.title,
+            platform: mapSourceToPlatform(listing.source) as any,
+            item_url: listing.listing_url,
+            title: listing.title,
+            price: listing.price,
+            currency: listing.currency,
+            image_url: listing.images[0] || null,
+            similarity_score: listing.similarity_score,
+            description: listing.description || listing.title,
             matched_attributes: {
-              breakdown: result._scores.breakdown,
-              matchedFeatures: extractMatchedFeatures(attributes, result)
+              source: listing.source,
+              source_item_id: listing.source_item_id,
+              breakdown: listing._scores.breakdown,
+              brand: listing.brand,
+              size: listing.size,
+              condition: listing.condition,
             },
-            match_explanation: result.match_explanation
+            match_explanation: listing.match_explanation
           });
       });
 
       await Promise.all(insertPromises);
-      console.log(`\nStored ${topMatches.length} results to database`);
+      console.log(`Stored ${Math.min(topMatches.length, 12)} results`);
     } catch (dbError) {
       console.error('Database insert error:', dbError);
     }
 
     // Update final status
-    const finalStatus = highQuality.length > 0 ? 'completed' : 
-                        mediumQuality.length > 0 ? 'completed' : 'no_matches';
+    const finalStatus = highQuality.length > 0 || mediumQuality.length > 0 ? 'completed' : 'no_matches';
     
     await supabase
       .from('visual_searches')
@@ -306,13 +799,12 @@ serve(async (req) => {
         status: finalStatus,
         analysis_data: {
           attributes,
-          searchedQueries,
+          searchQuery,
           matchStats: {
-            total: uniqueItems.length,
+            total: allListings.length,
             highQuality: highQuality.length,
             mediumQuality: mediumQuality.length,
-            lowQuality: lowQuality.length,
-            topScore: scoredItems[0]?.similarity_score
+            topScore: topMatches[0]?.similarity_score || 0
           }
         }
       })
@@ -325,11 +817,12 @@ serve(async (req) => {
       resultsCount: topMatches.length,
       highQualityCount: highQuality.length,
       attributes,
-      searchedQueries,
       matchStats: {
+        total: allListings.length,
         highQuality: highQuality.length,
         mediumQuality: mediumQuality.length,
-        topScore: scoredItems[0]?.similarity_score
+        topScore: topMatches[0]?.similarity_score || 0,
+        sources: [...new Set(topMatches.map(l => l.source))]
       }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -346,8 +839,7 @@ serve(async (req) => {
 });
 
 // ============================================================
-// ADVANCED ATTRIBUTE EXTRACTION
-// Uses Gemini vision to extract detailed garment features
+// ATTRIBUTE EXTRACTION (preserved from original)
 // ============================================================
 async function extractDetailedAttributes(
   imageUrl: string, 
@@ -472,168 +964,16 @@ Return ONLY valid JSON.`
 }
 
 // ============================================================
-// LOCAL CATALOG SEARCH
-// Searches the catalog_items table with text matching
+// MATCH SCORING (adapted for normalized listings)
 // ============================================================
-async function searchLocalCatalog(
-  supabase: any,
-  queries: string[],
-  attributes: ExtractedAttributes,
-  budget?: { min?: number; max?: number }
-): Promise<any[]> {
-  try {
-    // Build a text search query from all search terms
-    const allKeywords = new Set<string>();
-    
-    // Add words from all queries
-    queries.forEach(q => {
-      q.toLowerCase().split(/\s+/).forEach(word => {
-        if (word.length > 2) allKeywords.add(word);
-      });
-    });
-    
-    // Add color and category
-    if (attributes.colors?.primary) {
-      allKeywords.add(attributes.colors.primary.toLowerCase());
-    }
-    if (attributes.category) {
-      attributes.category.toLowerCase().split(/\s+/).forEach(w => allKeywords.add(w));
-    }
-    
-    console.log('Searching catalog with keywords:', Array.from(allKeywords).slice(0, 10));
-    
-    // Query catalog_items with text search
-    let query = supabase
-      .from('catalog_items')
-      .select('*')
-      .eq('is_active', true);
-    
-    // Apply budget filters
-    if (budget?.min) {
-      query = query.gte('price', budget.min);
-    }
-    if (budget?.max) {
-      query = query.lte('price', budget.max);
-    }
-    
-    const { data: items, error } = await query.limit(50);
-    
-    if (error) {
-      console.error('Catalog query error:', error);
-      return [];
-    }
-    
-    console.log(`Retrieved ${items?.length || 0} items from catalog`);
-    
-    if (!items || items.length === 0) {
-      return [];
-    }
-    
-    // Score items by keyword match
-    const scoredItems = items.map((item: any) => {
-      const searchText = `${item.title || ''} ${item.description || ''}`.toLowerCase();
-      let matchCount = 0;
-      
-      allKeywords.forEach(keyword => {
-        if (searchText.includes(keyword)) {
-          matchCount++;
-        }
-      });
-      
-      return {
-        ...item,
-        title: item.title,
-        price: item.price || 0,
-        currency: item.currency || 'EUR',
-        item_url: item.item_url,
-        image_url: item.image_url,
-        shopName: item.platform,
-        _matchScore: matchCount / Math.max(allKeywords.size, 1)
-      };
-    });
-    
-    // Sort by match score and return top items
-    return scoredItems
-      .filter((item: any) => item._matchScore > 0 || items.length <= 10)
-      .sort((a: any, b: any) => b._matchScore - a._matchScore)
-      .slice(0, 20);
-    
-  } catch (error) {
-    console.error('Local catalog search error:', error);
-    return [];
-  }
-}
-
-// ============================================================
-// DEPOP API SEARCH
-// Uses Depop's internal search API
-// ============================================================
-async function searchDepop(
-  query: string,
-  budget?: { min?: number; max?: number }
-): Promise<any[]> {
-  try {
-    const encodedQuery = encodeURIComponent(query);
-    
-    // Depop's internal API endpoint
-    let depopUrl = `https://webapi.depop.com/api/v2/search/products/?what=${encodedQuery}&itemsPerPage=24`;
-    if (budget?.min) depopUrl += `&priceMin=${budget.min}`;
-    if (budget?.max) depopUrl += `&priceMax=${budget.max}`;
-
-    console.log('Fetching Depop:', depopUrl);
-
-    const response = await fetch(depopUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Origin': 'https://www.depop.com',
-        'Referer': 'https://www.depop.com/',
-      }
-    });
-
-    if (!response.ok) {
-      console.error('Depop API failed:', response.status);
-      return [];
-    }
-
-    const data = await response.json();
-    const products = data?.products || data?.items || [];
-    
-    return products.map((item: any) => ({
-      title: item.description || item.title || '',
-      price: parseFloat(item.price?.priceAmount || item.price || '0'),
-      currency: item.price?.currencyName || 'USD',
-      item_url: `https://www.depop.com/products/${item.slug || item.id}/`,
-      image_url: item.preview?.url || item.pictures?.[0]?.url || item.image || '',
-      shopName: item.seller?.username || '',
-      platform: 'depop',
-      brand: item.brand || '',
-      size: item.sizes?.[0] || ''
-    })).filter((item: any) => 
-      item.title && 
-      item.item_url && 
-      item.image_url
-    );
-    
-  } catch (error) {
-    console.error('Depop search error:', error);
-    return [];
-  }
-}
-
-// ============================================================
-// ADVANCED MATCH SCORING ALGORITHM
-// Hybrid: Text similarity + Attribute matching + Quality signals
-// ============================================================
-function calculateAdvancedMatchScores(
+function calculateMatchScores(
   attributes: ExtractedAttributes, 
-  item: any
+  listing: NormalizedListing
 ): MatchScores {
-  const titleLower = (item.title || '').toLowerCase();
-  const titleWords = new Set(titleLower.split(/\s+/));
+  const titleLower = (listing.title || '').toLowerCase();
+  const descLower = (listing.description || '').toLowerCase();
+  const searchText = `${titleLower} ${descLower}`;
   
-  // ---- ATTRIBUTE MATCHING (structured comparison) ----
   const breakdown = {
     categoryMatch: 0,
     colorMatch: 0,
@@ -644,92 +984,73 @@ function calculateAdvancedMatchScores(
     featureMatch: 0
   };
 
-  // Category match (20%)
+  // Category match
   if (attributes.category) {
     const categoryTerms = attributes.category.toLowerCase().split(/\s+/);
-    const matches = categoryTerms.filter(t => titleLower.includes(t));
+    const matches = categoryTerms.filter(t => searchText.includes(t));
     breakdown.categoryMatch = matches.length / categoryTerms.length;
-    
-    // Subcategory bonus
     if (attributes.subcategory) {
       const subTerms = attributes.subcategory.toLowerCase().split(/\s+/);
-      const subMatches = subTerms.filter(t => titleLower.includes(t));
-      if (subMatches.length > 0) {
+      if (subTerms.some(t => searchText.includes(t))) {
         breakdown.categoryMatch = Math.min(1, breakdown.categoryMatch + 0.3);
       }
     }
   }
 
-  // Color match (15%)
+  // Color match - check listing color field and text
   if (attributes.colors?.primary) {
     const colorTerms = attributes.colors.primary.toLowerCase().split(/\s+/);
-    if (colorTerms.some(c => titleLower.includes(c))) {
+    const hasColorInField = listing.color && colorTerms.some(c => listing.color!.toLowerCase().includes(c));
+    const hasColorInText = colorTerms.some(c => searchText.includes(c));
+    if (hasColorInField || hasColorInText) {
       breakdown.colorMatch = 0.8;
     }
-    // Secondary color bonus
-    if (attributes.colors.secondary && 
-        titleLower.includes(attributes.colors.secondary.toLowerCase())) {
+    if (attributes.colors.secondary && searchText.includes(attributes.colors.secondary.toLowerCase())) {
       breakdown.colorMatch = Math.min(1, breakdown.colorMatch + 0.2);
     }
   }
 
-  // Pattern match (12%)
+  // Pattern match
   if (attributes.pattern?.type) {
     const patternTerms = attributes.pattern.type.toLowerCase().split(/\s+/);
-    if (patternTerms.some(p => titleLower.includes(p))) {
+    if (patternTerms.some(p => searchText.includes(p))) {
       breakdown.patternMatch = 1.0;
     } else if (attributes.pattern.type.toLowerCase() === 'solid' && 
-               !titleLower.match(/floral|stripe|plaid|print|pattern/)) {
-      breakdown.patternMatch = 0.6; // Implicit solid match
+               !searchText.match(/floral|stripe|plaid|print|pattern/)) {
+      breakdown.patternMatch = 0.6;
     }
   }
 
-  // Material match (12%)
+  // Material match
   if (attributes.material?.fabric) {
     const materialTerms = attributes.material.fabric.toLowerCase().split(/\s+/);
-    if (materialTerms.some(m => titleLower.includes(m))) {
+    if (materialTerms.some(m => searchText.includes(m))) {
       breakdown.materialMatch = 1.0;
     }
-    // Texture bonus
-    if (attributes.material.texture && 
-        titleLower.includes(attributes.material.texture.toLowerCase())) {
-      breakdown.materialMatch = Math.min(1, breakdown.materialMatch + 0.2);
-    }
   }
 
-  // Silhouette match (15%)
+  // Silhouette match
   if (attributes.construction?.silhouette) {
     const silTerms = attributes.construction.silhouette.toLowerCase().split(/\s+/);
-    if (silTerms.some(s => titleLower.includes(s))) {
+    if (silTerms.some(s => searchText.includes(s))) {
       breakdown.silhouetteMatch = 0.8;
     }
-    // Length and other construction details
-    if (attributes.construction.length && 
-        titleLower.includes(attributes.construction.length.toLowerCase())) {
-      breakdown.silhouetteMatch = Math.min(1, breakdown.silhouetteMatch + 0.2);
-    }
   }
 
-  // Style match (10%)
+  // Style match
   if (attributes.style) {
-    if (attributes.style.aesthetic && 
-        titleLower.includes(attributes.style.aesthetic.toLowerCase())) {
+    if (attributes.style.aesthetic && searchText.includes(attributes.style.aesthetic.toLowerCase())) {
       breakdown.styleMatch = 0.7;
     }
-    if (attributes.style.era && 
-        titleLower.includes(attributes.style.era.toLowerCase())) {
+    if (attributes.style.era && searchText.includes(attributes.style.era.toLowerCase())) {
       breakdown.styleMatch = Math.min(1, breakdown.styleMatch + 0.3);
-    }
-    if (attributes.style.culturalOrigin && 
-        titleLower.includes(attributes.style.culturalOrigin.toLowerCase())) {
-      breakdown.styleMatch = Math.min(1, breakdown.styleMatch + 0.4);
     }
   }
 
-  // Distinctive features match (16%)
+  // Feature match
   if (attributes.distinctiveFeatures?.length > 0) {
     const featureMatches = attributes.distinctiveFeatures.filter(f => 
-      titleLower.includes(f.toLowerCase())
+      searchText.includes(f.toLowerCase())
     );
     breakdown.featureMatch = Math.min(1, featureMatches.length / Math.max(2, attributes.distinctiveFeatures.length));
   }
@@ -744,57 +1065,38 @@ function calculateAdvancedMatchScores(
     (breakdown.styleMatch * ATTRIBUTE_WEIGHTS.style) +
     (breakdown.featureMatch * ATTRIBUTE_WEIGHTS.distinctiveFeatures);
 
-  // ---- VISUAL SIMILARITY ESTIMATION ----
-  // Without CLIP embeddings, estimate from visual description matching
-  let visualSimilarity = 0.4; // Base score
-  
-  // Boost from visual signature matches
+  // Visual similarity estimate
+  let visualSimilarity = 0.4;
   if (attributes.visualSignature) {
     const colorMatches = attributes.visualSignature.dominantColors?.filter(c => 
-      titleLower.includes(c.toLowerCase())
+      searchText.includes(c.toLowerCase())
     ).length || 0;
     visualSimilarity += colorMatches * 0.15;
-    
-    // Pattern description similarity
-    if (attributes.visualSignature.patternDescription) {
-      const patternWords = attributes.visualSignature.patternDescription.toLowerCase().split(/\s+/);
-      const patternMatches = patternWords.filter(w => w.length > 3 && titleLower.includes(w)).length;
-      visualSimilarity += Math.min(0.2, patternMatches * 0.05);
-    }
   }
-  
-  // Primary search query match (strong signal)
-  if (item._searchQuery === attributes.searchQueries?.primary) {
-    visualSimilarity += 0.15;
-  }
-  
   visualSimilarity = Math.min(1, visualSimilarity);
 
-  // ---- TEXT SIMILARITY ----
+  // Text similarity
   let textSimilarity = 0;
   if (attributes.textDescription) {
     const descWords = attributes.textDescription.toLowerCase()
       .split(/\s+/)
       .filter(w => w.length > 3);
-    
-    const wordMatches = descWords.filter(w => titleWords.has(w) || titleLower.includes(w));
+    const wordMatches = descWords.filter(w => searchText.includes(w));
     textSimilarity = Math.min(1, wordMatches.length / Math.max(5, descWords.length));
   }
-
-  // Keyword matching bonus
   if (attributes.searchQueries?.keywords) {
     const keywordMatches = attributes.searchQueries.keywords.filter(k => 
-      titleLower.includes(k.toLowerCase())
+      searchText.includes(k.toLowerCase())
     ).length;
     textSimilarity = Math.min(1, textSimilarity + keywordMatches * 0.1);
   }
 
-  // ---- QUALITY SCORE ----
+  // Quality score
   let qualityScore = 0.5;
-  if (item.freeShipping) qualityScore += 0.15;
-  if (item.shopName) qualityScore += 0.1;
-  if (item.image_url?.includes('il_')) qualityScore += 0.15; // High-res indicator
-  if (item.originalPrice && item.originalPrice > item.price) qualityScore += 0.1; // On sale
+  if (listing.seller_rating && listing.seller_rating > 4) qualityScore += 0.2;
+  if (listing.images.length > 1) qualityScore += 0.1;
+  if (listing.brand) qualityScore += 0.1;
+  if (listing.condition) qualityScore += 0.1;
   qualityScore = Math.min(1, qualityScore);
 
   return {
@@ -807,76 +1109,39 @@ function calculateAdvancedMatchScores(
 }
 
 // ============================================================
-// MATCH EXPLANATION GENERATOR
+// MATCH EXPLANATION
 // ============================================================
 function generateMatchExplanation(
   attributes: ExtractedAttributes, 
-  item: any, 
+  listing: NormalizedListing, 
   scores: MatchScores
 ): string {
   const matches: string[] = [];
-  const titleLower = (item.title || '').toLowerCase();
+  const searchText = `${listing.title} ${listing.description}`.toLowerCase();
 
-  // Collect matched attributes
-  if (scores.breakdown.categoryMatch > 0.5) {
-    matches.push(attributes.category);
-  }
-  if (scores.breakdown.colorMatch > 0.5 && attributes.colors?.primary) {
-    matches.push(attributes.colors.primary);
-  }
-  if (scores.breakdown.materialMatch > 0.5 && attributes.material?.fabric) {
-    matches.push(attributes.material.fabric);
-  }
-  if (scores.breakdown.patternMatch > 0.5 && attributes.pattern?.type !== 'solid') {
-    matches.push(attributes.pattern.type);
-  }
-  if (scores.breakdown.silhouetteMatch > 0.5 && attributes.construction?.silhouette) {
-    matches.push(attributes.construction.silhouette + ' fit');
-  }
+  if (scores.breakdown.categoryMatch > 0.5) matches.push(attributes.category);
+  if (scores.breakdown.colorMatch > 0.5 && attributes.colors?.primary) matches.push(attributes.colors.primary);
+  if (scores.breakdown.materialMatch > 0.5 && attributes.material?.fabric) matches.push(attributes.material.fabric);
+  if (scores.breakdown.patternMatch > 0.5 && attributes.pattern?.type !== 'solid') matches.push(attributes.pattern.type);
+  if (scores.breakdown.silhouetteMatch > 0.5 && attributes.construction?.silhouette) matches.push(attributes.construction.silhouette + ' fit');
   if (scores.breakdown.styleMatch > 0.5) {
     if (attributes.style?.aesthetic) matches.push(attributes.style.aesthetic);
     if (attributes.style?.era) matches.push(attributes.style.era);
   }
 
-  // Add matched distinctive features
   if (attributes.distinctiveFeatures) {
     attributes.distinctiveFeatures.forEach(f => {
-      if (titleLower.includes(f.toLowerCase())) {
-        matches.push(f);
-      }
+      if (searchText.includes(f.toLowerCase())) matches.push(f);
     });
   }
 
+  // Add source info
+  const source = listing.source.charAt(0).toUpperCase() + listing.source.slice(1);
+
   if (matches.length === 0) {
-    const avgScore = (scores.visualSimilarity + scores.textSimilarity + scores.attributeMatch) / 3;
-    if (avgScore > 0.5) return 'Similar style match';
-    return 'Related item';
+    return `${source}: Similar style`;
   }
 
-  // Dedupe and limit
-  const uniqueMatches = [...new Set(matches)].slice(0, 5);
-  return 'Matches: ' + uniqueMatches.join(', ');
-}
-
-// ============================================================
-// EXTRACT MATCHED FEATURES FOR STORAGE
-// ============================================================
-function extractMatchedFeatures(attributes: ExtractedAttributes, item: ScoredItem): string[] {
-  const features: string[] = [];
-  const titleLower = (item.title || '').toLowerCase();
-
-  if (attributes.category && titleLower.includes(attributes.category.toLowerCase())) {
-    features.push(`category:${attributes.category}`);
-  }
-  if (attributes.colors?.primary && titleLower.includes(attributes.colors.primary.toLowerCase())) {
-    features.push(`color:${attributes.colors.primary}`);
-  }
-  if (attributes.material?.fabric && titleLower.includes(attributes.material.fabric.toLowerCase())) {
-    features.push(`material:${attributes.material.fabric}`);
-  }
-  if (attributes.construction?.silhouette && titleLower.includes(attributes.construction.silhouette.toLowerCase())) {
-    features.push(`silhouette:${attributes.construction.silhouette}`);
-  }
-
-  return features;
+  const uniqueMatches = [...new Set(matches)].slice(0, 4);
+  return `${source}: ${uniqueMatches.join(', ')}`;
 }
