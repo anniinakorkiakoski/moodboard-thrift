@@ -358,6 +358,13 @@ export type Database = {
             referencedRelation: "thrifters"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "thrift_requests_thrifter_id_fkey"
+            columns: ["thrifter_id"]
+            isOneToOne: false
+            referencedRelation: "thrifters_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       thrifters: {
@@ -607,12 +614,80 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      thrifters_public: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          display_name: string | null
+          has_availability: boolean | null
+          id: string | null
+          is_verified: boolean | null
+          pricing_info: string | null
+          rating: number | null
+          specialties: string[] | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          has_availability?: never
+          id?: string | null
+          is_verified?: boolean | null
+          pricing_info?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          has_availability?: never
+          id?: string | null
+          is_verified?: boolean | null
+          pricing_info?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_active_customer_count: {
         Args: { thrifter_uuid: string }
         Returns: number
+      }
+      get_public_thrifters: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          display_name: string
+          has_availability: boolean
+          id: string
+          is_verified: boolean
+          pricing_info: string
+          rating: number
+          specialties: string[]
+        }[]
+      }
+      get_thrifter_public: {
+        Args: { thrifter_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          display_name: string
+          has_availability: boolean
+          id: string
+          is_verified: boolean
+          pricing_info: string
+          rating: number
+          specialties: string[]
+        }[]
       }
       has_role: {
         Args: {

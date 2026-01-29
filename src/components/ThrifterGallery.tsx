@@ -6,17 +6,16 @@ import { useToast } from '@/hooks/use-toast';
 
 interface Thrifter {
   id: string;
-  user_id: string;
   display_name: string;
-  bio: string;
-  avatar_url: string;
-  rating: number;
-  total_orders: number;
-  specialties: string[];
+  bio: string | null;
+  avatar_url: string | null;
+  rating: number | null;
+  specialties: string[] | null;
+  pricing_info: string | null;
+  is_verified: boolean | null;
+  has_availability: boolean;
   style_tags?: string[];
   match_score?: number;
-  max_active_customers: number;
-  current_active_customers: number;
 }
 
 interface ThrifterGalleryProps {
@@ -36,12 +35,8 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
 
   const fetchMatchedThrifters = async () => {
     try {
-      // Fetch all verified thrifters
-      const { data: thriftersData, error } = await supabase
-        .from('thrifters')
-        .select('*')
-        .eq('is_verified', true)
-        .order('rating', { ascending: false });
+      // Use secure RPC function that hides sensitive business data
+      const { data: thriftersData, error } = await supabase.rpc('get_public_thrifters');
 
       if (error) throw error;
 
@@ -105,10 +100,10 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
         }
         
         // For non-featured, sort by match score then rating
-        if (b.match_score !== a.match_score) {
-          return b.match_score - a.match_score;
+        if ((b.match_score || 0) !== (a.match_score || 0)) {
+          return (b.match_score || 0) - (a.match_score || 0);
         }
-        return b.rating - a.rating;
+        return (b.rating || 0) - (a.rating || 0);
       });
 
       setThrifters(withLocalAvatars);
@@ -190,7 +185,7 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
                 <p className="text-white text-sm font-medium mb-1">{thrifter.display_name}</p>
                 <div className="flex items-center gap-1">
                   <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                  <span className="text-white text-xs">{thrifter.rating.toFixed(1)}</span>
+                  <span className="text-white text-xs">{(thrifter.rating || 5).toFixed(1)}</span>
                 </div>
                 {thrifter.match_score && thrifter.match_score > 0 && (
                   <span className="text-xs text-accent mt-1">
@@ -205,7 +200,7 @@ export const ThrifterGallery = ({ userStyleTags, userId }: ThrifterGalleryProps)
               <p className="text-xs font-medium text-foreground truncate">{thrifter.display_name}</p>
               <div className="flex items-center gap-1 mt-0.5">
                 <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                <span className="text-xs text-foreground/70">{thrifter.rating.toFixed(1)}</span>
+                <span className="text-xs text-foreground/70">{(thrifter.rating || 5).toFixed(1)}</span>
               </div>
             </div>
           </div>
