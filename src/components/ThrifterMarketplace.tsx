@@ -15,10 +15,10 @@ interface Thrifter {
   bio: string | null;
   avatar_url: string | null;
   rating: number;
-  total_orders: number;
   specialties: string[] | null;
   pricing_info: string | null;
   is_verified: boolean;
+  has_availability: boolean;
 }
 
 interface ThrifterMarketplaceProps {
@@ -39,13 +39,19 @@ export const ThrifterMarketplace = ({ searchId, imageUrl }: ThrifterMarketplaceP
   }, []);
 
   const fetchThrifters = async () => {
-    const { data } = await supabase
-      .from('thrifters')
-      .select('*')
-      .eq('is_verified', true)
-      .order('rating', { ascending: false });
+    // Use secure RPC function that hides sensitive business data
+    const { data, error } = await supabase.rpc('get_public_thrifters');
+    
+    if (error) {
+      console.error('Error fetching thrifters:', error);
+      return;
+    }
 
-    if (data) setThrifters(data);
+    if (data) {
+      // Sort by rating descending
+      const sorted = [...data].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      setThrifters(sorted);
+    }
   };
 
   const submitRequest = async () => {
@@ -124,10 +130,7 @@ export const ThrifterMarketplace = ({ searchId, imageUrl }: ThrifterMarketplaceP
                   </div>
                   <div className="flex items-center gap-1 mt-1">
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-semibold">{thrifter.rating.toFixed(1)}</span>
-                    <span className="text-xs text-muted-foreground">
-                      ({thrifter.total_orders} orders)
-                    </span>
+                    <span className="text-sm font-semibold">{thrifter.rating?.toFixed(1) || '5.0'}</span>
                   </div>
                 </div>
               </div>

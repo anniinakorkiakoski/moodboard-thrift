@@ -3,23 +3,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Star, ShoppingBag } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface Thrifter {
   id: string;
-  user_id: string;
   display_name: string;
-  bio: string;
-  avatar_url: string;
-  rating: number;
-  total_orders: number;
-  specialties: string[];
+  bio: string | null;
+  avatar_url: string | null;
+  rating: number | null;
+  specialties: string[] | null;
+  pricing_info: string | null;
+  is_verified: boolean | null;
+  has_availability: boolean;
   style_tags?: string[];
-  pricing_info?: string;
-  max_active_customers: number;
-  current_active_customers: number;
 }
 
 interface ThrifterProfileDialogProps {
@@ -76,8 +74,8 @@ export const ThrifterProfileDialog = ({
       const defaultMessage = "Hey! I'd love to get curated by you.";
       const finalMessage = customMessage.trim() || defaultMessage;
       
-      // Check if thrifter has capacity
-      const hasCapacity = thrifter.current_active_customers < thrifter.max_active_customers;
+      // Use has_availability flag from secure RPC
+      const hasCapacity = thrifter.has_availability;
       const status = hasCapacity ? 'pending' : 'waitlist';
 
       const { error } = await supabase
@@ -146,11 +144,7 @@ export const ThrifterProfileDialog = ({
                 <div className="flex items-center gap-4 mt-2">
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    <span className="text-sm font-medium">{thrifter.rating.toFixed(1)}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm text-foreground/60">
-                    <ShoppingBag className="w-4 h-4" />
-                    <span>{thrifter.total_orders} orders</span>
+                    <span className="text-sm font-medium">{(thrifter.rating || 5).toFixed(1)}</span>
                   </div>
                 </div>
               </div>
@@ -201,15 +195,15 @@ export const ThrifterProfileDialog = ({
             </div>
           )}
 
-          {/* Connection Status or Form */}
+          {/* Availability Status */}
           <div className="bg-accent/10 p-3 rounded-lg mb-4">
             <div className="flex items-center justify-between text-sm">
               <span className="text-foreground/70">Availability:</span>
               <span className="font-medium">
-                {thrifter.max_active_customers - thrifter.current_active_customers} spots available
+                {thrifter.has_availability ? 'Spots available' : 'At capacity'}
               </span>
             </div>
-            {thrifter.current_active_customers >= thrifter.max_active_customers && (
+            {!thrifter.has_availability && (
               <p className="text-xs text-muted-foreground mt-1">
                 At capacity - new requests will be added to waitlist
               </p>
@@ -247,7 +241,7 @@ export const ThrifterProfileDialog = ({
                 variant="cta"
               >
                 {sending ? 'Sending...' : 
-                  thrifter.current_active_customers >= thrifter.max_active_customers 
+                  !thrifter.has_availability 
                     ? 'Join Waitlist' 
                     : 'Send Connection Request'}
               </Button>
