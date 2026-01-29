@@ -1,216 +1,371 @@
 
-# Source Adapter Architecture for Multi-Platform Search
 
-## Overview
+# Tradera SOAP API Response Parsing & Text Search Support
 
-This plan introduces a modular source adapter architecture to enable consistent UX across multiple resale marketplace APIs while displaying real-world listings. The initial implementation focuses on Tradera's SOAP API integration, with the architecture designed to easily accommodate eBay and other sources later.
+## Summary
 
-## Architecture Design
+This plan addresses three key areas: (1) fixing security issues with hardcoded API credentials, (2) correcting the XML response parser to match Tradera's actual SOAP 1.2 response format, and (3) adding text-based search capability alongside the existing image-based search.
 
-```text
-+------------------+     +-------------------+     +------------------+
-|   Visual Search  | --> |  Source Adapter   | --> |   Normalized     |
-|   Edge Function  |     |     Manager       |     |   Listing Schema |
-+------------------+     +-------------------+     +------------------+
-                                  |
-            +---------------------+---------------------+
-            |                     |                     |
-    +-------v-------+     +-------v-------+     +-------v-------+
-    |    Tradera    |     |    eBay       |     |    Local      |
-    |    Adapter    |     |    Adapter    |     |    Catalog    |
-    +---------------+     +---------------+     +---------------+
+## Issues Identified
+
+### 1. Security: Hardcoded API Credentials
+The `TraderaAdapter` class has credentials hardcoded as default values on lines 97-98:
+```
+private appId: number = 5636;
+private appKey: string = "1da3f721-eb75-4da3-a239-377de44a0f42";
+```
+These should never appear in source code. The credentials are already configured as Supabase secrets (`TRADERA_APP_ID`, `TRADERA_APP_KEY`).
+
+### 2. XML Response Parsing Mismatch
+The current parser looks for `<Item>` tags, but the actual Tradera response uses `<Items>` (plural). Additionally:
+- `ImageLinks` contains nested `<ImageLink><Url>string</Url></ImageLink>` structure
+- `AttributeValues` contains `TermAttributeValues` and `NumberAttributeValues` that could extract size, brand, condition
+- `SellerDsrAverage` is available for seller rating (not `SellerRating`)
+
+### 3. Text-Based Search Not Supported
+The current flow requires an image upload. Users should also be able to search by typing text queries directly.
+
+### 4. .env File Cleanup
+The `.env` file contains Tradera credentials which is unnecessary since they are stored in Supabase secrets and only used by edge functions.
+
+## Implementation Plan
+
+### Step 1: Remove Hardcoded Credentials from Edge Function
+
+Update `supabase/functions/visual-search/index.ts`:
+
+**Before:**
+```typescript
+class TraderaAdapter implements SourceAdapter {
+  name = "tradera";
+  private appId: number = 5636;
+  private appKey: string = "1da3f721-eb75-4da3-a239-377de44a0f42";
+
+  constructor() {
+    this.appId = Deno.env.get("TRADERA_APP_ID") || "";
+    this.appKey = Deno.env.get("TRADERA_APP_KEY") || "";
+  }
 ```
 
-## What Will Be Built
+**After:**
+```typescript
+class TraderaAdapter implements SourceAdapter {
+  name = "tradera";
+  private appId: string;
+  private appKey: string;
 
-### 1. Normalized Listing Schema
+  constructor() {
+    this.appId = Deno.env.get("TRADERA_APP_ID") || "";
+    this.appKey = Deno.env.get("TRADERA_APP_KEY") || "";
+    if (!this.appId || !this.appKey) {
+      console.warn("[Tradera] API credentials not configured");
+    }
+  }
+```
 
-A consistent data structure for all search results regardless of source:
+### Step 2: Fix XML Response Parsing
 
-```text
-interface NormalizedListing {
-  source: string;           // tradera, ebay, local
-  source_item_id: string;   // Original platform ID
-  title: string;
-  description: string;
-  price: number;
-  currency: string;         // SEK, EUR, USD
-  shipping: string | null;  // Shipping info or cost
-  condition: string | null; // New, Used, etc.
-  brand: string | null;
-  category: string | null;
-  size: string | null;
-  color: string | null;
-  city: string | null;
-  country: string | null;
-  zip: string | null;
-  images: string[];         // Array of image URLs
-  listing_url: string;      // Direct link to listing
-  seller_name: string | null;
-  seller_rating: number | null;
-  end_date: string | null;  // For auctions
-  is_auction: boolean;
+Update the `parseResponse` method to handle the correct Tradera SOAP response structure:
+
+```typescript
+private parseResponse(xmlText: string): NormalizedListing[] {
+  const listings: NormalizedListing[] = [];
+
+  // Extract items from SearchAdvancedResult - note: tag is <Items> not <Item>
+  const itemMatches = xmlText.match(/<Items>([\s\S]*?)<\/Items>/g) || [];
+
+  for (const itemXml of itemMatches) {
+    try {
+      const listing = this.parseItem(itemXml);
+      if (listing) listings.push(listing);
+    } catch (e) {
+      console.error("[Tradera] Parse item error:", e);
+    }
+  }
+
+  // Check for errors in response
+  const errorMatch = xmlText.match(/<Errors>[\s\S]*?<Code>([^<]*)<\/Code>[\s\S]*?<Message>([^<]*)<\/Message>/);
+  if (errorMatch) {
+    console.error(`[Tradera] API Error: ${errorMatch[1]} - ${errorMatch[2]}`);
+  }
+
+  return listings;
 }
 ```
 
-### 2. Source Adapter Interface
+Update `parseItem` to correctly extract nested ImageLinks:
 
-Each adapter implements:
-- **translateQuery**: Convert AI-generated search terms to API-specific format
-- **search**: Execute API call with pagination support
-- **mapToNormalizedListing**: Convert source response to normalized schema
-- **getSourceFilters**: Return which filters can be applied server-side
-- Built-in rate limiting and caching (15-minute TTL)
+```typescript
+private parseItem(itemXml: string): NormalizedListing | null {
+  const getValue = (tag: string): string => {
+    const match = itemXml.match(new RegExp(`<${tag}>([^<]*)</${tag}>`));
+    return match ? match[1] : "";
+  };
 
-### 3. Tradera SOAP Adapter
+  const id = getValue("Id");
+  if (!id) return null;
 
-Integration with Tradera's SearchAdvanced SOAP API:
-- SOAP 1.2 envelope construction
-- XML response parsing
-- Field mapping from Tradera response to normalized schema
-- Server-side filtering: price range, category, item condition
-- Pagination via PageNumber parameter
+  // ThumbnailLink is a direct URL
+  const thumbnailLink = getValue("ThumbnailLink");
+  
+  // ImageLinks contains nested <ImageLink><Url>...</Url></ImageLink>
+  const imageUrlMatches = itemXml.match(/<ImageLink>[\s\S]*?<Url>([^<]*)<\/Url>/g) || [];
+  const imageLinks = imageUrlMatches
+    .map(m => {
+      const urlMatch = m.match(/<Url>([^<]*)<\/Url>/);
+      return urlMatch ? urlMatch[1] : null;
+    })
+    .filter((url): url is string => url !== null);
 
-### 4. Secrets Management
+  const images = [thumbnailLink, ...imageLinks].filter(Boolean);
 
-Two new Supabase secrets will be added:
-- `TRADERA_APP_ID` = 5636
-- `TRADERA_APP_KEY` = 1da3f721-eb75-4da3-a239-377de44a0f42
+  // Parse AttributeValues for size, brand, condition
+  const attributeValues = this.parseAttributeValues(itemXml);
 
-### 5. Two-Stage Filtering
+  const buyNowPrice = parseFloat(getValue("BuyItNowPrice")) || 0;
+  const maxBid = parseFloat(getValue("MaxBid")) || 0;
+  const price = buyNowPrice || maxBid || parseFloat(getValue("NextBid")) || 0;
 
-**Stage 1 - Source-side (where supported):**
-- Price min/max
-- Category (fashion/clothing categories for Tradera)
-- Item condition
-- Only items with thumbnails
+  const itemType = getValue("ItemType");
+  const isAuction = itemType?.toLowerCase().includes("auction") || 
+                    (getValue("HasBids") === "true" && !buyNowPrice);
 
-**Stage 2 - Site-side post-processing:**
-- Size matching against detected sizes
-- Color validation
-- Image quality checks
-- Deduplication across sources
+  return {
+    source: "tradera",
+    source_item_id: id,
+    title: getValue("ShortDescription") || getValue("LongDescription") || "Untitled",
+    description: getValue("LongDescription") || getValue("ShortDescription") || "",
+    price,
+    currency: "SEK",
+    shipping: null,
+    condition: attributeValues.condition || null,
+    brand: attributeValues.brand || null,
+    category: getValue("CategoryId") || null,
+    size: attributeValues.size || null,
+    color: attributeValues.color || null,
+    city: null,
+    country: "SE",
+    zip: null,
+    images,
+    listing_url: getValue("ItemUrl") || `https://www.tradera.com/item/${id}`,
+    seller_name: getValue("SellerAlias") || null,
+    seller_rating: parseFloat(getValue("SellerDsrAverage")) || null,
+    end_date: getValue("EndDate") || null,
+    is_auction: isAuction,
+  };
+}
 
-### 6. Smart AI Analysis Threshold
-
-Visual AI analysis (for re-ranking) triggers only when:
-- More than 50 results returned from sources
-- Results are filtered down to max 50 using text/metadata first
-- Cached analysis results are reused when available
-
-### 7. Analysis Cache Table
-
-New database table to store reusable analysis results:
-
-```text
-listing_analysis
-├── id (uuid)
-├── source (text)
-├── source_item_id (text)
-├── image_url (text)
-├── detected_color (text)
-├── garment_type (text)
-├── pattern (text)
-├── style (text)
-├── image_embedding (vector, optional)
-├── analyzed_at (timestamp)
-├── expires_at (timestamp)
+private parseAttributeValues(itemXml: string): { size?: string; brand?: string; condition?: string; color?: string } {
+  const result: { size?: string; brand?: string; condition?: string; color?: string } = {};
+  
+  // Extract TermAttributeValue entries
+  const termMatches = itemXml.match(/<TermAttributeValue>[\s\S]*?<Name>([^<]*)<\/Name>/g) || [];
+  
+  for (const term of termMatches) {
+    const nameMatch = term.match(/<Name>([^<]*)<\/Name>/);
+    if (nameMatch) {
+      const name = nameMatch[1].toLowerCase();
+      // Common Swedish attribute names
+      if (name.includes("storlek") || name.includes("size")) {
+        const valueMatch = itemXml.match(new RegExp(`${term}[\\s\\S]*?<Value>([^<]*)</Value>`));
+        if (valueMatch) result.size = valueMatch[1];
+      }
+      if (name.includes("märke") || name.includes("brand")) {
+        const valueMatch = itemXml.match(new RegExp(`${term}[\\s\\S]*?<Value>([^<]*)</Value>`));
+        if (valueMatch) result.brand = valueMatch[1];
+      }
+      if (name.includes("färg") || name.includes("color")) {
+        const valueMatch = itemXml.match(new RegExp(`${term}[\\s\\S]*?<Value>([^<]*)</Value>`));
+        if (valueMatch) result.color = valueMatch[1];
+      }
+      if (name.includes("skick") || name.includes("condition")) {
+        const valueMatch = itemXml.match(new RegExp(`${term}[\\s\\S]*?<Value>([^<]*)</Value>`));
+        if (valueMatch) result.condition = valueMatch[1];
+      }
+    }
+  }
+  
+  return result;
+}
 ```
 
-### 8. Response Cache
+### Step 3: Add Text-Based Search Support
 
-In-memory caching within the edge function:
-- Cache key: hash of normalized query + filters
-- TTL: 15 minutes
-- Stored per source adapter
+**3a. Update Edge Function Handler**
 
-## Implementation Steps
+Modify the main handler in `supabase/functions/visual-search/index.ts` to accept an optional `textQuery` parameter:
 
-### Step 1: Add Tradera API Secrets
-Add `TRADERA_APP_ID` and `TRADERA_APP_KEY` to Supabase secrets
+```typescript
+serve(async (req) => {
+  // ... CORS handling ...
 
-### Step 2: Create Database Table
-Create `listing_analysis` table for caching analysis results
+  const { imageUrl, searchId, cropData, budget, textQuery } = await req.json();
 
-### Step 3: Refactor Edge Function
-Update `supabase/functions/visual-search/index.ts`:
-- Add normalized listing interface
-- Create Tradera SOAP adapter with rate limiting
-- Create local catalog adapter (refactor existing)
-- Implement source adapter manager
-- Add two-stage filtering logic
-- Implement 15-minute response cache
-- Add smart AI analysis threshold (>50 results)
+  // Allow either imageUrl OR textQuery
+  if (!searchId || (!imageUrl && !textQuery)) {
+    return new Response(JSON.stringify({ error: "Missing required fields: searchId and either imageUrl or textQuery" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
-### Step 4: Update Response Mapping
-Ensure search results stored in database use normalized schema fields
+  // For text-only search, skip image analysis
+  let attributes: ExtractedAttributes;
+  if (imageUrl) {
+    attributes = await extractDetailedAttributes(imageUrl, cropData, LOVABLE_API_KEY);
+  } else {
+    // Create synthetic attributes from text query
+    attributes = createAttributesFromText(textQuery);
+  }
+  // ... rest of search logic
+});
 
-## Technical Details
-
-### Tradera SOAP Request Structure
-
-The edge function will construct SOAP envelopes:
-
-```text
-POST /v3/SearchService.asmx
-Host: api.tradera.com
-Content-Type: application/soap+xml; charset=utf-8
-
-SOAP envelope with:
-- AuthenticationHeader: AppId + AppKey
-- ConfigurationHeader: Sandbox=0, MaxResultAge=60
-- SearchAdvanced request with:
-  - SearchWords (from AI-generated queries)
-  - PriceMinimum/Maximum (from budget)
-  - OnlyItemsWithThumbnail=true
-  - ItemsPerPage=50
-  - CategoryId (fashion categories when relevant)
+function createAttributesFromText(query: string): ExtractedAttributes {
+  const words = query.toLowerCase().split(/\s+/);
+  return {
+    category: query,
+    colors: { primary: "", colorFamily: "neutral" },
+    material: { fabric: "" },
+    pattern: { type: "" },
+    construction: { silhouette: "" },
+    style: { aesthetic: "" },
+    distinctiveFeatures: [],
+    searchQueries: {
+      primary: query,
+      fallback: words.slice(0, 2).join(" "),
+      alternative: words[0] || "",
+      keywords: words.filter(w => w.length > 2),
+    },
+    textDescription: query,
+    visualSignature: {
+      dominantColors: [],
+      patternDescription: "",
+      shapeDescription: "",
+    },
+  };
+}
 ```
 
-### Response Parsing
+**3b. Add Text Search UI Component**
 
-Parse XML response extracting:
-- Id -> source_item_id
-- ShortDescription/LongDescription -> title/description
-- BuyItNowPrice or MaxBid -> price
-- ThumbnailLink + ImageLinks -> images
-- ItemUrl -> listing_url
-- SellerAlias -> seller_name
-- EndDate -> end_date
-- ItemType -> is_auction detection
+Create a new search input in the Gallery page that allows text-based queries:
 
-### Rate Limiting Strategy
+```typescript
+// In src/pages/Gallery.tsx or src/components/GalleryUpload.tsx
+const [textQuery, setTextQuery] = useState('');
 
-- Max 2 requests per second to Tradera API
-- Queue mechanism for concurrent searches
-- Exponential backoff on 429/503 responses
+const handleTextSearch = async () => {
+  if (!textQuery.trim()) return;
+  navigate('/visual-search-results', { 
+    state: { textQuery: textQuery.trim() } 
+  });
+};
+```
 
-### Files to Modify
+**3c. Update VisualSearchResults Page**
 
-1. **supabase/functions/visual-search/index.ts** - Major refactor
-2. **src/integrations/supabase/types.ts** - Auto-updated after migration
-3. **supabase/config.toml** - No changes needed
+Modify `src/pages/VisualSearchResults.tsx` to handle text queries:
 
-### Files Unchanged
+```typescript
+const { imageUrl, imageId, textQuery } = location.state || {};
 
-- UI components remain the same
-- `VisualSearchResults.tsx` - No changes
-- `VisualSearchResultCard.tsx` - No changes (already handles normalized data)
-- Navigation and styling - Preserved
+// Skip crop overlay for text searches
+useEffect(() => {
+  if (imageUrl && !searchInitiated) {
+    setShowCropOverlay(true);
+  } else if (textQuery && !searchInitiated) {
+    // Direct search for text queries
+    setSearchInitiated(true);
+    startTextSearch(textQuery);
+  }
+}, [imageUrl, textQuery, searchInitiated]);
+```
 
-## Expected Behavior
+**3d. Update useVisualSearch Hook**
 
-1. User uploads image and/or enters a search query -> AI extracts attributes and generates search queries
-2. Source adapter manager queries Tradera + local catalog in parallel
-3. Results normalized to common schema
-4. Stage 1: Source-side filters applied (price, thumbnails)
-5. Stage 2: Site-side filters (size, color matching)
-6. If >50 results: AI vision analysis runs to filter to top 50
-7. Results ranked by match score and displayed
-8. Cache populated for 15-minute reuse
+Add text search method to `src/hooks/useVisualSearch.ts`:
 
-## Rollback Safety
+```typescript
+const startTextSearch = async (query: string, budget?: { min: number; max: number }) => {
+  setLoading(true);
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) throw new Error('User not authenticated');
 
-- Local catalog adapter preserved as fallback
-- If Tradera API fails, system gracefully falls back to local results
-- Existing search functionality remains functional during implementation
+    const { data: search, error: searchError } = await supabase
+      .from('visual_searches')
+      .insert({
+        user_id: user.user.id,
+        image_url: '', // No image for text search
+        status: 'pending',
+        analysis_data: { textQuery: query, budget },
+      })
+      .select()
+      .single();
+
+    if (searchError) throw searchError;
+
+    setCurrentSearch(search);
+
+    const { data, error } = await supabase.functions.invoke('visual-search', {
+      body: { textQuery: query, searchId: search.id, budget },
+    });
+
+    if (error) throw error;
+    await fetchSearchResults(search.id);
+    return search.id;
+  } catch (error) {
+    // ... error handling
+  } finally {
+    setLoading(false);
+  }
+};
+```
+
+### Step 4: Clean Up .env File
+
+Remove the Tradera credentials from `.env` since they are stored in Supabase secrets:
+
+```
+VITE_SUPABASE_PROJECT_ID="gerwikyaggikykftcyxm"
+VITE_SUPABASE_PUBLISHABLE_KEY="..."
+VITE_SUPABASE_URL="https://gerwikyaggikykftcyxm.supabase.co"
+```
+
+## Files to Modify
+
+1. `supabase/functions/visual-search/index.ts` - Fix credentials, XML parsing, add text search support
+2. `src/hooks/useVisualSearch.ts` - Add `startTextSearch` method
+3. `src/pages/VisualSearchResults.tsx` - Handle text query in state
+4. `src/components/GalleryUpload.tsx` - Add text search input field
+5. `.env` - Remove TRADERA_APP_ID and TRADERA_APP_KEY
+
+## Technical Notes
+
+### Tradera SOAP Response Structure (from documentation)
+```text
+<SearchAdvancedResult>
+  <TotalNumberOfItems>int</TotalNumberOfItems>
+  <TotalNumberOfPages>int</TotalNumberOfPages>
+  <Items>
+    <Id>int</Id>
+    <ShortDescription>string</ShortDescription>
+    <BuyItNowPrice>int</BuyItNowPrice>
+    <SellerDsrAverage>double</SellerDsrAverage>
+    <ImageLinks>
+      <ImageLink>
+        <Url>string</Url>
+        <Format>string</Format>
+      </ImageLink>
+    </ImageLinks>
+    <AttributeValues>...</AttributeValues>
+  </Items>
+  <Errors>...</Errors>
+</SearchAdvancedResult>
+```
+
+### Security Considerations
+- API credentials only exist in Supabase secrets, never in source code
+- Edge functions read from `Deno.env.get()` which accesses Supabase secrets
+- Frontend code never has access to these secrets
+
