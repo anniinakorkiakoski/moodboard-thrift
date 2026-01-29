@@ -94,14 +94,18 @@ function setCachedResults(source: string, query: SearchQuery, data: NormalizedLi
 // ============================================================
 class TraderaAdapter implements SourceAdapter {
   name = "tradera";
-  private appId: number = 5636;
-  private appKey: string = "1da3f721-eb75-4da3-a239-377de44a0f42";
+  private appId: string;
+  private appKey: string;
   private lastRequestTime = 0;
   private minRequestInterval = 500; // Max 2 requests/sec
 
   constructor() {
+    // SECURITY: Credentials loaded from Supabase secrets only
     this.appId = Deno.env.get("TRADERA_APP_ID") || "";
     this.appKey = Deno.env.get("TRADERA_APP_KEY") || "";
+    if (!this.appId || !this.appKey) {
+      console.warn("[Tradera] API credentials not configured in Supabase secrets");
+    }
   }
 
   getSourceFilters(): string[] {
@@ -242,8 +246,8 @@ class TraderaAdapter implements SourceAdapter {
   private parseResponse(xmlText: string): NormalizedListing[] {
     const listings: NormalizedListing[] = [];
 
-    // Simple XML parsing for Tradera response
-    const itemMatches = xmlText.match(/<Item>([\s\S]*?)<\/Item>/g) || [];
+    // Extract items from SearchAdvancedResult - note: tag is <Items> not <Item>
+    const itemMatches = xmlText.match(/<Items>([\s\S]*?)<\/Items>/g) || [];
 
     for (const itemXml of itemMatches) {
       try {
@@ -252,6 +256,12 @@ class TraderaAdapter implements SourceAdapter {
       } catch (e) {
         console.error("[Tradera] Parse item error:", e);
       }
+    }
+
+    // Check for errors in response
+    const errorMatch = xmlText.match(/<Errors>[\s\S]*?<Code>([^<]*)<\/Code>[\s\S]*?<Message>([^<]*)<\/Message>/);
+    if (errorMatch) {
+      console.error(`[Tradera] API Error: ${errorMatch[1]} - ${errorMatch[2]}`);
     }
 
     return listings;
@@ -266,11 +276,22 @@ class TraderaAdapter implements SourceAdapter {
     const id = getValue("Id");
     if (!id) return null;
 
+    // ThumbnailLink is a direct URL
     const thumbnailLink = getValue("ThumbnailLink");
-    const imageLinks =
-      itemXml.match(/<ImageLink>([^<]*)<\/ImageLink>/g)?.map((m) => m.replace(/<\/?ImageLink>/g, "")) || [];
+    
+    // ImageLinks contains nested <ImageLink><Url>...</Url></ImageLink>
+    const imageUrlMatches = itemXml.match(/<ImageLink>[\s\S]*?<Url>([^<]*)<\/Url>/g) || [];
+    const imageLinks = imageUrlMatches
+      .map(m => {
+        const urlMatch = m.match(/<Url>([^<]*)<\/Url>/);
+        return urlMatch ? urlMatch[1] : null;
+      })
+      .filter((url): url is string => url !== null);
 
     const images = [thumbnailLink, ...imageLinks].filter(Boolean);
+
+    // Parse AttributeValues for size, brand, condition
+    const attributeValues = this.parseAttributeValues(itemXml);
 
     // Price parsing - prefer BuyItNowPrice, fallback to MaxBid
     const buyNowPrice = parseFloat(getValue("BuyItNowPrice")) || 0;
@@ -278,6 +299,8 @@ class TraderaAdapter implements SourceAdapter {
     const price = buyNowPrice || maxBid || parseFloat(getValue("NextBid")) || 0;
 
     const itemType = getValue("ItemType");
+    const isAuction = itemType?.toLowerCase().includes("auction") || 
+                      (getValue("HasBids") === "true" && !buyNowPrice);
 
     return {
       source: "tradera",
@@ -286,22 +309,58 @@ class TraderaAdapter implements SourceAdapter {
       description: getValue("LongDescription") || getValue("ShortDescription") || "",
       price,
       currency: "SEK",
-      shipping: getValue("ShippingCondition") || null,
-      condition: getValue("ItemCondition") || null,
-      brand: null, // Not directly available in response
-      category: getValue("CategoryName") || null,
-      size: null, // Would need to parse from description
-      color: null, // Would need to parse from description
-      city: getValue("SellerCity") || null,
+      shipping: null,
+      condition: attributeValues.condition || null,
+      brand: attributeValues.brand || null,
+      category: getValue("CategoryId") || null,
+      size: attributeValues.size || null,
+      color: attributeValues.color || null,
+      city: null,
       country: "SE",
-      zip: getValue("ZipCode") || null,
+      zip: null,
       images,
       listing_url: getValue("ItemUrl") || `https://www.tradera.com/item/${id}`,
       seller_name: getValue("SellerAlias") || null,
-      seller_rating: parseFloat(getValue("SellerRating")) || null,
+      seller_rating: parseFloat(getValue("SellerDsrAverage")) || null,
       end_date: getValue("EndDate") || null,
-      is_auction: itemType?.toLowerCase() === "auction" || !buyNowPrice,
+      is_auction: isAuction,
     };
+  }
+
+  private parseAttributeValues(itemXml: string): { size?: string; brand?: string; condition?: string; color?: string } {
+    const result: { size?: string; brand?: string; condition?: string; color?: string } = {};
+    
+    // Extract TermAttributeValue entries and their values
+    const termValueSection = itemXml.match(/<TermAttributeValues>([\s\S]*?)<\/TermAttributeValues>/);
+    if (!termValueSection) return result;
+    
+    const termMatches = termValueSection[1].match(/<TermAttributeValue>([\s\S]*?)<\/TermAttributeValue>/g) || [];
+    
+    for (const term of termMatches) {
+      const nameMatch = term.match(/<Name>([^<]*)<\/Name>/);
+      const valueMatch = term.match(/<Value>([^<]*)<\/Value>/);
+      
+      if (nameMatch && valueMatch) {
+        const name = nameMatch[1].toLowerCase();
+        const value = valueMatch[1];
+        
+        // Common Swedish attribute names
+        if (name.includes("storlek") || name.includes("size")) {
+          result.size = value;
+        }
+        if (name.includes("märke") || name.includes("brand") || name.includes("varumärke")) {
+          result.brand = value;
+        }
+        if (name.includes("färg") || name.includes("color") || name.includes("colour")) {
+          result.color = value;
+        }
+        if (name.includes("skick") || name.includes("condition")) {
+          result.condition = value;
+        }
+      }
+    }
+    
+    return result;
   }
 }
 
@@ -588,10 +647,11 @@ serve(async (req) => {
   }
 
   try {
-    const { imageUrl, searchId, cropData, budget } = await req.json();
+    const { imageUrl, searchId, cropData, budget, textQuery } = await req.json();
 
-    if (!imageUrl || !searchId) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+    // Allow either imageUrl OR textQuery
+    if (!searchId || (!imageUrl && !textQuery)) {
+      return new Response(JSON.stringify({ error: "Missing required fields: searchId and either imageUrl or textQuery" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -599,13 +659,11 @@ serve(async (req) => {
 
     console.log("=== SOURCE ADAPTER VISUAL SEARCH ===");
     console.log("Search ID:", searchId);
+    console.log("Mode:", imageUrl ? "Image-based" : "Text-based");
     console.log("Budget:", budget || "No budget set");
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
-
+    
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -614,19 +672,30 @@ serve(async (req) => {
     await supabase.from("visual_searches").update({ status: "analyzing", crop_data: cropData }).eq("id", searchId);
 
     // ============================================================
-    // STEP 1: EXTRACT ATTRIBUTES
+    // STEP 1: EXTRACT ATTRIBUTES (or create from text query)
     // ============================================================
-    console.log("\n[STEP 1] Extracting visual attributes...");
-    const attributes = await extractDetailedAttributes(imageUrl, cropData, LOVABLE_API_KEY);
-    console.log("Category:", attributes.category);
-    console.log("Color:", attributes.colors.primary);
-    console.log("Search queries:", attributes.searchQueries);
+    let attributes: ExtractedAttributes;
+    
+    if (imageUrl) {
+      if (!LOVABLE_API_KEY) {
+        throw new Error("LOVABLE_API_KEY is not configured for image analysis");
+      }
+      console.log("\n[STEP 1] Extracting visual attributes from image...");
+      attributes = await extractDetailedAttributes(imageUrl, cropData, LOVABLE_API_KEY);
+      console.log("Category:", attributes.category);
+      console.log("Color:", attributes.colors.primary);
+      console.log("Search queries:", attributes.searchQueries);
+    } else {
+      console.log("\n[STEP 1] Creating attributes from text query...");
+      console.log("Text query:", textQuery);
+      attributes = createAttributesFromText(textQuery);
+    }
 
     await supabase
       .from("visual_searches")
       .update({
         status: "searching",
-        analysis_data: { attributes },
+        analysis_data: { attributes, textQuery: textQuery || null },
         attributes,
       })
       .eq("id", searchId);
@@ -946,6 +1015,37 @@ Return ONLY valid JSON.`,
       },
     };
   }
+}
+
+// ============================================================
+// CREATE ATTRIBUTES FROM TEXT QUERY
+// ============================================================
+function createAttributesFromText(query: string): ExtractedAttributes {
+  const words = query.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+  const significantWords = words.filter(w => w.length > 2);
+  
+  return {
+    category: query,
+    subcategory: undefined,
+    colors: { primary: "", colorFamily: "neutral" },
+    material: { fabric: "" },
+    pattern: { type: "" },
+    construction: { silhouette: "" },
+    style: { aesthetic: "" },
+    distinctiveFeatures: [],
+    searchQueries: {
+      primary: query,
+      fallback: words.slice(0, 3).join(" "),
+      alternative: words.slice(0, 2).join(" ") || words[0] || query,
+      keywords: significantWords.slice(0, 6),
+    },
+    textDescription: query,
+    visualSignature: {
+      dominantColors: [],
+      patternDescription: "",
+      shapeDescription: "",
+    },
+  };
 }
 
 // ============================================================

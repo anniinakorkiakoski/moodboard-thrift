@@ -13,18 +13,22 @@ import { Navigation } from '@/components/Navigation';
 export const VisualSearchResults = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { imageUrl, imageId } = location.state || {};
-  const { currentSearch, results, loading, startSearch } = useVisualSearch();
+  const { imageUrl, imageId, textQuery } = location.state || {};
+  const { currentSearch, results, loading, startSearch, startTextSearch } = useVisualSearch();
   const [activeTab, setActiveTab] = useState<'results' | 'marketplace'>('results');
   const [showCropOverlay, setShowCropOverlay] = useState(false);
   const [searchInitiated, setSearchInitiated] = useState(false);
 
-  // Show crop overlay on initial load
+  // Show crop overlay on initial load for image searches, or start text search directly
   useEffect(() => {
     if (imageUrl && !searchInitiated) {
       setShowCropOverlay(true);
+    } else if (textQuery && !searchInitiated) {
+      // Direct search for text queries - no crop overlay needed
+      setSearchInitiated(true);
+      startTextSearch(textQuery);
     }
-  }, [imageUrl, searchInitiated]);
+  }, [imageUrl, textQuery, searchInitiated]);
 
   const handleConfirmCrop = async (cropData: any, budget?: { min: number; max: number }) => {
     setShowCropOverlay(false);
@@ -43,14 +47,14 @@ export const VisualSearchResults = () => {
     }
   }, [currentSearch]);
 
-  if (!imageUrl) {
+  if (!imageUrl && !textQuery) {
     return (
       <>
         <Navigation />
         <div className="min-h-screen flex items-center justify-center pt-32">
           <div className="text-center space-y-4">
-            <p className="text-muted-foreground font-mono">no image selected for search.</p>
-            <Button onClick={() => navigate('/')} className="font-mono">go back</Button>
+            <p className="text-muted-foreground font-mono">no search query provided.</p>
+            <Button onClick={() => navigate('/gallery')} className="font-mono">go back</Button>
           </div>
         </div>
       </>
@@ -70,16 +74,27 @@ export const VisualSearchResults = () => {
         />
       )}
 
-      {/* Search Image & Attributes */}
+      {/* Search Image/Query & Attributes */}
       <div className="container mx-auto px-4 py-8 pt-32">
         <div className="max-w-md mx-auto mb-8">
-          <div className="aspect-square bg-muted rounded-lg overflow-hidden border-2 border-muted">
-            <img 
-              src={imageUrl} 
-              alt="Search query"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          {imageUrl ? (
+            <div className="aspect-square bg-muted rounded-lg overflow-hidden border-2 border-muted">
+              <img 
+                src={imageUrl} 
+                alt="Search query"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : textQuery ? (
+            <div className="p-6 bg-muted/30 rounded-lg border border-border/50 text-center">
+              <p className="text-xs font-medium text-primary uppercase tracking-wider mb-3">
+                Text Search
+              </p>
+              <p className="text-lg font-lora text-foreground">
+                "{textQuery}"
+              </p>
+            </div>
+          ) : null}
           
           {currentSearch?.attributes && (
             <div className="mt-4 p-4 bg-muted/30 rounded-lg space-y-4 border border-border/50">
