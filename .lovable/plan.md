@@ -1,86 +1,99 @@
 
 
-# eBay Account Deletion Notification Endpoint
+# Integrate eBay Browse API into Visual Search
 
-## Summary
+## Overview
+Add eBay as a new source adapter alongside Tradera, Depop, and the local catalog. This involves creating an eBay OAuth token manager with caching, building an eBay Browse API adapter, adding a new edge function for standalone eBay queries, and updating the database enum to include "ebay" as a platform type.
 
-Create a Supabase Edge Function at `ebay-account-deletion` that handles eBay's Marketplace Account Deletion/Closure notification requirements. This is a prerequisite for eBay Browse API access.
+## Steps
 
-**Endpoint URL:** `https://gerwikyaggikykftcyxm.supabase.co/functions/v1/ebay-account-deletion`
+### 1. Store eBay Secrets
+Add the following secrets to Supabase:
+- `EBAY_CLIENT_ID` = `Christia-CURA-PRD-db45c9f27-cc1b4cf9`
+- `EBAY_CLIENT_SECRET` = `SBX-b42aa1f5b7a3-5530-4de6-8513-cc78`
+- `EBAY_MARKETPLACE_ID` = `EBAY_FI`
 
-## What This Does
+### 2. Database Migration: Add "ebay" to platform_type enum
+Run an `ALTER TYPE` to add `'ebay'` to the `platform_type` enum so search results can be stored with `platform: 'ebay'`.
 
-eBay requires all API consumers to provide a notification endpoint that:
-1. **GET** -- Responds to a verification challenge by computing `SHA256_HEX(challenge_code + verification_token + endpoint_url)` and returning it as JSON
-2. **POST** -- Accepts account deletion/closure notifications and returns 200 OK
+```sql
+ALTER TYPE platform_type ADD VALUE IF NOT EXISTS 'ebay';
+```
 
-## Implementation Steps
+### 3. Create `ebay-browse-listings` Edge Function
+A new public edge function (`verify_jwt = false`) at `supabase/functions/ebay-browse-listings/index.ts` that:
 
-### Step 1: Store the Verification Token as a Secret
+- **OAuth Token Caching**: Uses eBay's Client Credentials Grant (`/identity/v1/oauth2/token`) to get an Application Access Token. Caches the token in-memory with its expiry time so subsequent calls within the TTL reuse it without re-authenticating.
+- **Browse API Search**: Calls `GET /buy/browse/v1/item_summary/search` with:
+  - `q` (search keywords)
+  - `filter` for price range, condition
+  - `X-EBAY-C-MARKETPLACE-ID` header set to the configured marketplace (default `EBAY_FI`, overridable via request body)
+  - `limit` parameter (default 50)
+- **Response**: Returns normalized listings matching the existing `NormalizedListing` schema.
+- **CORS**: Full CORS support for frontend calls.
 
-Add a new Supabase secret:
-- **Name:** `EBAY_VERIFICATION_TOKEN`
-- **Value:** `ebay_api_verify_cura_ai_feb_2026`
+### 4. Add EbayAdapter to `visual-search` Edge Function
+Add a new `EbayAdapter` class (implementing `SourceAdapter`) inside `supabase/functions/visual-search/index.ts`:
 
-This keeps the token out of source code and only accessible server-side via `Deno.env.get()`.
+- Reuses the same OAuth token caching pattern (in-memory with expiry tracking).
+- Calls the eBay Browse API search endpoint directly (not via the separate edge function, to avoid an extra network hop).
+- Maps eBay item summaries to `NormalizedListing` format:
+  - `source: "ebay"`
+  - `price` from `price.value`, `currency` from `price.currency`
+  - `images` from `image.imageUrl` and `additionalImages`
+  - `listing_url` from `itemWebUrl`
+  - `condition` from `condition`
+  - `is_auction` based on `buyingOptions` containing `"AUCTION"`
+- Register the adapter in the adapters array (line ~709) so it runs in parallel with Tradera, Depop, and local catalog.
+- Update `mapSourceToPlatform` to map `"ebay"` to `"ebay"` (instead of current `"other_vintage"` fallback).
 
-### Step 2: Create the Edge Function
+### 5. Update `supabase/config.toml`
+Add the new function config:
+```toml
+[functions.ebay-browse-listings]
+verify_jwt = false
+```
 
-Create `supabase/functions/ebay-account-deletion/index.ts`:
+### 6. Token Caching Strategy
+Both the standalone edge function and the adapter within `visual-search` will use the same pattern:
 
-- **No JWT verification** -- eBay's requests are unauthenticated webhook-style calls
-- **GET handler** -- Reads `challenge_code` from query params, computes SHA-256 hex digest of `challenge_code + verification_token + endpoint_url`, returns `{"challengeResponse": "<hex>"}` with `Content-Type: application/json` and status 200
-- **POST handler** -- Accepts the notification body, logs it for auditing, returns 200 OK with empty JSON
-- **Error handling** -- Returns 400 if `challenge_code` is missing on GET; returns 204 No Content if POST body parsing fails
-- **No BOM** -- All JSON responses use standard UTF-8 encoding without byte-order mark
+```text
+Module-level variables:
+  cachedToken: string | null
+  tokenExpiry: number (timestamp)
 
-The endpoint URL used in the SHA-256 computation will be the full Supabase function URL:
-`https://gerwikyaggikykftcyxm.supabase.co/functions/v1/ebay-account-deletion`
+getEbayAccessToken():
+  if cachedToken exists AND tokenExpiry > now + 60s buffer:
+    return cachedToken
+  else:
+    POST to eBay OAuth endpoint with client credentials
+    parse access_token + expires_in from response
+    store in cachedToken / tokenExpiry
+    return token
+```
 
-### Step 3: Update Config
-
-Add the function to `supabase/config.toml` with `verify_jwt = false` since eBay sends unauthenticated requests.
-
-### Step 4: Deploy and Verify
-
-Deploy the edge function and test the GET challenge endpoint to confirm it returns the correct SHA-256 response.
+This prevents redundant OAuth calls within each edge function instance's lifetime (typically minutes to hours in Deno Deploy).
 
 ## Technical Details
 
-### SHA-256 Challenge Flow
-
-```text
-Input string = challenge_code + "ebay_api_verify_cura_ai_feb_2026" + "https://gerwikyaggikykftcyxm.supabase.co/functions/v1/ebay-account-deletion"
-
-Output = SHA256 hex digest of input string (lowercase)
-
-Response: { "challengeResponse": "<hex_digest>" }
+### eBay Browse API Request
+```
+GET https://api.ebay.com/buy/browse/v1/item_summary/search
+Headers:
+  Authorization: Bearer {access_token}
+  X-EBAY-C-MARKETPLACE-ID: EBAY_FI
+  Content-Type: application/json
+Query params:
+  q={search terms}
+  limit=50
+  filter=price:[{min}..{max}],priceCurrency:EUR
 ```
 
-### Edge Function Pseudocode
-
-```text
-GET /ebay-account-deletion?challenge_code=abc123
-  -> Read challenge_code from URL params
-  -> If missing: return 400 {"error": "Missing challenge_code"}
-  -> Compute: SHA256(challenge_code + token + endpoint)
-  -> Return 200 {"challengeResponse": "<hex>"}
-
-POST /ebay-account-deletion
-  -> Parse JSON body (log notification type + userId)
-  -> Return 200 {"status": "ok"}
-  -> On parse error: return 204 No Content
-```
-
-### Files to Create/Modify
-
-1. **New:** `supabase/functions/ebay-account-deletion/index.ts` -- The edge function
-2. **Edit:** `supabase/config.toml` -- Add `[functions.ebay-account-deletion]` with `verify_jwt = false`
-
-### Security Notes
-
-- Verification token stored as Supabase secret, never in source code or frontend
-- No CORS needed (eBay calls server-to-server, not from a browser)
-- CORS headers included anyway for flexibility (preflight handling)
-- No sensitive data returned in any response
+### Files Changed
+| File | Change |
+|------|--------|
+| `supabase/functions/ebay-browse-listings/index.ts` | New standalone edge function |
+| `supabase/functions/visual-search/index.ts` | Add `EbayAdapter` class + register it |
+| `supabase/config.toml` | Add `ebay-browse-listings` config |
+| Database migration | Add `'ebay'` to `platform_type` enum |
 
