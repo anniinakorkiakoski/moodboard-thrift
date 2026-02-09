@@ -72,8 +72,8 @@ export const Auth = () => {
         // For customers, the database trigger auto-creates the role on signup
         
         toast({
-          title: "Account Created",
-          description: "Please check your email to confirm your account."
+          title: "Account Created — Check Your Email! 📧",
+          description: "We've sent a confirmation link to your email. Please check your inbox (and spam folder) and click the link to activate your account before signing in.",
         });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -104,9 +104,12 @@ export const Auth = () => {
         navigate('/');
       }
     } catch (error: any) {
+      const message = error.message?.includes('security purposes')
+        ? "Please wait a moment before trying again. If you already signed up, check your email for the confirmation link."
+        : error.message;
       toast({
         title: "Authentication Error",
-        description: error.message,
+        description: message,
         variant: "destructive"
       });
     } finally {
