@@ -60,28 +60,16 @@ export const Auth = () => {
         
         if (error) throw error;
         
-        if (data.user) {
-          // If thrifter, redirect to terms page (role will be created there)
-          if (userRole === 'thrifter') {
-            toast({
-              title: "Account Created",
-              description: "Please review and accept our thrifter terms."
-            });
-            navigate('/thrifter-terms');
-            return;
-          }
-          
-          // For customers, insert role immediately
-          const { error: roleError } = await supabase
-            .from('user_roles')
-            .insert({
-              user_id: data.user.id,
-              role: userRole,
-              terms_accepted_at: new Date().toISOString()
-            });
-
-          if (roleError) throw roleError;
+        if (data.user && userRole === 'thrifter') {
+          // Thrifters need to accept terms — role will be created on the terms page
+          toast({
+            title: "Account Created",
+            description: "Please review and accept our thrifter terms."
+          });
+          navigate('/thrifter-terms');
+          return;
         }
+        // For customers, the database trigger auto-creates the role on signup
         
         toast({
           title: "Account Created",
