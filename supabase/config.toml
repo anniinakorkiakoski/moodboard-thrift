@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.ebay-account-deletion]
 verify_jwt = false
+
+[functions.ebay-browse-listings]
+verify_jwt = false

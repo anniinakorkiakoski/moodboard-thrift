@@ -708,6 +708,7 @@ export type Database = {
         | "depop"
         | "other_vintage"
         | "tradera"
+        | "ebay"
       search_status:
         | "pending"
         | "analyzing"
@@ -851,6 +852,7 @@ export const Constants = {
         "depop",
         "other_vintage",
         "tradera",
+        "ebay",
       ],
       search_status: [
         "pending",

@@ -42,6 +42,7 @@ export const SearchResults = ({ results, onRequestThrifter }: SearchResultsProps
       tise: 'bg-blue-500',
       facebook_marketplace: 'bg-blue-600',
       emmy: 'bg-purple-500',
+      ebay: 'bg-yellow-500',
       other_vintage: 'bg-gray-500',
     };
     return colors[platform] || 'bg-gray-500';

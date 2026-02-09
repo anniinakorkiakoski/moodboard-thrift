@@ -549,6 +549,154 @@ class DepopAdapter implements SourceAdapter {
 }
 
 // ============================================================
+// EBAY BROWSE API ADAPTER
+// Searches eBay via Browse API with OAuth token caching
+// ============================================================
+let ebayToken: string | null = null;
+let ebayTokenExpiry = 0;
+
+async function getEbayToken(): Promise<string> {
+  if (ebayToken && Date.now() < ebayTokenExpiry - 60_000) {
+    console.log("[eBay] Using cached access token");
+    return ebayToken;
+  }
+
+  const clientId = Deno.env.get("EBAY_CLIENT_ID");
+  const clientSecret = Deno.env.get("EBAY_CLIENT_SECRET");
+  if (!clientId || !clientSecret) {
+    throw new Error("EBAY_CLIENT_ID or EBAY_CLIENT_SECRET not configured");
+  }
+
+  const credentials = btoa(`${clientId}:${clientSecret}`);
+  const response = await fetch("https://api.ebay.com/identity/v1/oauth2/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${credentials}`,
+    },
+    body: "grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope",
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[eBay] OAuth error [${response.status}]:`, errorText);
+    throw new Error(`eBay OAuth failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  ebayToken = data.access_token;
+  ebayTokenExpiry = Date.now() + data.expires_in * 1000;
+  console.log(`[eBay] New token, expires in ${data.expires_in}s`);
+  return ebayToken!;
+}
+
+class EbayAdapter implements SourceAdapter {
+  name = "ebay";
+
+  getSourceFilters(): string[] {
+    return ["priceMin", "priceMax", "condition"];
+  }
+
+  async search(query: SearchQuery): Promise<NormalizedListing[]> {
+    const clientId = Deno.env.get("EBAY_CLIENT_ID");
+    if (!clientId) {
+      console.log("[eBay] Credentials not configured, skipping");
+      return [];
+    }
+
+    const cached = getCachedResults(this.name, query);
+    if (cached) return cached;
+
+    const searchWords = query.searchWords.join(" ");
+    console.log(`[eBay] Searching: "${searchWords}"`);
+
+    try {
+      const accessToken = await getEbayToken();
+      const marketplace = Deno.env.get("EBAY_MARKETPLACE_ID") || "EBAY_FI";
+
+      const filters: string[] = [];
+      if (query.priceMin !== undefined || query.priceMax !== undefined) {
+        const min = query.priceMin ?? 0;
+        const max = query.priceMax ?? "";
+        filters.push(`price:[${min}..${max}]`);
+        filters.push("priceCurrency:EUR");
+      }
+
+      const params = new URLSearchParams({
+        q: searchWords,
+        limit: String(query.itemsPerPage || 50),
+      });
+      if (filters.length > 0) {
+        params.set("filter", filters.join(","));
+      }
+
+      const apiUrl = `https://api.ebay.com/buy/browse/v1/item_summary/search?${params}`;
+      const response = await fetch(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "X-EBAY-C-MARKETPLACE-ID": marketplace,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        console.error(`[eBay] API error: ${response.status}`);
+        return [];
+      }
+
+      const data = await response.json();
+      const items = data.itemSummaries || [];
+
+      const results = items.map((item: any) => this.mapToNormalized(item));
+      console.log(`[eBay] Found ${results.length} items`);
+      setCachedResults(this.name, query, results);
+      return results;
+    } catch (error) {
+      console.error("[eBay] Search error:", error);
+      return [];
+    }
+  }
+
+  private mapToNormalized(item: any): NormalizedListing {
+    const images: string[] = [];
+    if (item.image?.imageUrl) images.push(item.image.imageUrl);
+    if (item.additionalImages) {
+      for (const img of item.additionalImages) {
+        if (img.imageUrl) images.push(img.imageUrl);
+      }
+    }
+
+    return {
+      source: "ebay",
+      source_item_id: item.itemId || item.legacyItemId || "",
+      title: item.title || "",
+      description: item.shortDescription || item.title || "",
+      price: parseFloat(item.price?.value || "0"),
+      currency: item.price?.currency || "EUR",
+      shipping: item.shippingOptions?.[0]?.shippingCost?.value
+        ? `${item.shippingOptions[0].shippingCost.currency} ${item.shippingOptions[0].shippingCost.value}`
+        : null,
+      condition: item.condition || null,
+      brand: null,
+      category: item.categories?.[0]?.categoryName || null,
+      size: null,
+      color: null,
+      city: item.itemLocation?.city || null,
+      country: item.itemLocation?.country || null,
+      zip: item.itemLocation?.postalCode || null,
+      images,
+      listing_url: item.itemWebUrl || "",
+      seller_name: item.seller?.username || null,
+      seller_rating: item.seller?.feedbackPercentage
+        ? parseFloat(item.seller.feedbackPercentage)
+        : null,
+      end_date: item.itemEndDate || null,
+      is_auction: (item.buyingOptions || []).includes("AUCTION"),
+    };
+  }
+}
+
+// ============================================================
 // SOURCE ADAPTER MANAGER
 // Orchestrates parallel searches across all adapters
 // ============================================================
@@ -706,7 +854,7 @@ serve(async (req) => {
     console.log("\n[STEP 2] Searching via source adapters...");
 
     // Initialize adapters
-    const adapters: SourceAdapter[] = [new TraderaAdapter(), new DepopAdapter(), new LocalCatalogAdapter(supabase)];
+    const adapters: SourceAdapter[] = [new TraderaAdapter(), new EbayAdapter(), new DepopAdapter(), new LocalCatalogAdapter(supabase)];
 
     const adapterManager = new SourceAdapterManager(adapters);
 
@@ -807,7 +955,7 @@ serve(async (req) => {
         tradera: "tradera",
         depop: "depop",
         local: "other_vintage",
-        ebay: "other_vintage",
+        ebay: "ebay",
       };
       return platformMap[source] || "other_vintage";
     };
