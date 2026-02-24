@@ -1,99 +1,85 @@
 
 
-# Integrate eBay Browse API into Visual Search
+# Fix: Search Results Not Displaying Despite Successful API Calls
 
-## Overview
-Add eBay as a new source adapter alongside Tradera, Depop, and the local catalog. This involves creating an eBay OAuth token manager with caching, building an eBay Browse API adapter, adding a new edge function for standalone eBay queries, and updating the database enum to include "ebay" as a platform type.
+## Problem
+eBay and Tradera APIs return listings successfully, and results are stored in the database, but users see "No matches found" because of a three-part bug chain in scoring, status logic, and frontend data fetching.
 
-## Steps
-
-### 1. Store eBay Secrets
-Add the following secrets to Supabase:
-- `EBAY_CLIENT_ID` = `Christia-CURA-PRD-db45c9f27-cc1b4cf9`
-- `EBAY_CLIENT_SECRET` = `SBX-b42aa1f5b7a3-5530-4de6-8513-cc78`
-- `EBAY_MARKETPLACE_ID` = `EBAY_FI`
-
-### 2. Database Migration: Add "ebay" to platform_type enum
-Run an `ALTER TYPE` to add `'ebay'` to the `platform_type` enum so search results can be stored with `platform: 'ebay'`.
-
-```sql
-ALTER TYPE platform_type ADD VALUE IF NOT EXISTS 'ebay';
-```
-
-### 3. Create `ebay-browse-listings` Edge Function
-A new public edge function (`verify_jwt = false`) at `supabase/functions/ebay-browse-listings/index.ts` that:
-
-- **OAuth Token Caching**: Uses eBay's Client Credentials Grant (`/identity/v1/oauth2/token`) to get an Application Access Token. Caches the token in-memory with its expiry time so subsequent calls within the TTL reuse it without re-authenticating.
-- **Browse API Search**: Calls `GET /buy/browse/v1/item_summary/search` with:
-  - `q` (search keywords)
-  - `filter` for price range, condition
-  - `X-EBAY-C-MARKETPLACE-ID` header set to the configured marketplace (default `EBAY_FI`, overridable via request body)
-  - `limit` parameter (default 50)
-- **Response**: Returns normalized listings matching the existing `NormalizedListing` schema.
-- **CORS**: Full CORS support for frontend calls.
-
-### 4. Add EbayAdapter to `visual-search` Edge Function
-Add a new `EbayAdapter` class (implementing `SourceAdapter`) inside `supabase/functions/visual-search/index.ts`:
-
-- Reuses the same OAuth token caching pattern (in-memory with expiry tracking).
-- Calls the eBay Browse API search endpoint directly (not via the separate edge function, to avoid an extra network hop).
-- Maps eBay item summaries to `NormalizedListing` format:
-  - `source: "ebay"`
-  - `price` from `price.value`, `currency` from `price.currency`
-  - `images` from `image.imageUrl` and `additionalImages`
-  - `listing_url` from `itemWebUrl`
-  - `condition` from `condition`
-  - `is_auction` based on `buyingOptions` containing `"AUCTION"`
-- Register the adapter in the adapters array (line ~709) so it runs in parallel with Tradera, Depop, and local catalog.
-- Update `mapSourceToPlatform` to map `"ebay"` to `"ebay"` (instead of current `"other_vintage"` fallback).
-
-### 5. Update `supabase/config.toml`
-Add the new function config:
-```toml
-[functions.ebay-browse-listings]
-verify_jwt = false
-```
-
-### 6. Token Caching Strategy
-Both the standalone edge function and the adapter within `visual-search` will use the same pattern:
+## Root Cause Chain
 
 ```text
-Module-level variables:
-  cachedToken: string | null
-  tokenExpiry: number (timestamp)
-
-getEbayAccessToken():
-  if cachedToken exists AND tokenExpiry > now + 60s buffer:
-    return cachedToken
-  else:
-    POST to eBay OAuth endpoint with client credentials
-    parse access_token + expires_in from response
-    store in cachedToken / tokenExpiry
-    return token
+Adapters return listings
+        |
+        v
+Scoring is too strict (max ~0.46 for text searches)
+        |
+        v
+Status set to "no_matches" (needs score >= 0.5)
+        |
+        v
+Frontend skips fetching results (only reads when "completed")
+        |
+        v
+User sees empty results
 ```
 
-This prevents redundant OAuth calls within each edge function instance's lifetime (typically minutes to hours in Deno Deploy).
+## Fixes
+
+### Fix 1: Backend -- Lower the status threshold and use "tentative_matches"
+**File:** `supabase/functions/visual-search/index.ts` (line ~994)
+
+Change the status logic so that:
+- If ANY results were stored, status is at least `"tentative_matches"`
+- Only set `"no_matches"` when zero listings came back from adapters (already handled at line 876)
+
+Current:
+```typescript
+const finalStatus = highQuality.length > 0 || mediumQuality.length > 0 ? "completed" : "no_matches";
+```
+
+New:
+```typescript
+const finalStatus = highQuality.length > 0 ? "completed" : "tentative_matches";
+```
+
+### Fix 2: Backend -- Boost base scores for text searches
+**File:** `supabase/functions/visual-search/index.ts` (scoring function ~line 1299)
+
+The `visualSimilarity` base of 0.4 is too low as a starting point. For text-based searches (where attributes are sparse), add a text-query boost so that keyword-matching listings aren't penalized by empty visual/attribute fields.
+
+Adjust the scoring to give a higher baseline when the search is text-based (detected by empty `visualSignature.dominantColors`):
+- Base `visualSimilarity` = 0.5 for text searches (no image to compare against, so neutral score instead of penalty)
+- Add a keyword density bonus to `textSimilarity` calculation
+
+### Fix 3: Frontend -- Fetch results for both "completed" and "tentative_matches"
+**File:** `src/hooks/useVisualSearch.ts` (line ~112)
+
+Change the status guard to also fetch results for `tentative_matches`:
+```typescript
+if (search.status === 'completed' || search.status === 'tentative_matches') {
+```
+
+## Files Changed
+
+| File | Change |
+|------|--------|
+| `supabase/functions/visual-search/index.ts` | Fix status threshold logic (line ~994); boost text search scoring baseline (line ~1299) |
+| `src/hooks/useVisualSearch.ts` | Fetch results for both "completed" and "tentative_matches" statuses (line ~112) |
 
 ## Technical Details
 
-### eBay Browse API Request
-```
-GET https://api.ebay.com/buy/browse/v1/item_summary/search
-Headers:
-  Authorization: Bearer {access_token}
-  X-EBAY-C-MARKETPLACE-ID: EBAY_FI
-  Content-Type: application/json
-Query params:
-  q={search terms}
-  limit=50
-  filter=price:[{min}..{max}],priceCurrency:EUR
-```
+### Scoring Math (before fix)
+For a text search like "black jeans" with empty attributes:
+- `visualSimilarity` = 0.4 (base) x 0.4 (weight) = 0.16
+- `textSimilarity` = ~0.3 x 0.25 = 0.075
+- `attributeMatch` = ~0 x 0.25 = 0
+- `qualityScore` = 0.5 x 0.1 = 0.05
+- **Total: ~0.285** (well below 0.5 threshold)
 
-### Files Changed
-| File | Change |
-|------|--------|
-| `supabase/functions/ebay-browse-listings/index.ts` | New standalone edge function |
-| `supabase/functions/visual-search/index.ts` | Add `EbayAdapter` class + register it |
-| `supabase/config.toml` | Add `ebay-browse-listings` config |
-| Database migration | Add `'ebay'` to `platform_type` enum |
+### Scoring Math (after fix)
+- `visualSimilarity` = 0.5 (boosted base) x 0.4 = 0.20
+- `textSimilarity` = ~0.5 (boosted) x 0.25 = 0.125
+- `attributeMatch` = ~0.1 x 0.25 = 0.025
+- `qualityScore` = 0.5 x 0.1 = 0.05
+- **Total: ~0.40** -- and status threshold lowered so any stored results are shown as tentative matches
 
