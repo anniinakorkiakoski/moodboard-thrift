@@ -715,6 +715,7 @@ export type Database = {
         | "searching"
         | "completed"
         | "no_matches"
+        | "tentative_matches"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -860,6 +861,7 @@ export const Constants = {
         "searching",
         "completed",
         "no_matches",
+        "tentative_matches",
       ],
     },
   },
