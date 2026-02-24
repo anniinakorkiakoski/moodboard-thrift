@@ -1,0 +1,1 @@
+ALTER TYPE public.search_status ADD VALUE IF NOT EXISTS 'tentative_matches';

@@ -991,7 +991,7 @@ serve(async (req) => {
     }
 
     // Update final status
-    const finalStatus = highQuality.length > 0 || mediumQuality.length > 0 ? "completed" : "no_matches";
+    const finalStatus = highQuality.length > 0 ? "completed" : topMatches.length > 0 ? "tentative_matches" : "no_matches";
 
     await supabase
       .from("visual_searches")
@@ -1296,7 +1296,9 @@ function calculateMatchScores(attributes: ExtractedAttributes, listing: Normaliz
     breakdown.featureMatch * ATTRIBUTE_WEIGHTS.distinctiveFeatures;
 
   // Visual similarity estimate
-  let visualSimilarity = 0.4;
+  // For text-only searches (no image), use a neutral baseline of 0.5 instead of penalizing
+  const isTextOnlySearch = !attributes.visualSignature?.dominantColors?.length;
+  let visualSimilarity = isTextOnlySearch ? 0.5 : 0.4;
   if (attributes.visualSignature) {
     const colorMatches =
       attributes.visualSignature.dominantColors?.filter((c) => searchText.includes(c.toLowerCase())).length || 0;
@@ -1317,6 +1319,10 @@ function calculateMatchScores(attributes: ExtractedAttributes, listing: Normaliz
   if (attributes.searchQueries?.keywords) {
     const keywordMatches = attributes.searchQueries.keywords.filter((k) => searchText.includes(k.toLowerCase())).length;
     textSimilarity = Math.min(1, textSimilarity + keywordMatches * 0.1);
+  }
+  // Boost for text-only searches: keywords are the primary signal
+  if (isTextOnlySearch && textSimilarity > 0) {
+    textSimilarity = Math.min(1, textSimilarity + 0.2);
   }
 
   // Quality score

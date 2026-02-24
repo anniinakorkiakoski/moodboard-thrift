@@ -109,7 +109,7 @@ export const useVisualSearch = () => {
     if (search) {
       setCurrentSearch(search);
 
-      if (search.status === 'completed') {
+      if (search.status === 'completed' || search.status === 'tentative_matches') {
         const { data: results } = await supabase
           .from('search_results')
           .select('*')
