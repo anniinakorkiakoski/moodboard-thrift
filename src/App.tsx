@@ -37,7 +37,7 @@ const App = () => (
           <Route path="/style-profile" element={<StyleProfile />} /> {/* Redirect old route */}
           <Route path="/our-mission" element={<OurMission />} />
           <Route path="/how-to-use" element={<HowToUse />} />
-          <Route path="/connect" element={<Connect />} />
+          
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/inspiration" element={<Inspiration />} />
           <Route path="/catalog-admin" element={<CatalogAdmin />} />

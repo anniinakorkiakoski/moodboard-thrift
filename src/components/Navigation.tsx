@@ -148,23 +148,13 @@ export const Navigation = () => {
               </Button>
             </Link>
             <span className="text-foreground/40 font-mono">/</span>
-            <Link to="/connect">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-foreground hover:bg-muted font-mono px-2"
-              >
-                connect
-              </Button>
-            </Link>
-            <span className="text-foreground/40 font-mono">/</span>
             <Link to="/how-to-use">
               <Button
                 variant="ghost"
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono px-2"
               >
-                guide
+                howto
               </Button>
             </Link>
             <span className="text-foreground/40 font-mono">/</span>
