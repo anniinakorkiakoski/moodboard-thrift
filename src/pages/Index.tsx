@@ -56,6 +56,16 @@ const Index = () => {
                 <p className="text-xs md:text-sm font-light text-foreground/60 max-w-md mx-auto mt-6 text-center italic">
                   Sustainable fashion, curated for you.
                 </p>
+                <div className="mt-10 flex justify-center">
+                  <Link to="/gallery">
+                    <Button
+                      variant="outline"
+                      className="font-mono text-sm uppercase tracking-[0.2em] px-8 py-5 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                    >
+                      start curating now
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
 
