@@ -134,7 +134,7 @@ export const Navigation = () => {
                 size="sm"
                 className="text-foreground hover:bg-muted font-mono px-2"
               >
-                gallery
+                find
               </Button>
             </Link>
             <span className="text-foreground/40 font-mono">/</span>
