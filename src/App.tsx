@@ -11,7 +11,7 @@ import { VisualSearchResults } from "./pages/VisualSearchResults";
 import { StyleProfile } from "./pages/StyleProfile";
 import { OurMission } from "./pages/OurMission";
 import { HowToUse } from "./pages/HowToUse";
-import { Connect } from "./pages/Connect";
+
 import { CatalogAdmin } from "./pages/CatalogAdmin";
 import CatalogScraper from "./pages/CatalogScraper";
 import Gallery from "./pages/Gallery";
