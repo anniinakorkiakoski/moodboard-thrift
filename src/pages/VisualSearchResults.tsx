@@ -37,7 +37,7 @@ export const VisualSearchResults = () => {
   };
 
   const handleCancelCrop = () => {
-    navigate('/');
+    navigate('/gallery');
   };
 
   useEffect(() => {
