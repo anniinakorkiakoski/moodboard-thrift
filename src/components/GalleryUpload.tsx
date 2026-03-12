@@ -595,29 +595,41 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                   onDrop={(e) => handleImageDrop(e, image.id)}
                   onDragEnd={handleImageDragEnd}
                 >
-                  <div className={`bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${
+                  <div className="bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${
                     draggedImageId === image.id ? 'opacity-50 scale-95' : ''
                   } ${
                     dragOverImageId === image.id && draggedImageId !== image.id 
                       ? 'ring-2 ring-burgundy scale-105' 
                       : ''
-                  }`}>
-                    <div className="relative cursor-pointer" onClick={() => {
-                      const matchCount = imageMatches.get(image.id);
-                      if (matchCount && matchCount > 0) {
-                        setSelectedImageForMatches({ id: image.id, url: image.url });
-                      }
-                    }}>
+                  }">
+                    {/* Image container - clickable for search */}
+                    <div 
+                      className="relative cursor-pointer" 
+                      onClick={() => {
+                        onImageSearch?.({
+                          id: image.id,
+                          url: image.url,
+                          caption: image.caption,
+                          aspectRatio: image.aspectRatio
+                        });
+                      }}
+                    >
                       <img 
                         src={image.url} 
                         alt={image.caption || 'Inspiration image'}
                         className="w-full h-auto object-cover"
                       />
                       
-                      {/* Match indicator badge */}
+                      {/* Match indicator badge - clickable to view matches */}
                       {imageMatches.get(image.id) && imageMatches.get(image.id)! > 0 && (
-                        <div className="absolute top-2 left-2 z-20">
-                          <div className="w-8 h-8 bg-burgundy rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                        <div 
+                          className="absolute top-2 left-2 z-20 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedImageForMatches({ id: image.id, url: image.url });
+                          }}
+                        >
+                          <div className="w-8 h-8 bg-burgundy rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg hover:scale-110 transition-transform">
                             {imageMatches.get(image.id)}
                           </div>
                         </div>
@@ -645,7 +657,10 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                           variant="outline"
                           size="sm"
                           className="bg-white/90 backdrop-blur-sm border-white/50 hover:bg-white h-7 w-7 p-0"
-                          onClick={() => handleDeleteImage(image.id, image.filePath)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteImage(image.id, image.filePath);
+                          }}
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
@@ -680,13 +695,14 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                             rows={3}
                           />
                         ) : (
-                          <div 
-                            className="text-sm text-white font-light leading-relaxed cursor-pointer min-h-[20px] font-lora whitespace-pre-wrap"
-                            onClick={() => {
-                              setEditingCaption(image.id);
-                              setEditingCaptionText(image.caption);
-                            }}
-                          >
+                        <div 
+                          className="text-sm text-white font-light leading-relaxed cursor-pointer min-h-[20px] font-lora whitespace-pre-wrap"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingCaption(image.id);
+                            setEditingCaptionText(image.caption);
+                          }}
+                        >
                             {image.caption || 'what do you love about this?'}
                           </div>
                         )}
