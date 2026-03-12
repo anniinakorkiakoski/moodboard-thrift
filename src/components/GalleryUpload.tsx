@@ -583,7 +583,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
             onDrop={handleFileDrop}
           >
             {/* Masonry Grid - Full Width */}
-            <div className="columns-2 md:columns-4 lg:columns-5 gap-3 md:gap-4 space-y-3 md:space-y-4">
+            <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-3 md:gap-4 space-y-3 md:space-y-4">
               {displayImages.map((image, index) => (
                 <div 
                   key={image.id} 
@@ -595,13 +595,13 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                   onDrop={(e) => handleImageDrop(e, image.id)}
                   onDragEnd={handleImageDragEnd}
                 >
-                  <div className="bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${
+                  <div className={`bg-card rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${
                     draggedImageId === image.id ? 'opacity-50 scale-95' : ''
                   } ${
                     dragOverImageId === image.id && draggedImageId !== image.id 
                       ? 'ring-2 ring-burgundy scale-105' 
                       : ''
-                  }">
+                  }`}>
                     {/* Image container - clickable for search */}
                     <div 
                       className="relative cursor-pointer" 
