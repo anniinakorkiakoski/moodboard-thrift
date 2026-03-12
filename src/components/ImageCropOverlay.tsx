@@ -55,14 +55,12 @@ export const ImageCropOverlay = ({ imageUrl, onConfirm, onCancel }: ImageCropOve
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
       <div className="relative w-full max-w-4xl my-auto">
         {/* Close button */}
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
           onClick={onCancel}
-          className="absolute top-4 right-4 z-10 text-white hover:bg-white/20"
+          className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm border border-border shadow-md hover:bg-white transition-colors"
         >
-          <X className="w-5 h-5" />
-        </Button>
+          <X className="w-6 h-6 text-burgundy" />
+        </button>
 
         {/* Main content */}
         <div className="bg-white rounded-lg overflow-hidden">
