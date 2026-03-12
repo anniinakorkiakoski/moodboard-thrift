@@ -695,13 +695,14 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                             rows={3}
                           />
                         ) : (
-                          <div 
-                            className="text-sm text-white font-light leading-relaxed cursor-pointer min-h-[20px] font-lora whitespace-pre-wrap"
-                            onClick={() => {
-                              setEditingCaption(image.id);
-                              setEditingCaptionText(image.caption);
-                            }}
-                          >
+                        <div 
+                          className="text-sm text-white font-light leading-relaxed cursor-pointer min-h-[20px] font-lora whitespace-pre-wrap"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingCaption(image.id);
+                            setEditingCaptionText(image.caption);
+                          }}
+                        >
                             {image.caption || 'what do you love about this?'}
                           </div>
                         )}
