@@ -595,13 +595,13 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
                   onDrop={(e) => handleImageDrop(e, image.id)}
                   onDragEnd={handleImageDragEnd}
                 >
-                  <div className="bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${
+                  <div className={`bg-card rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${
                     draggedImageId === image.id ? 'opacity-50 scale-95' : ''
                   } ${
                     dragOverImageId === image.id && draggedImageId !== image.id 
                       ? 'ring-2 ring-burgundy scale-105' 
                       : ''
-                  }">
+                  }`}>
                     {/* Image container - clickable for search */}
                     <div 
                       className="relative cursor-pointer" 
