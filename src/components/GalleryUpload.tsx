@@ -583,7 +583,7 @@ export const GalleryUpload = ({ onUpload, onImageSearch, isLoading = false }: Ga
             onDrop={handleFileDrop}
           >
             {/* Masonry Grid - Full Width */}
-            <div className="columns-2 md:columns-4 lg:columns-5 gap-3 md:gap-4 space-y-3 md:space-y-4">
+            <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-3 md:gap-4 space-y-3 md:space-y-4">
               {displayImages.map((image, index) => (
                 <div 
                   key={image.id} 
